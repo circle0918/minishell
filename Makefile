@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2021/12/09 12:13:20 by thhusser         ###   ########.fr        #
+#    Updated: 2021/12/09 14:46:30 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,7 @@ SRCS_FILES	= \
 
 CC			=	clang
 
-FLAGS		= 	-Werror -Wextra -Wall
+FLAGS		= 	-Werror -Wextra -Wall -g
 
 PATH_LIBFT 	= ./libft/
 
