@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/09 16:59:51 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/09 17:25:09 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,11 @@ void	signal_in(int signal)
 	ft_putstr(_GREEN"thhusser> "_NC);
 }
 
+void	test(int signal)
+{
+	
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	char	*line;
@@ -70,6 +75,7 @@ int	main(int argc, char **argv, char **env)
 	line = NULL;
 	g.env= NULL;
 	signal(SIGINT, signal_in);
+	signal(SIGQUIT, test);
 	begin(argc, argv, env, &g);
 	while (1)
 	{
