@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/10 12:10:27 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/10 12:23:16 by yyuan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,28 +44,6 @@ void	record_list(t_list **list, char *str)
 	ft_lstadd_back(list, new_elem);
 }
 
-void	get_path(t_ms *g)
-{
-	char *path;
-	t_list *tmp;
-	char *pos;
-
-	tmp = g->env;
-	path = NULL;
-	while (tmp)
-	{
-		pos = ft_strstr(tmp->content, "PATH=");
-		if (pos && pos - (char *)tmp->content == 0)
-		{
-			path = tmp->content;
-			break;
-		}
-		tmp = tmp->next;
-	}
-	// maybe path= null or PATH= nothing
-	path = ft_substr(path, 5, (ft_strlen(path) - 5));
-	g->path = ft_split(path, ':');
-}
 
 void	begin(int argc, char **argv, char **env, t_ms *g)
 {
@@ -89,42 +67,6 @@ void	signal_in(int signal)
 void	test(int signal)
 {
 printf("%d\n",signal);	
-}
-char	*get_cmd_in_line(char *line)
-{
-	//char *cmd;
-	
-	//TODO PARSER ls -a but take only ls
-	return (line);
-}
-int		find_cmd_path(char *cmd, t_ms *g)
-{
-	DIR				*dir;
-	struct dirent	*dirp;
-	int				i;
-
-	i = 0;
-
-	while (g->path[i])
-	{
-		dir = opendir(g->path[i]);
-		if (dir)
-		{
-			while ((dirp = readdir(dir)) != NULL)
-			{
-				if (ft_strequ(dirp->d_name, cmd))
-				{
-					if (closedir(dir) == -1)
-						perror("error : closedir");	
-					return (1);
-				}
-			}
-		}
-		if (closedir(dir) == -1)
-			perror("error : closedir");	
-		i++;
-	}
-	return (0);
 }
 int	main(int argc, char **argv, char **env)
 {

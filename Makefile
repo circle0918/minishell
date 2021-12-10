@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2021/12/09 14:46:30 by thhusser         ###   ########.fr        #
+#    Updated: 2021/12/10 12:26:00 by yyuan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ SRCS		= $(addprefix ./srcs/, ${SRCS_FILES})
 
 SRCS_FILES	= \
 				main.c \
-
+				env/env.c \
 				
 				
 

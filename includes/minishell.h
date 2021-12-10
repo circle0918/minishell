@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/10 01:27:51 by yyuan            ###   ########.fr       */
+/*   Updated: 2021/12/10 12:25:12 by yyuan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,4 +29,7 @@ typedef struct 	s_ms
 				t_list	*error;
 }				t_ms;
 
+void	get_path(t_ms *g);
+char	*get_cmd_in_line(char *line);
+int		find_cmd_path(char *cmd, t_ms *g);
 #endif
