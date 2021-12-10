@@ -12,11 +12,14 @@ char	*get_cmd_in_line(char *line)
 		pos = i;
 		i++;
 	}
-	pos++;
+	if (i != 0)
+		pos++;
+	//printf("pos : %d i : %d\n", pos, i);
 	while(ft_isspace(line[i]) == 0)
 	{
 		i++;
 	}
+	//printf("pos : %d i : %d\n", pos, i);
 	cmd = ft_substr(line, pos, i-pos);
 //	printf("%s", cmd);
 	
