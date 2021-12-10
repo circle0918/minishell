@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/09 16:41:25 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/10 01:27:51 by yyuan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,16 @@
 
 # include "../libft/libft.h"
 # include "signal.h"
+# include <stdio.h>
+# include <stdlib.h>
+# include <dirent.h>
+# include <errno.h>
 
 typedef struct 	s_ms
 {
 				char 	*line;
 				t_list	*env;
+				char	**path;
 				t_list	*cmd;
 				t_list	*error;
 }				t_ms;
