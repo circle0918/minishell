@@ -1,5 +1,26 @@
 #include "../includes/minishell.h"
-
+char	*get_cmd_in_line(char *line)
+{
+	char *cmd;
+	int i;
+	int pos;
+	//TODO PARSER ls -a but only take ls
+	i = 0;
+	pos = 0;
+	while (ft_isspace(line[i]) == 1)
+	{
+		pos = i;
+		i++;
+	}
+	while(ft_isspace(line[i]) != 0)
+	{
+		i++;
+	}
+	cmd = ft_substr(line, pos, i);
+	printf("%s", cmd);
+	
+	return (cmd); //need to free
+}
 void	get_path(t_ms *g)
 {
 	char *path;
