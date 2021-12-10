@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/10 15:16:03 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/10 15:20:36 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ int	main(int argc, char **argv, char **env)
 		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
 			ft_exit(2, g.line, &g);
 		cmd = get_cmd_in_line_th(g.line, &g);
-		print_list(g.cmd_tmp);
+		// print_list(g.cmd_tmp);
 		if (!find_cmd_path(cmd, &g))
 		{
 			ft_putstr("minishell: ");
