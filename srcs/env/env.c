@@ -12,12 +12,13 @@ char	*get_cmd_in_line(char *line)
 		pos = i;
 		i++;
 	}
-	while(ft_isspace(line[i]) != 0)
+	pos++;
+	while(ft_isspace(line[i]) == 0)
 	{
 		i++;
 	}
-	cmd = ft_substr(line, pos, i);
-	printf("%s", cmd);
+	cmd = ft_substr(line, pos, i-pos);
+//	printf("%s", cmd);
 	
 	return (cmd); //need to free
 }
@@ -54,8 +55,9 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	DIR				*dir;
 	struct dirent	*dirp;
 	int				i;
-
+	char			*comd;
 	i = 0;
+	comd = get_cmd_in_line(cmd);
 
 	while (g->path[i])
 	{
@@ -64,9 +66,10 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		{
 			while ((dirp = readdir(dir)) != NULL)
 			{
-				if (ft_strequ(dirp->d_name, cmd))
+				if (ft_strequ(dirp->d_name, comd))
 				{
 					closedir(dir);
+					free(comd);
 					return (1);
 				}
 			}
@@ -74,6 +77,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		closedir(dir);
 		i++;
 	}
+	free(comd);
 	return (0);
 }
 
