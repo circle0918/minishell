@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/10 13:04:52 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/10 15:16:03 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	ft_exit(int nb, char *line, t_ms *g)
 	ft_del_line(line);
 	ft_lstclear(&g->env, &ft_del_list);
 	ft_lstclear(&g->cmd, &ft_del_list);
+	ft_lstclear(&g->cmd_tmp, &ft_del_list);
 	ft_lstclear(&g->error, &ft_del_list);
 	free_split(g->path);
 	exit(1);
@@ -86,9 +87,19 @@ void	test(int signal)
 	printf("%d\n",signal);	
 }
 
-char	*get_cmd_in_line(char *line)
+char	*get_cmd_in_line_th(char *line, t_ms *g)
 {
-	
+	char	**line_split;
+	int		i;
+	(void)g;
+	line_split = ft_split_charset(line, " \t");
+	i = -1;
+	while (line_split[++i])
+	{
+		record_list(&g->cmd_tmp, line_split[i]);
+		ft_del_line(line_split[i]);
+	}
+	free(line_split);
 	return (line);
 }
 
@@ -98,8 +109,9 @@ int	main(int argc, char **argv, char **env)
 	t_ms	g;
 
 	(void)argv;
+	cmd = NULL;
 	if (argc != 1)
-		printf(_RED"Error number arguments\n"_NC);
+		return(printf(_RED"Error number arguments\n"_NC));
 	signal(SIGINT, signal_in);
 	signal(SIGQUIT, test);
 	begin(env, &g);
@@ -108,7 +120,8 @@ int	main(int argc, char **argv, char **env)
 		ft_putstr(_GREEN"thhusser> "_NC);
 		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
 			ft_exit(2, g.line, &g);
-		cmd = get_cmd_in_line(g.line);
+		cmd = get_cmd_in_line_th(g.line, &g);
+		print_list(g.cmd_tmp);
 		if (!find_cmd_path(cmd, &g))
 		{
 			ft_putstr("minishell: ");

@@ -45,14 +45,12 @@ int		find_cmd_path(char *cmd, t_ms *g)
 			{
 				if (ft_strequ(dirp->d_name, cmd))
 				{
-					if (closedir(dir) == -1)
-						perror("error : closedir");	
+					closedir(dir);
 					return (1);
 				}
 			}
 		}
-		if (closedir(dir) == -1)
-			perror("error : closedir");	
+		closedir(dir);
 		i++;
 	}
 	return (0);
