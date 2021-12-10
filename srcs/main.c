@@ -6,11 +6,27 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/10 12:23:16 by yyuan            ###   ########.fr       */
+/*   Updated: 2021/12/10 13:04:52 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+void	free_split(char **split)
+{
+	int i;
+
+	i = -1;
+	if (split)
+	{
+		while (split[++i])
+		{
+			if (split[i])
+				free(split[i]);
+		}
+		free(split);
+	}
+}
 
 void	ft_exit(int nb, char *line, t_ms *g)
 {
@@ -18,6 +34,9 @@ void	ft_exit(int nb, char *line, t_ms *g)
 		ft_putstr("exit\n");	
 	ft_del_line(line);
 	ft_lstclear(&g->env, &ft_del_list);
+	ft_lstclear(&g->cmd, &ft_del_list);
+	ft_lstclear(&g->error, &ft_del_list);
+	free_split(g->path);
 	exit(1);
 }
 
@@ -44,13 +63,11 @@ void	record_list(t_list **list, char *str)
 	ft_lstadd_back(list, new_elem);
 }
 
-
-void	begin(int argc, char **argv, char **env, t_ms *g)
+void	begin(char **env, t_ms *g)
 {
-	(void)argc;
-	(void)argv;
 	int i;
 
+	init_global_struct(g);
 	i = -1;
 	while (env[++i])
 		record_list(&g->env, env[i]);
@@ -66,35 +83,41 @@ void	signal_in(int signal)
 
 void	test(int signal)
 {
-printf("%d\n",signal);	
+	printf("%d\n",signal);	
 }
+
+char	*get_cmd_in_line(char *line)
+{
+	
+	return (line);
+}
+
 int	main(int argc, char **argv, char **env)
 {
-	char	*line;
 	char	*cmd;
 	t_ms	g;
 
-	line = NULL;
-	g.env= NULL;
+	(void)argv;
+	if (argc != 1)
+		printf(_RED"Error number arguments\n"_NC);
 	signal(SIGINT, signal_in);
 	signal(SIGQUIT, test);
-	begin(argc, argv, env, &g);
+	begin(env, &g);
 	while (1)
 	{
 		ft_putstr(_GREEN"thhusser> "_NC);
-		if (!get_next_line(0, &line) || !ft_strcmp(line, "exit"))
-			ft_exit(2, line, &g);
-		cmd = get_cmd_in_line(line);
+		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
+			ft_exit(2, g.line, &g);
+		cmd = get_cmd_in_line(g.line);
 		if (!find_cmd_path(cmd, &g))
-		//	printf("minishell: %s: command not found", cmd);
 		{
 			ft_putstr("minishell: ");
 			ft_putstr(cmd);
 			ft_putstr(": command not found\n");
 		}
-		if (!ft_strcmp(line, "env"))
+		if (!ft_strcmp(g.line, "env"))
 			print_list(g.env);
-		ft_del_line(line);
+		ft_del_line(g.line);
 	}
 	return (0);
 }

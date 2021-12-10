@@ -1,33 +1,33 @@
 #include "../includes/minishell.h"
+
 void	get_path(t_ms *g)
 {
 	char *path;
+	char *path_tmp;
 	t_list *tmp;
 	char *pos;
 
 	tmp = g->env;
 	path = NULL;
+	path_tmp = NULL;
 	while (tmp)
 	{
 		pos = ft_strstr(tmp->content, "PATH=");
 		if (pos && pos - (char *)tmp->content == 0)
 		{
-			path = tmp->content;
+			path_tmp = ft_strdup(tmp->content);
 			break;
 		}
+		free(path_tmp);
 		tmp = tmp->next;
 	}
 	// maybe path= null or PATH= nothing
-	path = ft_substr(path, 5, (ft_strlen(path) - 5));
+	path = ft_substr(path_tmp, 5, (ft_strlen(path_tmp) - 5));
+	free(path_tmp);
 	g->path = ft_split(path, ':');
+	free(path);
 }
-char	*get_cmd_in_line(char *line)
-{
-	//char *cmd;
-	
-	//TODO PARSER ls -a but take only ls
-	return (line);
-}
+
 int		find_cmd_path(char *cmd, t_ms *g)
 {
 	DIR				*dir;
