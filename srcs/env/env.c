@@ -84,10 +84,6 @@ int launch(char *cmd, char *comd, t_ms *g, int i)
 	argv[j] = NULL;
 	char *dir_cmd = ft_strjoin(g->path[i], "/");
 	char *abs_cmd = ft_strjoin(dir_cmd, comd); //str_replace TODO (ls    -a = ls -a)
-	//if (is_buildin(comd) == 1)
-	//	ft_pwd();		
-	//else
-	{
 /*	ft_putstr(" cmd : ");
 	ft_putstr(cmd);
 	ft_putstr(" comd : ");
@@ -96,19 +92,22 @@ int launch(char *cmd, char *comd, t_ms *g, int i)
 	ft_putstr(argv[0]);
 	ft_putstr(" a1: ");
 	ft_putstr(argv[1]);
-	ft_putstr("\n");*/
+	ft_putstr("\n");
+*/	if (is_buildin(comd) == 1)
+		ft_pwd();		
+	else
+	{
 		if (execve(abs_cmd, argv, NULL) == -1)
 			return (-1);
 	}
 	free(dir_cmd);
 	free(abs_cmd);
 	j = 0;
-	while(argv[j])
+	while(j < size)
 	{
 		free (argv[j]);
 		j++;
 	}
-	free(argv);
 	return (0);
 }
 
