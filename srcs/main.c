@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/13 17:26:58 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/13 17:35:50 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,7 @@ void	clean_command(t_ms *g)
 
 	i = -1;
 	pipe = 0;
-	if (parseur(g, -1, 0))
+	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
 		return (1);
 	// parseur va check tous les padding probleme de cote ...
 	// ensuite enlever tous les espace en debut de ligne
