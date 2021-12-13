@@ -47,13 +47,21 @@ void	get_path(t_ms *g)
 	g->path = ft_split(path, ':');
 	free(path);
 }
-void	ft_pwd()
+void	ft_pwd(char *comd)
 {
-	ft_putstr("pwd here\n");
+	ft_putstr(comd);
 }
 int		is_buildin(char *comd)
 {
 	if (ft_strcmp(comd, "pwd") == 0)
+		return (1);
+	else if (ft_strcmp(comd, "echo") == 0)
+		return (1);
+	else if (ft_strcmp(comd, "cd") == 0)
+		return (1);
+	else if (ft_strcmp(comd, "export") == 0)
+		return (1);
+	else if (ft_strcmp(comd, "unset") == 0)
 		return (1);
 	else
 		return (0);
@@ -94,7 +102,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i)
 	ft_putstr(argv[1]);
 	ft_putstr("\n");
 */	if (is_buildin(comd) == 1)
-		ft_pwd();		
+		ft_pwd(comd);		
 	else
 	{
 		if (execve(abs_cmd, argv, NULL) == -1)
