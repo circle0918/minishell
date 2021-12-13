@@ -19,6 +19,7 @@
 # include <stdlib.h>
 # include <dirent.h>
 # include <errno.h>
+# include <sys/wait.h>
 
 typedef struct	s_data
 {

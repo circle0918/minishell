@@ -4,9 +4,9 @@ char	*get_cmd_in_line(char *line)
 	char *cmd;
 	int i;
 	int pos;
-	//TODO PARSER ls -a but only take ls
 	i = 0;
 	pos = 0;
+	cmd = 0;
 	while (ft_isspace(line[i]) == 1)
 	{
 		pos = i;
@@ -14,16 +14,12 @@ char	*get_cmd_in_line(char *line)
 	}
 	if (i != 0)
 		pos++;
-	//printf("pos : %d i : %d\n", pos, i);
 	while(ft_isspace(line[i]) == 0)
 	{
 		i++;
 	}
-	//printf("pos : %d i : %d\n", pos, i);
 	cmd = ft_substr(line, pos, i-pos);
-//	printf("%s", cmd);
-	
-	return (cmd); //need to free
+	return (cmd);
 }
 void	get_path(t_ms *g)
 {
@@ -46,13 +42,104 @@ void	get_path(t_ms *g)
 		free(path_tmp);
 		tmp = tmp->next;
 	}
-	// maybe path= null or PATH= nothing
 	path = ft_substr(path_tmp, 5, (ft_strlen(path_tmp) - 5));
 	free(path_tmp);
 	g->path = ft_split(path, ':');
 	free(path);
 }
+void	ft_pwd()
+{
+	ft_putstr("pwd here\n");
+}
+int		is_buildin(char *comd)
+{
+	if (ft_strcmp(comd, "pwd") == 0)
+		return (1);
+	else
+		return (0);
+}
 
+int launch(char *cmd, char *comd, t_ms *g, int i)
+{
+	int j;
+	int size;
+
+	j = 0;
+	char **split_cmd = ft_split(cmd, ' ');
+	while(split_cmd[j])
+	{
+		j++;
+	}
+	size = j + 1 ;
+	//printf("size %d\n", size);
+	char *argv[size];
+	j = 0;
+	while(j < size -1)
+	{
+		argv[j] = ft_strdup(split_cmd[j]);
+		free(split_cmd[j]);
+	//	printf("%s\n", argv[j]);
+		j++;
+	}
+	argv[j] = NULL;
+	char *dir_cmd = ft_strjoin(g->path[i], "/");
+	char *abs_cmd = ft_strjoin(dir_cmd, comd); //str_replace TODO (ls    -a = ls -a)
+	//if (is_buildin(comd) == 1)
+	//	ft_pwd();		
+	//else
+	{
+/*	ft_putstr(" cmd : ");
+	ft_putstr(cmd);
+	ft_putstr(" comd : ");
+	ft_putstr(comd);
+	ft_putstr(" toprint a0: ");
+	ft_putstr(argv[0]);
+	ft_putstr(" a1: ");
+	ft_putstr(argv[1]);
+	ft_putstr("\n");*/
+		if (execve(abs_cmd, argv, NULL) == -1)
+			return (-1);
+	}
+	free(dir_cmd);
+	free(abs_cmd);
+	j = 0;
+	while(argv[j])
+	{
+		free (argv[j]);
+		j++;
+	}
+	free(argv);
+	return (0);
+}
+
+
+int launcher(char *cmd, char *comd, t_ms *g, int i)
+{
+	pid_t pid, wpid;
+	int status;
+	
+	pid = fork();
+	if (pid == 0)
+	{
+	  // Child process
+		if (launch(cmd, comd, g, i) == -1)
+	  		perror("launch error");
+		exit(EXIT_FAILURE);
+	} 
+	else if (pid < 0)
+	{
+		// Error forking
+		perror("lsh");
+	}
+	else
+	{
+		// Parent process
+		do {
+			wpid = waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	} 
+	return 1;
+}
 int		find_cmd_path(char *cmd, t_ms *g)
 {
 	DIR				*dir;
@@ -71,8 +158,9 @@ int		find_cmd_path(char *cmd, t_ms *g)
 			{
 				if (ft_strequ(dirp->d_name, comd))
 				{
-					closedir(dir);
+					launcher(cmd, comd, g, i);
 					free(comd);
+					closedir(dir);
 					return (1);
 				}
 			}
