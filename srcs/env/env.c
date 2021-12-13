@@ -35,7 +35,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	int				i;
 
 	i = 0;
-
+	// printf("%s\n", cmd);
 	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);

@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2021/12/10 12:56:40 by thhusser         ###   ########.fr        #
+#    Updated: 2021/12/13 12:11:12 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,8 @@ SRCS_FILES	= \
 				main.c \
 				env/env.c \
 				init.c \
+				exit_free.c \
+				list.c \
 				
 				
 

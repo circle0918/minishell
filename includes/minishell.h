@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/10 15:13:17 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/13 12:30:31 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct	s_data
 
 typedef struct 	s_ms
 {
+				int		nb_cmd;
 				t_data	parsing;
 				char 	*line;
 				t_list	*env;
@@ -35,6 +36,14 @@ typedef struct 	s_ms
 				t_list	*cmd_tmp;
 				t_list	*error;
 }				t_ms;
+
+//list
+void	record_list(t_list **list, char *str);
+void	print_list(t_list *error);
+
+//free and exit
+void	ft_exit(int nb, t_ms *g);
+void	free_split(char **split);
 
 void	get_path(t_ms *g);
 char	*get_cmd_in_line_th(char *line, t_ms *g);
