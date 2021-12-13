@@ -14,7 +14,7 @@ char	*get_cmd_in_line(char *line)
 	}
 	if (i != 0)
 		pos++;
-	while(ft_isspace(line[i]) == 0)
+	while(line[i] && ft_isspace(line[i]) == 0)
 	{
 		i++;
 	}
