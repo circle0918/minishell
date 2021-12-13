@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/13 17:35:50 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/13 19:05:35 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,19 @@ char	*get_cmd_in_line_th(char *line, t_ms *g)
 	return (line);
 }
 
+int		parseur_quotes(t_ms *g, int i, int c)
+{
+	while (g->line[i] != c && g->line[i])
+	{
+		if (g->line[i] == '\\' && c != '\'')
+			i++;
+		i++;
+	}
+	if (g->line[i] == '\0')
+		return (-1);
+	return (i);
+}
+
 int		parseur(t_ms *g, int i, int res)
 {
 	while (g->line[++i])
@@ -131,11 +144,14 @@ int		parseur(t_ms *g, int i, int res)
 		//check double cote ou simple cote
 		if (g->line[i] == '\'' || g->line[i] == '"') // les passer avec les fonctions et retourner i pour decaller l'index
 		{
-			i = parseur_quotes(i + 1, g->line[i]);
+			i = parseur_quotes(g, i + 1, g->line[i]);
 			if (i == -1)
-				return ();//generer une erreur correspondate a bash
+			{
+				record_list(&g->error, "bash: syntax error: unexpected end of file\n");
+				return (1);//generer une erreur correspondante a bash
+			}
 		}
-		// checek chevron in et out
+		// check chevron in et out // check si besoin de rechercher les >> et << ou parser les > + 1 et < + 1
 		if (g->line[i] == '>')
 		{
 			res = parsing_redirection_out(i);
@@ -148,7 +164,7 @@ int		parseur(t_ms *g, int i, int res)
 			if (res != 0)
 				return (res);
 		}
-		// check pipe
+		// check pipe (compter nombre de pipe ? compter nombre de sous commande ? utiliser les global pour le multi pipe ?)
 		if (g->line[i] == '|')
 		{
 			res = parsing_pipe(i);
@@ -177,8 +193,6 @@ void	clean_command(t_ms *g)
 	// ensuite enlever tous les espace en debut de ligne
 	// ensuite test sur la commande si pipe sinon commande a executer
 	// --> ou alors boucle pour le nombre de pipe present dans la commande
-
-
 }
 
 int	main(int argc, char **argv, char **env)

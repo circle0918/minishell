@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/13 12:30:31 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/13 19:00:00 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,15 @@
 # include <dirent.h>
 # include <errno.h>
 
-typedef struct	s_data
-{
-
-}				t_data;
+// typedef struct	s_data
+// {
+				// une structure par commande
+				// forcement que une commande ! car pas de ';'
+// }				t_data;
 
 typedef struct 	s_ms
 {
-				int		nb_cmd;
-				t_data	parsing;
+				// t_data	parsing;
 				char 	*line;
 				t_list	*env;
 				char	**path;
