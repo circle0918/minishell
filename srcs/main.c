@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/13 12:55:18 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/13 13:08:30 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,14 @@ int		parse_line(t_ms *g)
 	char	*option;
 	t_list	*tmp;
 	char	**line_split;
-	char 	*tmp;
+	char 	*tmp_line;
 	
 	line_split = NULL;
 	g->nb_cmd = ft_lstsize(g->cmd_tmp);
 	i = 0;
 	x = -1;
 	line = NULL;
-	tmp = NULL;
+	tmp_line = NULL;
 	option = NULL;
 	tmp = g->cmd_tmp;
 	// g->parsing = malloc(sizeof(t_data) * nb_cmd);
@@ -70,22 +70,22 @@ int		parse_line(t_ms *g)
 		x = -1;
 		i = -1;
 		line = ft_strdup(tmp->content);
-		line_split = ft_split_charset(line, " \t");
-		// printf(_RED"%s\n"_NC, line);
-		// printf(_GREEN"%s\n"_NC, g->line);
-		while (line_split[++x])
-		{
-			option = check_option(line_split[x]);
-			if (option)
-			{
-				tmp = ft_strjoin(line_split[x], " ");
-				record_list(&g->cmd, ft_strjoin(tmp, option));
-				ft_del_line(tmp);
-			}
-			ft_del_line(line_split[x]);
-			ft_del_line(option);
-		}
-		free(line_split);
+		// line_split = ft_split_charset(line, " \t");
+		printf(_RED"%s\n"_NC, line);
+		printf(_GREEN"%s\n"_NC, g->line);
+		// while (line_split[++x])
+		// {
+		// 	option = check_option(line_split[x]);
+		// 	if (option)
+		// 	{
+		// 		tmp_line = ft_strjoin(line_split[x], " ");
+		// 		record_list(&g->cmd, ft_strjoin(tmp_line, option));
+		// 		ft_del_line(tmp_line);
+		// 	}
+		// 	ft_del_line(line_split[x]);
+		// 	ft_del_line(option);
+		// }
+		// free(line_split);
 		ft_del_line(line);
 		line_split = NULL;
 		tmp = tmp->next;
