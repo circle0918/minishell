@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 18:54:42 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 20:04:26 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ int		parseur(t_ms *g, int i, int res)
 				return (1);//generer une erreur correspondante a bash
 			}
 		}
-		// check chevron in et out // check si besoin de rechercher les >> et << ou parser les > + 1 et < + 1
+		// check chevron in et out // check si besoin de rechercher les >> et << ou parser les > + 1 et < + 1 (>+1 <+1 retenue !)
 		if (g->line[i] == '>')
 		{
 			res = parsing_redirection_out(i, 0, g);
@@ -174,6 +174,19 @@ int		parseur(t_ms *g, int i, int res)
 	return(0);
 }
 
+static void	clean_line(t_ms *g)
+{
+	int	i;
+	char	*dest;
+
+	i = 0;
+	while (g->line[i] && g->line[i] == ' ')
+		i++;
+	dest = ft_strdup(g->line + i);
+	ft_del_line(g->line);
+	g->line = dest;
+}
+
 int	clean_command(t_ms *g)
 {
 	int	i;
@@ -181,9 +194,16 @@ int	clean_command(t_ms *g)
 
 	i = -1;
 	pipe = 0;
+	if (DEBUG)
+		printf("B clean : g->line -->%s\n", g->line);
+	clean_line(g);
+	if (DEBUG)
+		printf("A clean : g->line -->%s\n", g->line);
+	// while (*g->line == ' ' && *g->line)
+		// g->line += 1;
 	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
 		return (1);
-	printf(_RED"%s\n"_NC, g->line);
+	// while ()
 	// parseur va check tous les padding probleme de cote ...
 	// ensuite enlever tous les espace en debut de ligne
 	// ensuite test sur la commande si pipe sinon commande a executer

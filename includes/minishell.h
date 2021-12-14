@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 15:07:03 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 20:00:57 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # include <stdlib.h>
 # include <dirent.h>
 # include <errno.h>
+
+# define DEBUG 1
 
 // typedef struct	s_data
 // {
