@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/13 19:05:35 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 11:01:44 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,19 +124,6 @@ char	*get_cmd_in_line_th(char *line, t_ms *g)
 	return (line);
 }
 
-int		parseur_quotes(t_ms *g, int i, int c)
-{
-	while (g->line[i] != c && g->line[i])
-	{
-		if (g->line[i] == '\\' && c != '\'')
-			i++;
-		i++;
-	}
-	if (g->line[i] == '\0')
-		return (-1);
-	return (i);
-}
-
 int		parseur(t_ms *g, int i, int res)
 {
 	while (g->line[++i])
@@ -147,27 +134,27 @@ int		parseur(t_ms *g, int i, int res)
 			i = parseur_quotes(g, i + 1, g->line[i]);
 			if (i == -1)
 			{
-				record_list(&g->error, "bash: syntax error: unexpected end of file\n");
+				record_list(&g->error, "bash: syntax error: unexpected end of file\n"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
 				return (1);//generer une erreur correspondante a bash
 			}
 		}
 		// check chevron in et out // check si besoin de rechercher les >> et << ou parser les > + 1 et < + 1
 		if (g->line[i] == '>')
 		{
-			res = parsing_redirection_out(i);
+			res = parsing_redirection_out(i, 0, g);
 			if (res != 0)
 				return (res);
 		}
 		if (g->line[i] == '<')
 		{
-			res = parsing_redirection_in(i);
+			res = parsing_redirection_in(i, 0, g);
 			if (res != 0)
 				return (res);
 		}
 		// check pipe (compter nombre de pipe ? compter nombre de sous commande ? utiliser les global pour le multi pipe ?)
 		if (g->line[i] == '|')
 		{
-			res = parsing_pipe(i);
+			res = parsing_pipe(i, 0, g);
 			if (res != 0)
 				return (res);
 		}
