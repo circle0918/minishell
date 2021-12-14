@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 10:32:51 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/13 12:10:40 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 18:38:16 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	print_list(t_list *error)
 	{
 		line = ft_strdup(error->content);
 		ft_putstr(line);
-		ft_putstr("\n");
 		free(line);
 		error = error->next;
 	}

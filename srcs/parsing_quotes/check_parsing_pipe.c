@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 11:00:33 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 15:29:50 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 18:35:53 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int		parsing_pipe(int i, int res, t_ms *g)
 		return (parse_error(2, "multi", g));
 	}
 	if (g->line[res] == '!')
-		return (parse_error(1, "!"), g);
+		return (parse_error(1, "!", g));
 	if (g->line[res] == ';')
 		return (parse_error(1, ";", g));
 	if (g->line[res] == ')')

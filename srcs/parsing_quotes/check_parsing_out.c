@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:47:18 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 15:11:08 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 18:34:01 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ static int	norm_1(int res, t_ms *g, int comp)
 		return (parse_error(1, ">", g));
 	}
 	if (g->line[res + 1] == '&')
-		return (parse_error("<&", g));
-	if (g->line[res + 1] == '>', g)
-		return (parse_error("<>", g));
+		return (parse_error(1, "<&", g));
+	if (g->line[res + 1] == '>')
+		return (parse_error(1, "<>", g));
 	if (g->line[res + 1] == '<')
 		return (parse_error(1, "<<", g));
 	return (parse_error(1, "<", g));

@@ -6,12 +6,14 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 12:53:08 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 18:54:42 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
+
+//enrehistrement des variables envirenementales dans une liste !
 void	begin(char **env, t_ms *g)
 {
 	int i;
@@ -23,6 +25,7 @@ void	begin(char **env, t_ms *g)
 	get_path(g);
 }
 
+//Signal pour le 'ctrl + C'
 void	signal_in(int signal)
 {
 	(void)signal;
@@ -30,6 +33,7 @@ void	signal_in(int signal)
 	ft_putstr(_GREEN"thhusser> "_NC);
 }
 
+//--> trash
 char	*check_option(char *line)
 {
 	int		i;
@@ -44,6 +48,7 @@ char	*check_option(char *line)
 	return (option);
 }
 
+//-->trash
 int		parse_line(t_ms *g)
 {
 	int		i;
@@ -93,6 +98,7 @@ int		parse_line(t_ms *g)
 	return(0);
 }
 
+//-->trash
 int 	first_command(t_ms *g)
 {
 	int	res;
@@ -107,21 +113,23 @@ int 	first_command(t_ms *g)
 	return (res);
 }
 
-char	*get_cmd_in_line_th(char *line, t_ms *g)
-{
-	char	**line_split;
-	int		i;
-	(void)g;
-	line_split = ft_split_charset(line, "|");
-	i = -1;
-	while (line_split[++i])
-	{
-		record_list(&g->cmd_tmp, line_split[i]);
-		ft_del_line(line_split[i]);
-	}
-	free(line_split);
-	return (line);
-}
+// char	*get_cmd_in_line_th(char *line, t_ms *g) // le but premier etait de separer les differente comandes dans le split, 
+												// mais meme si il ya des pipes cela reste la meme commande
+												// seul les ';' separent les commande. Donc plus utile2
+// {
+// 	char	**line_split;
+// 	int		i;
+// 	(void)g;
+// 	line_split = ft_split_charset(line, "|");
+// 	i = -1;
+// 	while (line_split[++i])
+// 	{
+// 		record_list(&g->cmd_tmp, line_split[i]);
+// 		ft_del_line(line_split[i]);
+// 	}
+// 	free(line_split);
+// 	return (line);
+// }
 
 int		parseur(t_ms *g, int i, int res)
 {
@@ -175,10 +183,16 @@ int	clean_command(t_ms *g)
 	pipe = 0;
 	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
 		return (1);
+	printf(_RED"%s\n"_NC, g->line);
 	// parseur va check tous les padding probleme de cote ...
 	// ensuite enlever tous les espace en debut de ligne
 	// ensuite test sur la commande si pipe sinon commande a executer
 	// --> ou alors boucle pour le nombre de pipe present dans la commande
+	if (!find_cmd_path(g->line, g))
+	{
+		ft_putstr(g->line);
+		ft_putstr(": command not found\n");
+	}
 	return(0);
 }
 
@@ -198,6 +212,7 @@ int	main(int argc, char **argv, char **env)
 		ft_putstr(_GREEN"thhusser> "_NC);
 		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
 			ft_exit(2, &g);
+		
 		// cmd = get_cmd_in_line_th(g.line, &g);
 		// if (first_command(&g))
 		// 	ft_exit(0, &g);
@@ -210,7 +225,13 @@ int	main(int argc, char **argv, char **env)
 		// }
 		// if (!ft_strcmp(g.line, "env"))
 		// 	print_list(g.env);
+
 		clean_command(&g);
+		if (g.error)
+		{
+			print_list(g.error);
+			ft_lstclear(&g.error, &ft_del_list);
+		}
 		ft_del_line(g.line);
 	}
 	return (0);
