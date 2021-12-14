@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 11:00:33 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 11:19:45 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 13:11:14 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,17 @@ int		parsing_pipe(int i, int res, t_ms *g)
 	int	tmp;
 
 	tmp = 0;
+	if (g->line[i + 1] == '\0')
+		return (parse_error(2, "err"));
 	if (g->line[0] == '|' && g->line[1] == '|')
 		return (parse_error(1, "||"));
-	if (g->line[0] == '|')
-		return (parse_error(1, "|"));
 	if (g->line[i + 1] == '|' && g->line[i + 2] == '|' && g->line[i + 3] == '|')
 		return (parse_error(1, "||"));
 	if (g->line[i + 1] == '|' && g->line[i + 2] == '|')
+		return (parse_error(1, "|"));
+	if (g->line[i] == '|' && g->line[i + 1] == '&')
+		return (parse_error(1, "|&"));
+	if (g->line[0] == '|')
 		return (parse_error(1, "|"));
 	res = i - 1;
 	while (g->line[res] == ' ' && res > 0)
@@ -33,7 +37,7 @@ int		parsing_pipe(int i, int res, t_ms *g)
 		while (g->line[tmp] && g->line[tmp] == ' ')
 		{
 			if (g->line[tmp] == '|' && g->line[tmp + 1] == '|')
-				return (parse_error(1, "||"));
+				return (parse_error(2, "||"));
 			tmp++;
 		}
 		return (parse_error(1, "|"));
@@ -42,7 +46,7 @@ int		parsing_pipe(int i, int res, t_ms *g)
 	while (g->line[res] && g->line[res] == ' ')
 		res++;
 	if (g->line[res] == '\0')
-		return (parse_error(1, "newline"));
+		return (parse_error(2, "newline"));
 	if (g->line[res] == '|')
 	{
 		if (g->line[res + 1] == '|')

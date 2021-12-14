@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 11:01:44 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/14 12:53:08 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ int		parse_line(t_ms *g)
 	char 	*tmp_line;
 	
 	line_split = NULL;
-	g->nb_cmd = ft_lstsize(g->cmd_tmp);
 	i = 0;
 	x = -1;
 	line = NULL;
@@ -167,7 +166,7 @@ int		parseur(t_ms *g, int i, int res)
 	return(0);
 }
 
-void	clean_command(t_ms *g)
+int	clean_command(t_ms *g)
 {
 	int	i;
 	int	pipe;
@@ -180,6 +179,7 @@ void	clean_command(t_ms *g)
 	// ensuite enlever tous les espace en debut de ligne
 	// ensuite test sur la commande si pipe sinon commande a executer
 	// --> ou alors boucle pour le nombre de pipe present dans la commande
+	return(0);
 }
 
 int	main(int argc, char **argv, char **env)
