@@ -47,22 +47,138 @@ void	get_path(t_ms *g)
 	g->path = ft_split(path, ':');
 	free(path);
 }
-void	ft_pwd(char *comd)
+void ft_pwd()
 {
-	ft_putstr(comd);
+	char buf[1024];
+	char *cwd;
+	
+	cwd = getcwd(buf, sizeof(buf));
+	if(cwd == NULL)
+	{
+		perror("get working directory failed.\n");
+		exit(-1);
+	}
+	else
+		printf("%s\n", cwd);
 }
-int		is_buildin(char *comd)
+void ft_echo(char *cmd)
 {
+	//TODO
+	// ' ', "", \" = ", $ env,
+	int i;
+
+	i = 5;
+	while(cmd[i])
+	{
+		printf("%c", cmd[i]);
+		i++;
+	}
+	printf("\n");
+}
+void ft_export(char *comd, char *cmd, t_ms *g)
+{
+	//TODO AAA= aaa -> echo $AAA is empty
+	//     if AAA =aaa -> error
+	// if env already exist, TODO replace the old one only, don't need to add it
+	// maybe sort
+	char *str;
+	(void)comd;
+
+	str = ft_substr(cmd, 7, (ft_strlen(cmd)-7));
+//	printf("before export %s\n", str);
+//	print_list(g->env);
+	record_list(&g->env, str);
+//	printf("after export %s\n", str);
+//	print_list(g->env);
+	free(str);
+
+}
+void ft_unset(char *comd, char *cmd, t_ms *g)
+{
+	char *str;
+	(void)comd;
+
+	str = ft_substr(cmd, 6, (ft_strlen(cmd)-6));
+	t_list *tmp;
+	char *pos;
+	t_list *pre;
+
+	tmp = g->env;
+	while (tmp)
+	{
+		pos = ft_strstr(tmp->content, str);
+		if (pos && pos - (char *)tmp->content == 0) //first sub string and ABCD=123 ABC=123 find ABC= 
+		{
+			if (((char *)tmp->content)[ft_strlen(str)] == '=')
+			{
+				if (tmp->next)
+					pre->next = tmp->next;
+				else
+				{
+					pre->next = NULL;
+				}
+				
+				free(tmp->content);
+				free(tmp);
+				free(str);
+				break;
+			}
+		}
+		pre = tmp;
+		tmp = tmp->next;
+	}
+}
+void ft_cd(char *comd, char *cmd)
+{
+	//TODO $home/$pwd change env PWD and OLDPWD
+	char *path;
+	(void)comd;
+
+	path = ft_substr(cmd, 3, (ft_strlen(cmd)-3));
+
+	char cwd[1024];
+
+    if(path[0] != '/')
+    {// true for the dir in cwd
+        getcwd(cwd,sizeof(cwd));
+        ft_strcat(cwd,"/");
+        ft_strcat(cwd,path);
+        chdir(path);
+    }else{//true for dir w.r.t. /
+        chdir(path);
+    }
+
+
+
+}
+int		is_buildin(char *comd, char *cmd, t_ms *g)
+{
+//	printf("comd %s\n",comd);
 	if (ft_strcmp(comd, "pwd") == 0)
+	{
+		ft_pwd();
 		return (1);
+	}
 	else if (ft_strcmp(comd, "echo") == 0)
+	{
+		ft_echo(cmd);
 		return (1);
+	}
 	else if (ft_strcmp(comd, "cd") == 0)
+	{
+		ft_cd(comd, cmd);
 		return (1);
+	}
 	else if (ft_strcmp(comd, "export") == 0)
+	{
+		ft_export(comd, cmd, g);
 		return (1);
+	}
 	else if (ft_strcmp(comd, "unset") == 0)
+	{
+		ft_unset(comd, cmd, g);
 		return (1);
+	}
 	else
 		return (0);
 }
@@ -101,9 +217,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i)
 	ft_putstr(" a1: ");
 	ft_putstr(argv[1]);
 	ft_putstr("\n");
-*/	if (is_buildin(comd) == 1)
-		ft_pwd(comd);		
-	else
+*/	if (is_buildin(comd, cmd, g) == 0)	
 	{
 		if (execve(abs_cmd, argv, NULL) == -1)
 			return (-1);
@@ -155,7 +269,24 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	char			*comd;
 	i = 0;
 	comd = get_cmd_in_line(cmd);
-
+	if(ft_strcmp(comd, "export") == 0)
+	{
+		if (launch(cmd, comd, g, i) == -1)
+	  		perror("launch error");
+		return (1);
+	}
+	if(ft_strcmp(comd, "unset") == 0)
+	{
+		if (launch(cmd, comd, g, i) == -1)
+	  		perror("launch error");
+		return (1);
+	}
+	if(ft_strcmp(comd, "cd") == 0)
+	{
+		if (launch(cmd, comd, g, i) == -1)
+	  		perror("launch error");
+		return (1);
+	}
 	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);

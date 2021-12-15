@@ -41,5 +41,6 @@ void	get_path(t_ms *g);
 char	*get_cmd_in_line_th(char *line, t_ms *g);
 int		find_cmd_path(char *cmd, t_ms *g);
 void	init_global_struct(t_ms *g);
-
+void	record_list(t_list **list, char *str);
+void	print_list(t_list *error);
 #endif
