@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 20:04:26 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/16 12:47:13 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,15 +187,29 @@ static void	clean_line(t_ms *g)
 	g->line = dest;
 }
 
+char	*check_in_out(t_ms *g, char *str)
+{
+	if (ft_strchr(str, '>') || ft_strchr(str, '<'))
+		str = ft_checkredir(str);
+	if (ft_strchr(str, '\\'))
+		str = ft_checkbackredir(str, 0, 0);
+	return (str);
+}
+
+//check_in_out  --> my_redirection
+//check_nb_pipe --> ft_nbpipe2
+//pipe_command  --> ft_pipe
+//command_exec  --> ft_command
+
 int	clean_command(t_ms *g)
 {
 	int	i;
 	int	pipe;
+	char 	*commamd;
 
+	commamd = NULL;
 	i = -1;
 	pipe = 0;
-	if (DEBUG)
-		printf("B clean : g->line -->%s\n", g->line);
 	clean_line(g);
 	if (DEBUG)
 		printf("A clean : g->line -->%s\n", g->line);
@@ -203,9 +217,22 @@ int	clean_command(t_ms *g)
 		// g->line += 1;
 	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
 		return (1);
-	// while ()
-	// parseur va check tous les padding probleme de cote ...
-	// ensuite enlever tous les espace en debut de ligne
+	if (DEBUG)
+		printf("A clean : g->line -->%s\n", g->line);
+	if (g->line)
+	{
+		command = check_in_out(g, g->line);
+		pipe = check_nb_pipe(command);
+		if (pipe)
+			pipe_command(g, command);
+		else
+			commande = commamd_exec(g, command);
+	}
+	// --> une fois le parseur fait, regarder nombre de pipe, si pipe envoyer les commande dans une fonction qui gere
+	// toutes les pipes, sinon envoyer dans commande
+	
+	// parseur va check tous les padding probleme de cote ... --> fait
+	// ensuite enlever tous les espace en debut de ligne -- fait avant le parseur
 	// ensuite test sur la commande si pipe sinon commande a executer
 	// --> ou alors boucle pour le nombre de pipe present dans la commande
 	if (!find_cmd_path(g->line, g))
