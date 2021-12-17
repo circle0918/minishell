@@ -77,14 +77,23 @@ void ft_echo(char *cmd)
 }
 void ft_export(char *comd, char *cmd, t_ms *g)
 {
-	//TODO AAA= aaa -> echo $AAA is empty
-	//     if AAA =aaa -> error
+	//TODO AAA= aaa -> env : AAA=
+	//if AAA =aaa -> error : export: « =aaa » : identifiant non valable
+	//if export AAA -> nothing
 	// if env already exist, TODO replace the old one only, don't need to add it
 	// maybe sort
 	char *str;
 	(void)comd;
+	int i;
 
+	i = 0;
 	str = ft_substr(cmd, 7, (ft_strlen(cmd)-7));
+	while(str[i])
+	{
+		if
+		i++:
+				
+	}
 //	printf("before export %s\n", str);
 //	print_list(g->env);
 	record_list(&g->env, str);
