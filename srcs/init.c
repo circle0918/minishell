@@ -20,4 +20,5 @@ void	init_global_struct(t_ms *g)
 	g->cmd = NULL;
 	g->cmd_tmp = NULL;
 	g->error = NULL;
+//	g->return_code = 0;
 }

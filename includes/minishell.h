@@ -28,6 +28,7 @@ typedef struct	s_data
 
 typedef struct 	s_ms
 {
+				int		statut;
 				t_data	parsing;
 				char 	*line;
 				t_list	*env;

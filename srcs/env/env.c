@@ -1,4 +1,16 @@
 #include "../includes/minishell.h"
+void	exit_free(char **str)
+{
+	int i;
+
+	i = 0;
+	while(str[i])
+	{
+		free(str[i]);
+		i++;
+	}
+	free(str);
+}
 char	*get_cmd_in_line(char *line)
 {
 	char *cmd;
@@ -65,6 +77,7 @@ void ft_echo(char *cmd)
 {
 	//TODO
 	// ' ', "", \" = ", $ env,
+	//echo $? return 0 (normal)/1 (error)
 	int i;
 
 	i = 5;
@@ -75,32 +88,67 @@ void ft_echo(char *cmd)
 	}
 	printf("\n");
 }
-void ft_export(char *comd, char *cmd, t_ms *g)
+void ft_export(char *cmd, t_ms *g)
 {
-	//TODO AAA= aaa -> env : AAA=
-	//if AAA =aaa -> error : export: « =aaa » : identifiant non valable
+	//TODO AAA= aaa / AAA= -> env : AAA=
+	//if AAA =aaa -> error : export: « =aaa » : identifiant non valable and echo $? == 1
+	//if only export == export p : declare -x all env=
 	//if export AAA -> nothing
 	// if env already exist, TODO replace the old one only, don't need to add it
 	// maybe sort
-	char *str;
-	(void)comd;
+
+	char **tab;
 	int i;
 
-	i = 0;
-	str = ft_substr(cmd, 7, (ft_strlen(cmd)-7));
-	while(str[i])
+	i = 1;
+	g->statut = 0;
+	tab = ft_split(cmd, ' ');
+	if (!tab[1])
+		;// export env
+	else
 	{
-		if
-		i++:
-				
+		while(tab[i])
+		{
+			if (ft_isalpha(tab[i][0]) != 1)
+			{
+				g->statut = 1;
+				printf("minishell: export: '%s': not a valid identifier\n", tab[i]);
+			}
+			i++;
+		}
+		if (g->statut == 1)
+		{
+			exit_free(tab);
+			return;
+		}
+		char *ptr = ft_strchr(tab[1], '=');
+		if (ptr == NULL)
+		{
+			exit_free(tab);
+			return;	
+		}
+		else
+		{
+			t_list *tmp;
+			tmp = g->env;
+			char *pos = NULL;
+			char *str = ft_substr(tab[1], 0, (ptr-tab[1]));
+			while (tmp)
+			{
+				pos = ft_strstr(tmp->content, str);
+				if (pos && pos - (char *)tmp->content == 0)
+				{
+					free(tmp->content);
+					tmp->content = ft_strdup(tab[1]);
+					exit_free(tab);
+					return;
+				}
+				tmp = tmp->next;
+			}
+			record_list(&g->env, tab[1]);
+			exit_free(tab);
+		}
 	}
-//	printf("before export %s\n", str);
-//	print_list(g->env);
-	record_list(&g->env, str);
-//	printf("after export %s\n", str);
-//	print_list(g->env);
-	free(str);
-
 }
 void ft_unset(char *comd, char *cmd, t_ms *g)
 {
@@ -180,7 +228,7 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 	}
 	else if (ft_strcmp(comd, "export") == 0)
 	{
-		ft_export(comd, cmd, g);
+		ft_export(cmd, g);
 		return (1);
 	}
 	else if (ft_strcmp(comd, "unset") == 0)
