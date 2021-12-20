@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/16 12:47:13 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/20 13:40:28 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,27 +187,221 @@ static void	clean_line(t_ms *g)
 	g->line = dest;
 }
 
+char	*ft_spaceredir(char *str, char *tmp, int idx, int i)
+{
+	int		j;
+
+	j = 0;
+	while (str[i])
+	{
+		if (i == idx || i == idx + 1)
+		{
+			tmp[j] = ' ';
+			j++;
+		}
+		tmp[j] = str[i];
+		i++;
+		j++;
+	}
+	tmp[j] = '\0';
+	free(str);
+	str = ft_strdup(tmp);
+	free(tmp);
+	tmp = NULL;
+	return (str);
+}
+
+char	*ft_checkbackredir(t_ms *g, int i, int nb)
+{
+	char	*tmp;
+
+	tmp = NULL;
+	while (g->line[i])
+	{
+		if (g->line[i] == '\'' || g->line[i] == '"')
+			i = parseur_quotes(g, i + 1, g->line[i]);
+		while (g->line[i] == '\\')
+		{
+			nb++;
+			i++;
+		}
+		if ((g->line[i] == '>' || g->line[i] == '<') && nb != 0 && nb % 2 == 0)
+		{
+			if (!(tmp = (char *)malloc(sizeof(char) * (ft_strlen(g->line) + 3))))
+				return (NULL);
+			g->line = ft_spaceredir(g->line, tmp, i, 0);
+			i += 1;
+		}
+		else
+			nb = 0;
+		i++;
+	}
+	return (g->line);
+}
+
 char	*check_in_out(t_ms *g, char *str)
 {
 	if (ft_strchr(str, '>') || ft_strchr(str, '<'))
 		str = ft_checkredir(str);
 	if (ft_strchr(str, '\\'))
-		str = ft_checkbackredir(str, 0, 0);
+		str = ft_checkbackredir(g, 0, 0);
 	return (str);
 }
+///pipe
+void		execution(char *cmd, int p_in[2], int p_out[2], char ***env)
+{
+	g_pid[1] = fork();
+	errno = 0;
+	if (g_pid[1] == -1)
+		exit(EXIT_FAILURE);
+	else if (g_pid[1] == 0)
+	{
+		if (p_in[0] != -1 && p_in[1] != -1)
+		{
+			close(p_in[1]);
+			dup2(p_in[0], STDIN_FILENO);
+			close(p_in[0]);
+		}
+		if (p_out[0] != -1 && p_out[1] != -1 && g_last != 1)
+		{
+			close(p_out[0]);
+			dup2(p_out[1], STDOUT_FILENO);
+			close(p_out[1]);
+		}
+		ft_command(cmd, env, NULL);
+		exit(errno);
+	}
+}
+
+void		preexecution(char **cmd, int p_in[2], int p_out[2], char ***env)
+{
+	int		i;
+
+	i = 0;
+	while (cmd[i])
+	{
+		if (i < tab_len(cmd) - 1)
+			pipe(p_out);
+		execution(cmd[i], p_in, p_out, env);
+		if (p_in[0] != -1)
+			close(p_in[0]);
+		close(p_in[1]);
+		if (i < tab_len(cmd) - 1)
+		{
+			p_in[0] = p_out[0];
+			p_in[1] = p_out[1];
+		}
+		else
+		{
+			p_out[0] = -1;
+			p_out[1] = -1;
+		}
+		if (i == tab_len(cmd) - 2)
+			g_last = 1;
+		i++;
+	}
+}
+
+void		my_pipe(char **cmd, char ***env)
+{
+	int		p_in[2];
+	int		p_out[2];
+	int		status;
+
+	status = 0;
+	p_in[0] = -1;
+	p_in[1] = -1;
+	p_out[0] = -1;
+	p_out[1] = -1;
+	preexecution(cmd, p_in, p_out, env);
+	while (waitpid(0, &status, 0) > 0)
+	{
+	}
+	errno = status / 256;
+}
+
+char		**takecmd_pipe(char **command, int i, int j, char *str)
+{
+	int c;
+	int first;
+
+	first = 0;
+	while (str[i++])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+			i = passquotes(str, i + 1, str[i]);
+		if (str[i] == '|')
+		{
+			c = delspace(str, i);
+			if (!(command[j] = (char *)malloc(sizeof(char) * (c - first) + 1)))
+				return (NULL);
+			ft_strlcpy(command[j++], &str[first], c - first + 1);
+			i = ft_pass_space(str, i);
+			first = i + 1;
+		}
+		if (str[i] == '\\')
+			i++;
+	}
+	if (!(command[j] = (char *)malloc(sizeof(char) * (i - first) + 1)))
+		return (NULL);
+	ft_strlcpy(command[j], &str[first], i - first + 1);
+	command[j + 1] = NULL;
+	return (command);
+}
+
+void		pipe_command(char *str, char ***env, int nb)
+{
+	char	**command;
+
+	g_last = 0;
+	if (!(command = (char **)malloc(sizeof(char *) * (nb + 2))))
+		return ;
+	if ((command = takecmd_pipe(command, 0, 0, str)) == NULL)
+	{
+		write(2, "error: malloc failed\n", 21);
+		ft_splitdel(&command);
+		return ;
+	}
+	my_pipe(command, env);
+	ft_splitdel(&command);
+}
+// fin pipe
 
 //check_in_out  --> my_redirection
 //check_nb_pipe --> ft_nbpipe2
 //pipe_command  --> ft_pipe
 //command_exec  --> ft_command
 
+int		check_nb_pipe(const char *str, t_ms *g)
+{
+	int		i;
+	int		nb;
+
+	i = 0;
+	nb = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+		{
+			if ((i = parseur_quotes(g, i + 1, str[i])) == -1)
+				break ;
+		}
+		if (str[i] == '|')
+			nb++;
+		if (str[i] == '\\')
+			i++;
+		i++;
+	}
+	return (nb);
+}
+
 int	clean_command(t_ms *g)
 {
 	int	i;
 	int	pipe;
-	char 	*commamd;
+	char 	*command;
 
-	commamd = NULL;
+	command = NULL;
 	i = -1;
 	pipe = 0;
 	clean_line(g);
@@ -222,11 +416,11 @@ int	clean_command(t_ms *g)
 	if (g->line)
 	{
 		command = check_in_out(g, g->line);
-		pipe = check_nb_pipe(command);
+		pipe = check_nb_pipe(command, g);
 		if (pipe)
 			pipe_command(g, command);
 		else
-			commande = commamd_exec(g, command);
+			command = commamd_exec(g, command);
 	}
 	// --> une fois le parseur fait, regarder nombre de pipe, si pipe envoyer les commande dans une fonction qui gere
 	// toutes les pipes, sinon envoyer dans commande

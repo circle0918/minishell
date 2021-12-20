@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 20:00:57 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/20 14:52:45 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ typedef struct 	s_ms
 				char 	*line;
 				t_list	*env;
 				char	**path;
-				t_list	*cmd;
-				t_list	*cmd_tmp;
+				// t_list	*cmd;
+				// t_list	*cmd_tmp;
 				t_list	*error;
 }				t_ms;
 
@@ -53,6 +53,14 @@ int		parsing_redirection_out(int i, int res, t_ms *g);
 int		parsing_redirection_in(int i, int res, t_ms *g);
 int		parsing_pipe(int i, int res, t_ms *g);
 int		parse_error(int res, char *erreur, t_ms *g);
+
+//clean redir
+char	*get_tmp_che(char *tmp, char *str, int *i, int *j);
+int		ft_nbchevron2(const char *str, int i);
+int		ft_spacechevron(char *str, int i);
+int		ft_nbchevron(const char *str);
+char	*ft_checkredir2(char *str, char *tmp, int i, int j);
+char	*ft_checkredir(char *str);
 
 void	get_path(t_ms *g);
 char	*get_cmd_in_line_th(char *line, t_ms *g);
