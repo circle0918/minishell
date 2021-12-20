@@ -1,4 +1,5 @@
 #include "../includes/minishell.h"
+
 void	exit_free(char **str)
 {
 	int i;
@@ -73,6 +74,50 @@ void ft_pwd()
 	else
 		printf("%s\n", cwd);
 }
+void export_no_arg (t_ms *g)
+{
+	//int l;
+	t_list *export_lst;
+	t_list *tmp_env;
+	t_list *tmp_exp;
+	t_list *tmp_exp_pre = NULL;
+
+	tmp_env = g->env;
+	export_lst = ft_lstnew(tmp_env->content); //duplicate 1st ?
+	tmp_exp = export_lst;
+	//printf("lst->content : %s\n", export_lst->content);
+	while(tmp_env)
+	{
+		tmp_exp = export_lst;
+		tmp_exp_pre = NULL;
+		t_list *node;
+		t_list *last = NULL;
+		while(tmp_exp)
+		{
+			if(ft_strcmp(tmp_exp->content, tmp_env->content) > 0) //env < exp
+			{
+				node = ft_lstnew(tmp_env->content);
+				if(tmp_exp_pre)
+					tmp_exp_pre->next = node;
+				node->next = tmp_exp;
+				break;
+			}
+			tmp_exp_pre = tmp_exp;
+			if (tmp_exp->next == NULL)
+				last = tmp_exp->next;
+			tmp_exp = tmp_exp->next;
+		}
+		if (last)
+		{
+			node = ft_lstnew(tmp_env->content);
+			last->next = node;
+		}
+			
+		tmp_env = tmp_env->next;
+	}
+	ft_print_list(export_lst);
+	ft_lstclear(&export_lst, NULL);
+}
 
 void ft_export(char *cmd, t_ms *g)
 {
@@ -90,7 +135,7 @@ void ft_export(char *cmd, t_ms *g)
 	g->statut = 0;
 	tab = ft_split(cmd, ' ');
 	if (!tab[1])
-		;// export env
+		export_no_arg(g);
 	else
 	{
 		while(tab[i])
