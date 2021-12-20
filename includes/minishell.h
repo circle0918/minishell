@@ -44,4 +44,6 @@ int		find_cmd_path(char *cmd, t_ms *g);
 void	init_global_struct(t_ms *g);
 void	record_list(t_list **list, char *str);
 void	print_list(t_list *error);
+void ft_echo(char *cmd, t_ms *g);
+void	exit_free(char **str);
 #endif

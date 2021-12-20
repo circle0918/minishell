@@ -73,21 +73,7 @@ void ft_pwd()
 	else
 		printf("%s\n", cwd);
 }
-void ft_echo(char *cmd)
-{
-	//TODO
-	// ' ', "", \" = ", $ env,
-	//echo $? return 0 (normal)/1 (error)
-	int i;
 
-	i = 5;
-	while(cmd[i])
-	{
-		printf("%c", cmd[i]);
-		i++;
-	}
-	printf("\n");
-}
 void ft_export(char *cmd, t_ms *g)
 {
 	//TODO AAA= aaa / AAA= -> env : AAA=
@@ -218,7 +204,7 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 	}
 	else if (ft_strcmp(comd, "echo") == 0)
 	{
-		ft_echo(cmd);
+		ft_echo(cmd, g);
 		return (1);
 	}
 	else if (ft_strcmp(comd, "cd") == 0)

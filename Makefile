@@ -26,6 +26,7 @@ SRCS		= $(addprefix ./srcs/, ${SRCS_FILES})
 SRCS_FILES	= \
 				main.c \
 				env/env.c \
+				env/echo.c \
 				init.c \
 				
 				
