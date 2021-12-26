@@ -74,6 +74,31 @@ void ft_pwd()
 	else
 		printf("%s\n", cwd);
 }
+void ft_print_export(t_list *export_lst)
+{
+	t_list *tmp;
+	int i;
+	int is_first_equal;
+	tmp = export_lst;
+	while(tmp)
+	{
+		is_first_equal = 1;
+		i = 0;
+		printf("declare -x ");
+		while(((char *)tmp->content)[i])
+		{
+			printf("%c", ((char *)tmp->content)[i]);
+			if (((char *)tmp->content)[i] == '=' && is_first_equal)
+			{
+				printf("\"");
+				is_first_equal = 0;
+			}
+			i++;
+		}
+		printf("\"\n");
+		tmp = tmp->next;
+	}
+}
 void export_no_arg (t_ms *g)
 {
 	//int l;
@@ -86,25 +111,44 @@ void export_no_arg (t_ms *g)
 	export_lst = ft_lstnew(tmp_env->content); //duplicate 1st ?
 	tmp_exp = export_lst;
 	//printf("lst->content : %s\n", export_lst->content);
+//	print_list(g->env);
+tmp_env = tmp_env->next;
 	while(tmp_env)
 	{
+	
+	//    printf("env->content : %s\n", tmp_env->content);
+	//	printf("--------------------------------------------\n");
 		tmp_exp = export_lst;
 		tmp_exp_pre = NULL;
 		t_list *node;
 		t_list *last = NULL;
 		while(tmp_exp)
 		{
+		//	printf("content : %s\n", tmp_exp->content);
 			if(ft_strcmp(tmp_exp->content, tmp_env->content) > 0) //env < exp
 			{
 				node = ft_lstnew(tmp_env->content);
 				if(tmp_exp_pre)
+				{
 					tmp_exp_pre->next = node;
-				node->next = tmp_exp;
-				break;
+					node->next = tmp_exp;
+	//	print_list(export_lst);
+	//	printf("--------------------------------------------\n");
+					break;
+				}
+				else
+				{
+				/*	t_list *ttmp;
+					ttmp = tmp_exp;
+					node->next = ttmp;
+					tmp_exp = node;*/
+					ft_lstadd_front(&export_lst, node);
+					break;
+				}	
 			}
 			tmp_exp_pre = tmp_exp;
 			if (tmp_exp->next == NULL)
-				last = tmp_exp->next;
+				last = tmp_exp;
 			tmp_exp = tmp_exp->next;
 		}
 		if (last)
@@ -115,8 +159,10 @@ void export_no_arg (t_ms *g)
 			
 		tmp_env = tmp_env->next;
 	}
-	ft_print_list(export_lst);
-	ft_lstclear(&export_lst, NULL);
+	//print_list(export_lst);
+	ft_print_export(export_lst);
+
+	ft_lstclear(&export_lst, &ft_del_list);
 }
 
 void ft_export(char *cmd, t_ms *g)
