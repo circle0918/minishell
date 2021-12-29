@@ -32,7 +32,7 @@ void ft_echo(char *cmd, t_ms *g)
 	char **tab;
 	int i;
 
-	g->statut = 0;
+	g->retcode = 0;
 	tab = ft_split(cmd, ' ');
 	if(!tab[1])
 	{

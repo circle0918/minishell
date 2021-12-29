@@ -28,7 +28,7 @@ typedef struct	s_data
 
 typedef struct 	s_ms
 {
-				int		statut;
+				int		retcode;
 				t_data	parsing;
 				char 	*line;
 				t_list	*env;
@@ -45,5 +45,6 @@ void	init_global_struct(t_ms *g);
 void	record_list(t_list **list, char *str);
 void	print_list(t_list *error);
 void ft_echo(char *cmd, t_ms *g);
+void ft_export(char *cmd, t_ms *g);
 void	exit_free(char **str);
 #endif

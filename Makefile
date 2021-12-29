@@ -25,10 +25,10 @@ SRCS		= $(addprefix ./srcs/, ${SRCS_FILES})
 
 SRCS_FILES	= \
 				main.c \
+				init.c \
 				env/env.c \
 				env/echo.c \
-				init.c \
-				
+				env/export.c \
 				
 
 CC			=	clang
