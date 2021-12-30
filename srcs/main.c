@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/20 13:40:28 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/24 16:15:10 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,104 +32,6 @@ void	signal_in(int signal)
 	ft_putstr("\n");
 	ft_putstr(_GREEN"thhusser> "_NC);
 }
-
-//--> trash
-char	*check_option(char *line)
-{
-	int		i;
-	char	*option;
-
-	i = -1;
-	while (line[++i])
-	{
-		if (line[i] == '-')
-			option = ft_strdup(line + i);
-	}
-	return (option);
-}
-
-//-->trash
-int		parse_line(t_ms *g)
-{
-	int		i;
-	int		x;
-	char	*line;
-	char	*option;
-	t_list	*tmp;
-	char	**line_split;
-	char 	*tmp_line;
-	
-	line_split = NULL;
-	i = 0;
-	x = -1;
-	line = NULL;
-	tmp_line = NULL;
-	option = NULL;
-	tmp = g->cmd_tmp;
-	// g->parsing = malloc(sizeof(t_data) * nb_cmd);
-	// if (!g->parsing)
-		// ft_exit(0, g);
-	printf(_GREEN"%s\n"_NC, g->line);
-	while (tmp)
-	{
-		x = -1;
-		i = -1;
-		line = ft_strdup(tmp->content);
-		// line_split = ft_split_charset(line, " \t");
-		printf(_RED"%s\n"_NC, line);
-		// while (line_split[++x])
-		{
-			// option = check_option(line_split[x]);
-			// if (option)
-			// {
-			// 	tmp_line = ft_strjoin(line_split[x], " ");
-			// 	record_list(&g->cmd, ft_strjoin(tmp_line, option));
-			// 	ft_del_line(tmp_line);
-	 		// 	ft_del_line(option);
-			// }
-			// ft_del_line(line_split[x]);
-		}
-		// free(line_split);
-		// line_split = NULL;
-		ft_del_line(line);
-		tmp = tmp->next;
-	}
-	ft_lstclear(&g->cmd_tmp, &ft_del_list);
-	return(0);
-}
-
-//-->trash
-int 	first_command(t_ms *g)
-{
-	int	res;
-	// res = parse_line(line);
-	res = parse_line(g);
-	// if (check_bultin_in(g))
-
-	// else if (check_biltin_out(g))
-
-	// else
-		// record_list(g->error, "Erreur\nCommande introuvable\n");
-	return (res);
-}
-
-// char	*get_cmd_in_line_th(char *line, t_ms *g) // le but premier etait de separer les differente comandes dans le split, 
-												// mais meme si il ya des pipes cela reste la meme commande
-												// seul les ';' separent les commande. Donc plus utile2
-// {
-// 	char	**line_split;
-// 	int		i;
-// 	(void)g;
-// 	line_split = ft_split_charset(line, "|");
-// 	i = -1;
-// 	while (line_split[++i])
-// 	{
-// 		record_list(&g->cmd_tmp, line_split[i]);
-// 		ft_del_line(line_split[i]);
-// 	}
-// 	free(line_split);
-// 	return (line);
-// }
 
 int		parseur(t_ms *g, int i, int res)
 {
@@ -247,125 +149,6 @@ char	*check_in_out(t_ms *g, char *str)
 		str = ft_checkbackredir(g, 0, 0);
 	return (str);
 }
-///pipe
-void		execution(char *cmd, int p_in[2], int p_out[2], char ***env)
-{
-	g_pid[1] = fork();
-	errno = 0;
-	if (g_pid[1] == -1)
-		exit(EXIT_FAILURE);
-	else if (g_pid[1] == 0)
-	{
-		if (p_in[0] != -1 && p_in[1] != -1)
-		{
-			close(p_in[1]);
-			dup2(p_in[0], STDIN_FILENO);
-			close(p_in[0]);
-		}
-		if (p_out[0] != -1 && p_out[1] != -1 && g_last != 1)
-		{
-			close(p_out[0]);
-			dup2(p_out[1], STDOUT_FILENO);
-			close(p_out[1]);
-		}
-		ft_command(cmd, env, NULL);
-		exit(errno);
-	}
-}
-
-void		preexecution(char **cmd, int p_in[2], int p_out[2], char ***env)
-{
-	int		i;
-
-	i = 0;
-	while (cmd[i])
-	{
-		if (i < tab_len(cmd) - 1)
-			pipe(p_out);
-		execution(cmd[i], p_in, p_out, env);
-		if (p_in[0] != -1)
-			close(p_in[0]);
-		close(p_in[1]);
-		if (i < tab_len(cmd) - 1)
-		{
-			p_in[0] = p_out[0];
-			p_in[1] = p_out[1];
-		}
-		else
-		{
-			p_out[0] = -1;
-			p_out[1] = -1;
-		}
-		if (i == tab_len(cmd) - 2)
-			g_last = 1;
-		i++;
-	}
-}
-
-void		my_pipe(char **cmd, char ***env)
-{
-	int		p_in[2];
-	int		p_out[2];
-	int		status;
-
-	status = 0;
-	p_in[0] = -1;
-	p_in[1] = -1;
-	p_out[0] = -1;
-	p_out[1] = -1;
-	preexecution(cmd, p_in, p_out, env);
-	while (waitpid(0, &status, 0) > 0)
-	{
-	}
-	errno = status / 256;
-}
-
-char		**takecmd_pipe(char **command, int i, int j, char *str)
-{
-	int c;
-	int first;
-
-	first = 0;
-	while (str[i++])
-	{
-		if (str[i] == '\'' || str[i] == '"')
-			i = passquotes(str, i + 1, str[i]);
-		if (str[i] == '|')
-		{
-			c = delspace(str, i);
-			if (!(command[j] = (char *)malloc(sizeof(char) * (c - first) + 1)))
-				return (NULL);
-			ft_strlcpy(command[j++], &str[first], c - first + 1);
-			i = ft_pass_space(str, i);
-			first = i + 1;
-		}
-		if (str[i] == '\\')
-			i++;
-	}
-	if (!(command[j] = (char *)malloc(sizeof(char) * (i - first) + 1)))
-		return (NULL);
-	ft_strlcpy(command[j], &str[first], i - first + 1);
-	command[j + 1] = NULL;
-	return (command);
-}
-
-void		pipe_command(char *str, char ***env, int nb)
-{
-	char	**command;
-
-	g_last = 0;
-	if (!(command = (char **)malloc(sizeof(char *) * (nb + 2))))
-		return ;
-	if ((command = takecmd_pipe(command, 0, 0, str)) == NULL)
-	{
-		write(2, "error: malloc failed\n", 21);
-		ft_splitdel(&command);
-		return ;
-	}
-	my_pipe(command, env);
-	ft_splitdel(&command);
-}
-// fin pipe
 
 //check_in_out  --> my_redirection
 //check_nb_pipe --> ft_nbpipe2
@@ -417,13 +200,11 @@ int	clean_command(t_ms *g)
 	{
 		command = check_in_out(g, g->line);
 		pipe = check_nb_pipe(command, g);
-		if (pipe)
-			pipe_command(g, command);
-		else
-			command = commamd_exec(g, command);
+		//si pipe il y a envoyer les la commande avec les pipes a exucuter dans un while sinon
+		// executer la commande !
 	}
-	// --> une fois le parseur fait, regarder nombre de pipe, si pipe envoyer les commande dans une fonction qui gere
-	// toutes les pipes, sinon envoyer dans commande
+	//-->old // --> une fois le parseur fait, regarder nombre de pipe, si pipe envoyer les commande dans une fonction qui gere
+	//-->old // toutes les pipes, sinon envoyer dans commande
 	
 	// parseur va check tous les padding probleme de cote ... --> fait
 	// ensuite enlever tous les espace en debut de ligne -- fait avant le parseur
@@ -453,20 +234,6 @@ int	main(int argc, char **argv, char **env)
 		ft_putstr(_GREEN"thhusser> "_NC);
 		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
 			ft_exit(2, &g);
-		
-		// cmd = get_cmd_in_line_th(g.line, &g);
-		// if (first_command(&g))
-		// 	ft_exit(0, &g);
-		// // print_list(g.cmd_tmp);
-		// if (!find_cmd_path(cmd, &g))
-		// {
-		// 	ft_putstr("minishell: ");
-		// 	ft_putstr(cmd);
-		// 	ft_putstr(": command not found\n");
-		// }
-		// if (!ft_strcmp(g.line, "env"))
-		// 	print_list(g.env);
-
 		clean_command(&g);
 		if (g.error)
 		{

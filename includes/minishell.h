@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/20 14:52:45 by thhusser         ###   ########.fr       */
+/*   Updated: 2021/12/24 16:04:39 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <dirent.h>
 # include <errno.h>
 
-# define DEBUG 1
+# define DEBUG 0
 
 // typedef struct	s_data
 // {
@@ -34,8 +34,8 @@ typedef struct 	s_ms
 				char 	*line;
 				t_list	*env;
 				char	**path;
-				// t_list	*cmd;
-				// t_list	*cmd_tmp;
+				t_list	*cmd;
+				t_list	*cmd_tmp;
 				t_list	*error;
 }				t_ms;
 
