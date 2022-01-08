@@ -47,4 +47,5 @@ void	print_list(t_list *error);
 void ft_echo(char *cmd, t_ms *g);
 void ft_export(char *cmd, t_ms *g);
 void	exit_free(char **str);
+t_list	*ft_lst_pop_last(t_list **lst);
 #endif
