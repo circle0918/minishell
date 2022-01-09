@@ -46,6 +46,9 @@ void	record_list(t_list **list, char *str);
 void	print_list(t_list *error);
 void ft_echo(char *cmd, t_ms *g);
 void ft_export(char *cmd, t_ms *g);
+void ft_cd(char *comd, char *cmd, t_ms *g);
+void ft_pwd();
+void ft_unset(char *comd, char *cmd, t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
 #endif
