@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/24 16:04:39 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/11 15:17:12 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,9 @@
 
 typedef struct 	s_ms
 {
-<<<<<<< HEAD
 				int		retcode;
 				t_data	parsing;
-=======
 				// t_data	parsing;
->>>>>>> thhusser
 				char 	*line;
 				t_list	*env;
 				char	**path;
