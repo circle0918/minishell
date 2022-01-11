@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/11 15:15:44 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/11 15:36:04 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int		parseur(t_ms *g, int i, int res)
 		if (g->line[i] == '\\')
 			i++;
 		//efectuer les fonction de test et return res pour les erreurs
-		//chercher ou mettre les commande $ ... pour echo !
+		//chercher ou mettre les commande $ ... pour echo ! --> une fois parser ! apres test si pipe
 	}
 	return(0);
 }
@@ -199,6 +199,7 @@ int	clean_command(t_ms *g)
 	{
 		command = check_in_out(g, g->line);
 		pipe = check_nb_pipe(command, g);
+		// printf("%s ------>%d\n", g->line, pipe);
 		//si pipe il y a envoyer les la commande avec les pipes a exucuter dans un while sinon
 		// executer la commande !
 	}
@@ -209,7 +210,7 @@ int	clean_command(t_ms *g)
 	// ensuite enlever tous les espace en debut de ligne -- fait avant le parseur
 	// ensuite test sur la commande si pipe sinon commande a executer
 	// --> ou alors boucle pour le nombre de pipe present dans la commande
-	if (!find_cmd_path(g->line, g))
+	if (!find_cmd_path(g->line, g)) // --> lancement partie yyuan
 	{
 		ft_putstr(g->line);
 		ft_putstr(": command not found\n");

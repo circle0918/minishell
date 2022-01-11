@@ -1,5 +1,14 @@
 # minishell
 
+## Restruturer --> 11/01/2022
+    * Ne plus passer par find path pour executer les commande mais par clean_commande
+        * Premier parsing, check global
+        * regarder si il y a des pipes --> Si oui les executer --> Sinon faire la commande avec une autre fonction
+            * Si pipe les executer et les parser ligne entiere en suprimant les space à voir si enregistrement dans un double tableau pour les executer.
+            * Sinon si pas de pipe, exeuter la commande ! et parser cette derniere --> la on recherche le $ (utiliser la meme fonction pour exceve les commande dans les pipes)
+    * Pour les pipes obliger d'utiliser des file descripteur et pid a envoyer dans la structure global pour gerer le processus global, surement aussi en local sur chaque pipe. --> Penser à bien les fermer 
+
+
 parseur --> voir les erreurs missings cotes --> "bash: missing quote" -- > ok pour pipe et chevron out
 
 -->verifier errno, code trouvee 130 si erreur ou 2 si multiligne
@@ -18,4 +27,4 @@ les options de echo sont forcement apres l'appel systeme et avangt le text
 --> ctr + m est considerer comme une commande --> erreur !
 
 --> pas de parsing a faire pour $.
-    * juste cher le '$' dans la ligne, si rien derriere rien faire sinon la chercher dans l'env !
+    * juste chercher le '$' dans la ligne, si rien derriere rien faire sinon la chercher dans l'env ! --> check '' afficher le text
