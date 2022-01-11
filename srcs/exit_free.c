@@ -1,24 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   exit_free.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/10 12:56:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/24 16:00:00 by thhusser         ###   ########.fr       */
+/*   Created: 2021/12/13 10:33:33 by thhusser          #+#    #+#             */
+/*   Updated: 2021/12/13 12:42:39 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	init_global_struct(t_ms *g)
+void	free_split(char **split)
 {
-	g->line = NULL;
-	g->env = NULL;
-	g->path = NULL;
-	g->cmd = NULL;
-	g->cmd_tmp = NULL;
-	g->error = NULL;
-//	g->return_code = 0;
+	int i;
+
+	i = -1;
+	if (split)
+	{
+		while (split[++i])
+				free(split[i]);
+		free(split);
+	}
+}
+
+void	ft_exit(int nb, t_ms *g)
+{
+	if (nb == 2)
+		ft_putstr("exit\n");
+	ft_del_line(g->line);
+	ft_lstclear(&g->env, &ft_del_list);
+	ft_lstclear(&g->cmd, &ft_del_list);
+	ft_lstclear(&g->cmd_tmp, &ft_del_list);
+	ft_lstclear(&g->error, &ft_del_list);
+	free_split(g->path);
+	exit(1);
 }

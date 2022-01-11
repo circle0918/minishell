@@ -6,63 +6,13 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/10 15:20:36 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/11 15:15:44 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-void	free_split(char **split)
-{
-	int i;
 
-	i = -1;
-	if (split)
-	{
-		while (split[++i])
-		{
-			if (split[i])
-				free(split[i]);
-		}
-		free(split);
-	}
-}
-
-void	ft_exit(int nb, char *line, t_ms *g)
-{
-	if (nb == 2)
-		ft_putstr("exit\n");	
-	ft_del_line(line);
-	ft_lstclear(&g->env, &ft_del_list);
-	ft_lstclear(&g->cmd, &ft_del_list);
-	ft_lstclear(&g->cmd_tmp, &ft_del_list);
-	ft_lstclear(&g->error, &ft_del_list);
-	free_split(g->path);
-	exit(1);
-}
-
-void	print_list(t_list *error)
-{
-	char	*line;
-
-	line = NULL;
-	while (error)
-	{
-		line = ft_strdup(error->content);
-		ft_putstr(line);
-		ft_putstr("\n");
-		free(line);
-		error = error->next;
-	}
-}
-
-void	record_list(t_list **list, char *str)
-{
-	t_list	*new_elem;
-
-	new_elem = ft_lstnew(ft_strdup(str));
-	ft_lstadd_back(list, new_elem);
-}
-
+//enrehistrement des variables envirenementales dans une liste !
 void	begin(char **env, t_ms *g)
 {
 	int i;
@@ -74,6 +24,7 @@ void	begin(char **env, t_ms *g)
 	get_path(g);
 }
 
+//Signal pour le 'ctrl + C'
 void	signal_in(int signal)
 {
 	(void)signal;
@@ -81,25 +32,189 @@ void	signal_in(int signal)
 	ft_putstr(_GREEN"thhusser> "_NC);
 }
 
-void	test(int signal)
+int		parseur(t_ms *g, int i, int res)
 {
-	printf("%d\n",signal);	
+	while (g->line[++i])
+	{
+		//check double cote ou simple cote
+		if (g->line[i] == '\'' || g->line[i] == '"') // les passer avec les fonctions et retourner i pour decaller l'index
+		{
+			i = parseur_quotes(g, i + 1, g->line[i]);
+			if (i == -1)
+			{
+				record_list(&g->error, "bash: syntax error: unexpected end of file\n"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
+				return (1);//generer une erreur correspondante a bash
+			}
+		}
+		// check chevron in et out // check si besoin de rechercher les >> et << ou parser les > + 1 et < + 1 (>+1 <+1 retenue !)
+		if (g->line[i] == '>')
+		{
+			res = parsing_redirection_out(i, 0, g);
+			if (res != 0)
+				return (res);
+		}
+		if (g->line[i] == '<')
+		{
+			res = parsing_redirection_in(i, 0, g);
+			if (res != 0)
+				return (res);
+		}
+		// check pipe (compter nombre de pipe ? compter nombre de sous commande ? utiliser les global pour le multi pipe ?)
+		if (g->line[i] == '|')
+		{
+			res = parsing_pipe(i, 0, g);
+			if (res != 0)
+				return (res);
+		}
+		//si back slash i++
+		if (g->line[i] == '\\')
+			i++;
+		//efectuer les fonction de test et return res pour les erreurs
+		//chercher ou mettre les commande $ ... pour echo !
+	}
+	return(0);
 }
 
-char	*get_cmd_in_line_th(char *line, t_ms *g)
+static void	clean_line(t_ms *g)
 {
-	char	**line_split;
-	int		i;
-	(void)g;
-	line_split = ft_split_charset(line, " \t");
-	i = -1;
-	while (line_split[++i])
+	int	i;
+	char	*dest;
+
+	i = 0;
+	while (g->line[i] && g->line[i] == ' ')
+		i++;
+	dest = ft_strdup(g->line + i);
+	ft_del_line(g->line);
+	g->line = dest;
+}
+
+char	*ft_spaceredir(char *str, char *tmp, int idx, int i)
+{
+	int		j;
+
+	j = 0;
+	while (str[i])
 	{
-		record_list(&g->cmd_tmp, line_split[i]);
-		ft_del_line(line_split[i]);
+		if (i == idx || i == idx + 1)
+		{
+			tmp[j] = ' ';
+			j++;
+		}
+		tmp[j] = str[i];
+		i++;
+		j++;
 	}
-	free(line_split);
-	return (line);
+	tmp[j] = '\0';
+	free(str);
+	str = ft_strdup(tmp);
+	free(tmp);
+	tmp = NULL;
+	return (str);
+}
+
+char	*ft_checkbackredir(t_ms *g, int i, int nb)
+{
+	char	*tmp;
+
+	tmp = NULL;
+	while (g->line[i])
+	{
+		if (g->line[i] == '\'' || g->line[i] == '"')
+			i = parseur_quotes(g, i + 1, g->line[i]);
+		while (g->line[i] == '\\')
+		{
+			nb++;
+			i++;
+		}
+		if ((g->line[i] == '>' || g->line[i] == '<') && nb != 0 && nb % 2 == 0)
+		{
+			if (!(tmp = (char *)malloc(sizeof(char) * (ft_strlen(g->line) + 3))))
+				return (NULL);
+			g->line = ft_spaceredir(g->line, tmp, i, 0);
+			i += 1;
+		}
+		else
+			nb = 0;
+		i++;
+	}
+	return (g->line);
+}
+
+char	*check_in_out(t_ms *g, char *str)
+{
+	if (ft_strchr(str, '>') || ft_strchr(str, '<'))
+		str = ft_checkredir(str);
+	if (ft_strchr(str, '\\'))
+		str = ft_checkbackredir(g, 0, 0);
+	return (str);
+}
+
+//check_in_out  --> my_redirection
+//check_nb_pipe --> ft_nbpipe2
+//pipe_command  --> ft_pipe
+//command_exec  --> ft_command
+
+int		check_nb_pipe(const char *str, t_ms *g)
+{
+	int		i;
+	int		nb;
+
+	i = 0;
+	nb = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+		{
+			if ((i = parseur_quotes(g, i + 1, str[i])) == -1)
+				break ;
+		}
+		if (str[i] == '|')
+			nb++;
+		if (str[i] == '\\')
+			i++;
+		i++;
+	}
+	return (nb);
+}
+
+int	clean_command(t_ms *g)
+{
+	int	i;
+	int	pipe;
+	char 	*command;
+
+	command = NULL;
+	i = -1;
+	pipe = 0;
+	clean_line(g);
+	if (DEBUG)
+		printf("A clean : g->line -->%s\n", g->line);
+	// while (*g->line == ' ' && *g->line)
+		// g->line += 1;
+	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
+		return (1);
+	if (DEBUG)
+		printf("A clean : g->line -->%s\n", g->line);
+	if (g->line)
+	{
+		command = check_in_out(g, g->line);
+		pipe = check_nb_pipe(command, g);
+		//si pipe il y a envoyer les la commande avec les pipes a exucuter dans un while sinon
+		// executer la commande !
+	}
+	//-->old // --> une fois le parseur fait, regarder nombre de pipe, si pipe envoyer les commande dans une fonction qui gere
+	//-->old // toutes les pipes, sinon envoyer dans commande
+	
+	// parseur va check tous les padding probleme de cote ... --> fait
+	// ensuite enlever tous les espace en debut de ligne -- fait avant le parseur
+	// ensuite test sur la commande si pipe sinon commande a executer
+	// --> ou alors boucle pour le nombre de pipe present dans la commande
+	if (!find_cmd_path(g->line, g))
+	{
+		ft_putstr(g->line);
+		ft_putstr(": command not found\n");
+	}
+	return(0);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -112,23 +227,18 @@ int	main(int argc, char **argv, char **env)
 	if (argc != 1)
 		return(printf(_RED"Error number arguments\n"_NC));
 	signal(SIGINT, signal_in);
-	signal(SIGQUIT, test);
 	begin(env, &g);
 	while (1)
 	{
 		ft_putstr(_GREEN"thhusser> "_NC);
 		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
-			ft_exit(2, g.line, &g);
-		cmd = get_cmd_in_line_th(g.line, &g);
-		// print_list(g.cmd_tmp);
-		if (!find_cmd_path(cmd, &g))
+			ft_exit(2, &g);
+		clean_command(&g);
+		if (g.error)
 		{
-			ft_putstr("minishell: ");
-			ft_putstr(cmd);
-			ft_putstr(": command not found\n");
+			print_list(g.error);
+			ft_lstclear(&g.error, &ft_del_list);
 		}
-		if (!ft_strcmp(g.line, "env"))
-			print_list(g.env);
 		ft_del_line(g.line);
 	}
 	return (0);
