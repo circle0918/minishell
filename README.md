@@ -11,4 +11,11 @@ les options de echo sont forcement apres l'appel systeme et avangt le text
 
 --> trouver solution espace dans guillemets (voir avec parsing_cotes) --> meilleur option !
 
---> check echo $? (errno)
+---------------------------------------------------------------------------------------------------------------------------------------
+
+--> check echo $? (errno) //ce n'est pas erno mais le code re retour du programme donc avec exit !
+
+--> ctr + m est considerer comme une commande --> erreur !
+
+--> pas de parsing a faire pour $.
+    * juste cher le '$' dans la ligne, si rien derriere rien faire sinon la chercher dans l'env !
