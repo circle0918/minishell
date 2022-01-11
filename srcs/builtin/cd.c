@@ -1,6 +1,19 @@
 #include "../includes/minishell.h"
 
+void error_out2(char *comd, char *opt, char *msg)
+{
+	char str[1024];
 
+	str[0] = '\0';
+	ft_strcat(str, "minishell : ");
+	ft_strcat(str, comd);
+	ft_strcat(str, ": ");
+	ft_strcat(str, opt);
+	ft_strcat(str, ": ");
+	ft_strcat(str, msg);
+	ft_strcat(str, "\n");
+	ft_putstr_fd(str, 2);
+}
 char* get_env(char *str, t_list *env)
 {
 	t_list *tmp;
@@ -71,6 +84,11 @@ void ft_cd(char *comd, char *cmd, t_ms *g)
 	char cwd[1024];
 	char *tmp_path;
 
+	if(ft_strchr(path, ' '))
+	{
+		error_out2("cd", path, "Too many arguements");
+		free(path);
+	}
 	if (!path || ft_strequ(path, "~") || ft_strequ(path, "--"))
 	{
 		//path == home
@@ -91,8 +109,17 @@ void ft_cd(char *comd, char *cmd, t_ms *g)
         ft_strcat(cwd, path);
         if (chdir(cwd) == 0)
 			change_path(cwd, g);
+		else
+		{
+			error_out2("cd", path, "No such file or directory");
+		}
+		
     }else{//true for dir w.r.t. /
         if (chdir(path) == 0)
 			change_path(path, g);
+		else
+		{
+			error_out2("cd", path, "No such file or directory");
+		}
     }
 }
