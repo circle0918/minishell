@@ -1,24 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   list.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/10 12:56:01 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/24 16:00:00 by thhusser         ###   ########.fr       */
+/*   Created: 2021/12/13 10:32:51 by thhusser          #+#    #+#             */
+/*   Updated: 2021/12/14 18:38:16 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	init_global_struct(t_ms *g)
+void	record_list(t_list **list, char *str)
 {
-	g->line = NULL;
-	g->env = NULL;
-	g->path = NULL;
-	g->cmd = NULL;
-	g->cmd_tmp = NULL;
-	g->error = NULL;
-//	g->return_code = 0;
+	t_list	*new_elem;
+
+	new_elem = ft_lstnew(ft_strdup(str));
+	ft_lstadd_back(list, new_elem);
+}
+
+void	print_list(t_list *error)
+{
+	char	*line;
+
+	line = NULL;
+	while (error)
+	{
+		line = ft_strdup(error->content);
+		ft_putstr(line);
+		free(line);
+		error = error->next;
+	}
 }

@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2021/12/10 12:56:40 by thhusser         ###   ########.fr        #
+#    Updated: 2022/01/11 15:15:55 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,14 @@ SRCS_FILES	= \
 				builtin/cd.c \
 				builtin/pwd.c \
 				builtin/unset.c \
+				exit_free.c \
+				list.c \
+				parsing_quotes/check_parsing_out.c \
+				parsing_quotes/check_parsing_in.c \
+				parsing_quotes/check_parsing_pipe.c \
+				parsing_quotes/check_parsing.c \
+				clean_redir_in_out.c \
+				
 				
 
 CC			=	clang
