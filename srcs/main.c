@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/11 15:36:04 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/12 14:37:01 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,29 +187,17 @@ int	clean_command(t_ms *g)
 	i = -1;
 	pipe = 0;
 	clean_line(g);
-	if (DEBUG)
-		printf("A clean : g->line -->%s\n", g->line);
-	// while (*g->line == ' ' && *g->line)
-		// g->line += 1;
 	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
 		return (1);
-	if (DEBUG)
-		printf("A clean : g->line -->%s\n", g->line);
 	if (g->line)
 	{
 		command = check_in_out(g, g->line);
 		pipe = check_nb_pipe(command, g);
-		// printf("%s ------>%d\n", g->line, pipe);
-		//si pipe il y a envoyer les la commande avec les pipes a exucuter dans un while sinon
-		// executer la commande !
+		if (pipe)
+			pipe_command(g, pipe);
+		// else
+			// ICI COMMANDE A EXECUTER PAS DE PIPE
 	}
-	//-->old // --> une fois le parseur fait, regarder nombre de pipe, si pipe envoyer les commande dans une fonction qui gere
-	//-->old // toutes les pipes, sinon envoyer dans commande
-	
-	// parseur va check tous les padding probleme de cote ... --> fait
-	// ensuite enlever tous les espace en debut de ligne -- fait avant le parseur
-	// ensuite test sur la commande si pipe sinon commande a executer
-	// --> ou alors boucle pour le nombre de pipe present dans la commande
 	if (!find_cmd_path(g->line, g)) // --> lancement partie yyuan
 	{
 		ft_putstr(g->line);

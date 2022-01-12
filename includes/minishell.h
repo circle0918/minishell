@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/11 15:17:51 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/12 14:38:18 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,13 @@ typedef struct 	s_ms
 				t_list	*cmd_tmp;
 				t_list	*error;
 }				t_ms;
+
+//pipe
+void    pipe_command(t_ms *g, int pipe);
+
+//utils pipe
+int		move_space_after(char *str, int i);
+int		move_space_before(char *str, int c);
 
 //list
 void	record_list(t_list **list, char *str);

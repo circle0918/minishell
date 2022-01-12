@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2022/01/11 15:15:55 by thhusser         ###   ########.fr        #
+#    Updated: 2022/01/12 14:36:56 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,8 @@ SRCS_FILES	= \
 				parsing_quotes/check_parsing_pipe.c \
 				parsing_quotes/check_parsing.c \
 				clean_redir_in_out.c \
+				pipe.c \
+				utils_pipe.c \
 				
 				
 
