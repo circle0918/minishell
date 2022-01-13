@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 19:03:28 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 23:04:16 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # include <errno.h>
 # include <sys/wait.h>
 
-# define DEBUG 0
+# define DEBUG 0				//--------> A suprimmer !
 
 typedef struct 	s_ms
 {
@@ -40,6 +40,8 @@ typedef struct 	s_ms
 }				t_ms;
 
 //doucle char
+char	**creat_list_arg(t_ms *g, char *line);
+void print_split(char **cmd);//tmp
 
 //pipe
 void    pipe_command(t_ms *g, int pipe);

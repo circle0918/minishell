@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2022/01/13 18:33:24 by thhusser         ###   ########.fr        #
+#    Updated: 2022/01/13 23:04:23 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,8 +41,7 @@ SRCS_FILES	= \
 				clean_redir_in_out.c \
 				pipe.c \
 				utils_pipe.c \
-				
-				
+				new_double_cmd.c \
 
 CC			=	clang
 
@@ -65,7 +64,7 @@ all:		${NAME}
 $(NAME): 	${OBJS}
 			@make -C libft/
 			@echo ""
-			@$(CC) $(FLAGS) $(HEADER) $(OBJS) -o $(NAME) -L ${PATH_LIBFT} -lft 
+			@$(CC) $(FLAGS) $(HEADER) $(OBJS) -o $(NAME) -L ${PATH_LIBFT} -lft
 			@echo "$(_GREEN)Generating $(NAME)$(_NC)"
 
 clean:
