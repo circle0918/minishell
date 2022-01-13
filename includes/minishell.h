@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/12 14:38:18 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 17:14:12 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,13 @@
 
 # define DEBUG 0
 
-// typedef struct	s_data
-// {
-				// une structure par commande
-				// forcement que une commande ! car pas de ';'
-// }				t_data;
-
 typedef struct 	s_ms
 {
 				int		retcode;
-				// t_data	parsing;
-				// t_data	parsing;
+
+				pid_t		pid[2];
+				int			last_cmd;
+				int 		nb_cmd_pipe;
 				char 	*line;
 				t_list	*env;
 				char	**path;
@@ -42,8 +38,11 @@ typedef struct 	s_ms
 				t_list	*error;
 }				t_ms;
 
+//doucle char
+
 //pipe
 void    pipe_command(t_ms *g, int pipe);
+void	init_pipe(t_ms *g);
 
 //utils pipe
 int		move_space_after(char *str, int i);

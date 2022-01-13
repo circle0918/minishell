@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/12 14:37:01 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 17:11:22 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ int		parseur(t_ms *g, int i, int res)
 	}
 	return(0);
 }
+
+
 
 static void	clean_line(t_ms *g)
 {
@@ -177,6 +179,50 @@ int		check_nb_pipe(const char *str, t_ms *g)
 	return (nb);
 }
 
+int 	count_split(char **split)
+{
+	int i;
+
+	i = 0;
+	while (split[i])
+		i++;
+	return (i);
+}
+
+void 	clean_line_cmd(t_ms *g)
+{
+	char **dest;
+	int i;
+	char *str;
+	int count;
+
+	str = NULL;
+	i = -1;
+	dest = ft_split(g->line, ' ');
+	count = count_split(dest);
+	while (dest[++i])
+	{
+		if (i == 0)
+		{
+			str = ft_strjoin(dest[i], "");
+		}
+		else if (count - 1 == i)
+		{
+			str = ft_strjoin(str, " ");
+			str = ft_strjoin(str, dest[i]);
+			break ;
+		}
+		else if (i != 0)
+		{
+			str = ft_strjoin(str, " ");
+			str = ft_strjoin(str, dest[i]);
+		}
+	}
+	free_split(dest);
+	ft_del_line(g->line);
+	g->line = str;
+}
+
 int	clean_command(t_ms *g)
 {
 	int	i;
@@ -186,22 +232,21 @@ int	clean_command(t_ms *g)
 	command = NULL;
 	i = -1;
 	pipe = 0;
-	clean_line(g);
 	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
 		return (1);
+	clean_line(g);
+	clean_line_cmd(g);
 	if (g->line)
 	{
 		command = check_in_out(g, g->line);
 		pipe = check_nb_pipe(command, g);
 		if (pipe)
 			pipe_command(g, pipe);
-		// else
-			// ICI COMMANDE A EXECUTER PAS DE PIPE
-	}
-	if (!find_cmd_path(g->line, g)) // --> lancement partie yyuan
-	{
-		ft_putstr(g->line);
-		ft_putstr(": command not found\n");
+		else if (!find_cmd_path(command, g)) // --> lancement partie yyuan
+		{
+			ft_putstr(command);
+			ft_putstr(": command not found\n");
+		}
 	}
 	return(0);
 }
@@ -219,6 +264,7 @@ int	main(int argc, char **argv, char **env)
 	begin(env, &g);
 	while (1)
 	{
+		init_pipe(&g);
 		ft_putstr(_GREEN"thhusser> "_NC);
 		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
 			ft_exit(2, &g);

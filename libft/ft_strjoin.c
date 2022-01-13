@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 01:13:41 by thhusser          #+#    #+#             */
-/*   Updated: 2020/11/04 01:13:41 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 16:58:29 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	char		*str;
 	size_t		size;
 
-	if (!s1 || !s2)
+	if (!s1 && !s2)
 		return (NULL);
 	if (s1 && s2)
 		size = ft_strlen(s1) + ft_strlen(s2) + 1;
