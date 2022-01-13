@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 15:31:37 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 15:32:21 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 17:26:30 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,11 @@
 
 void	init_pipe(t_ms *g)
 {
-	g->file[0] = 0;
-	g->file[1] = 0;
-	g->file[2] = 0;
-	g->fd[0] = 0;
-	g->fd[1] = 0;
-	g->cvr[0] = 0;
-	g->cvr[1] = 0;
 	g->last_cmd = 0;
 	g->nb_cmd_pipe = 0;
 	g->pid[0] = 0;
 	g->pid[1] = 0;
+	g->ret_dir = NULL;
 }
 
 void		execution(char *cmd, int fd_in[2], int fd_out[2], t_ms *g)
