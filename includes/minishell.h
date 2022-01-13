@@ -78,4 +78,5 @@ void ft_pwd();
 void ft_unset(char *comd, char *cmd, t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
+char* get_env(char *str, t_list *env);
 #endif

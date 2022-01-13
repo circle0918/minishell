@@ -93,7 +93,7 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 		return (0);
 }
 
-int launch(char *cmd, char *comd, t_ms *g, int i)
+int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 {
 	int j;
 	int size;
@@ -112,22 +112,18 @@ int launch(char *cmd, char *comd, t_ms *g, int i)
 	{
 		argv[j] = ft_strdup(split_cmd[j]);
 		free(split_cmd[j]);
-	//	printf("%s\n", argv[j]);
+		//printf("argv[%d]: %s\n", j, argv[j]);
 		j++;
 	}
 	argv[j] = NULL;
-	char *dir_cmd = ft_strjoin(g->path[i], "/");
+	char *dir_cmd;
+	if (abs_path_test == NULL)
+		dir_cmd = ft_strjoin(g->path[i], "/");
+	else
+		dir_cmd = ft_strjoin(abs_path_test, "/");
 	char *abs_cmd = ft_strjoin(dir_cmd, comd); //str_replace TODO (ls    -a = ls -a)
-/*	ft_putstr(" cmd : ");
-	ft_putstr(cmd);
-	ft_putstr(" comd : ");
-	ft_putstr(comd);
-	ft_putstr(" toprint a0: ");
-	ft_putstr(argv[0]);
-	ft_putstr(" a1: ");
-	ft_putstr(argv[1]);
-	ft_putstr("\n");
-*/	if (is_buildin(comd, cmd, g) == 0)	
+	//printf("abs_cmd: %s\n", abs_cmd);
+	if (is_buildin(comd, cmd, g) == 0)	
 	{
 		if (execve(abs_cmd, argv, NULL) == -1)
 			return (-1);
@@ -144,7 +140,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i)
 }
 
 
-int launcher(char *cmd, char *comd, t_ms *g, int i)
+int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 {
 	pid_t pid, wpid;
 	int status;
@@ -153,7 +149,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i)
 	if (pid == 0)
 	{
 	  // Child process
-		if (launch(cmd, comd, g, i) == -1)
+		if (launch(cmd, comd, g, i, abs_path_test) == -1)
 	  		perror("launch error");
 		exit(EXIT_FAILURE);
 	} 
@@ -171,6 +167,56 @@ int launcher(char *cmd, char *comd, t_ms *g, int i)
 	} 
 	return 1;
 }
+int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
+{
+	int l;
+	char *path;
+	char *exec;
+	DIR				*dir;
+	struct dirent	*dirp;
+
+	l = ft_strlen(comd) - 1;
+	while(l >= 0)
+	{
+		if(comd[l] == '/')
+			break;
+		l--;
+	}
+	if (l == -1)
+		return 0;
+	path = ft_substr(comd, 0, l);
+	//printf("cutting path: %s\n", path);
+	//path-->abs_path
+	if (path[0] != '/')
+	{
+		char *tmp = path;
+		char *tmp2 = ft_strjoin(get_env("PWD", g->env), "/");
+		path = ft_strjoin(tmp2, tmp);
+		free(tmp);
+		free(tmp2);
+	}
+	exec = ft_substr(comd, l + 1, ft_strlen(comd) - l);
+	//printf("cutting exec: %s\n", exec);
+	dir = opendir(path);
+		if (dir)
+		{
+			while ((dirp = readdir(dir)) != NULL)
+			{
+				if (ft_strequ(dirp->d_name, exec))
+				{
+					launcher(cmd, exec, g, i, path);
+					free(comd);
+					free(path);
+					free(exec);
+					closedir(dir);
+					return (1);
+				}
+			}
+		}
+		closedir(dir);
+		free(comd);
+	return (0);
+}
 int		find_cmd_path(char *cmd, t_ms *g)
 {
 	DIR				*dir;
@@ -181,22 +227,24 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	comd = get_cmd_in_line(cmd);
 	if(ft_strcmp(comd, "export") == 0)
 	{
-		if (launch(cmd, comd, g, i) == -1)
+		if (launch(cmd, comd, g, i, NULL) == -1)
 	  		perror("launch error");
 		return (1);
 	}
 	if(ft_strcmp(comd, "unset") == 0)
 	{
-		if (launch(cmd, comd, g, i) == -1)
+		if (launch(cmd, comd, g, i, NULL) == -1)
 	  		perror("launch error");
 		return (1);
 	}
 	if(ft_strcmp(comd, "cd") == 0)
 	{
-		if (launch(cmd, comd, g, i) == -1)
+		if (launch(cmd, comd, g, i, NULL) == -1)
 	  		perror("launch error");
 		return (1);
 	}
+	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
+		return (1);
 	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);
@@ -206,7 +254,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 			{
 				if (ft_strequ(dirp->d_name, comd))
 				{
-					launcher(cmd, comd, g, i);
+					launcher(cmd, comd, g, i, NULL);
 					free(comd);
 					closedir(dir);
 					return (1);

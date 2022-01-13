@@ -78,6 +78,9 @@ void ft_cd(char *comd, char *cmd, t_ms *g)
 	//TODO $home/$pwd change env PWD and OLDPWD
 	char *path;
 	(void)comd;
+	int only_cd;
+
+	only_cd = 0;
 //	TODO error if too many args
 	path = ft_substr(cmd, 3, (ft_strlen(cmd)-3));
 
@@ -89,7 +92,7 @@ void ft_cd(char *comd, char *cmd, t_ms *g)
 		error_out2("cd", path, "Too many arguements");
 		free(path);
 	}
-	if (!path || ft_strequ(path, "~") || ft_strequ(path, "--"))
+	if (ft_strlen(cmd)<=3 || ft_strequ(path, "~") || ft_strequ(path, "--"))
 	{
 		//path == home
 		free(path);
