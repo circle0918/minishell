@@ -6,14 +6,14 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 17:11:22 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 18:20:35 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
 //enrehistrement des variables envirenementales dans une liste !
-void	begin(char **env, t_ms *g)
+void begin(char **env, t_ms *g)
 {
 	int i;
 
@@ -25,14 +25,14 @@ void	begin(char **env, t_ms *g)
 }
 
 //Signal pour le 'ctrl + C'
-void	signal_in(int signal)
+void signal_in(int signal)
 {
 	(void)signal;
 	ft_putstr("\n");
-	ft_putstr(_GREEN"thhusser> "_NC);
+	ft_putstr(_GREEN "thhusser> "_NC);
 }
 
-int		parseur(t_ms *g, int i, int res)
+int parseur(t_ms *g, int i, int res)
 {
 	while (g->line[++i])
 	{
@@ -43,7 +43,7 @@ int		parseur(t_ms *g, int i, int res)
 			if (i == -1)
 			{
 				record_list(&g->error, "bash: syntax error: unexpected end of file\n"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
-				return (1);//generer une erreur correspondante a bash
+				return (1);																//generer une erreur correspondante a bash
 			}
 		}
 		// check chevron in et out // check si besoin de rechercher les >> et << ou parser les > + 1 et < + 1 (>+1 <+1 retenue !)
@@ -72,15 +72,13 @@ int		parseur(t_ms *g, int i, int res)
 		//efectuer les fonction de test et return res pour les erreurs
 		//chercher ou mettre les commande $ ... pour echo ! --> une fois parser ! apres test si pipe
 	}
-	return(0);
+	return (0);
 }
 
-
-
-static void	clean_line(t_ms *g)
+static void clean_line(t_ms *g)
 {
-	int	i;
-	char	*dest;
+	int i;
+	char *dest;
 
 	i = 0;
 	while (g->line[i] && g->line[i] == ' ')
@@ -90,9 +88,9 @@ static void	clean_line(t_ms *g)
 	g->line = dest;
 }
 
-char	*ft_spaceredir(char *str, char *tmp, int idx, int i)
+char *ft_spaceredir(char *str, char *tmp, int idx, int i)
 {
-	int		j;
+	int j;
 
 	j = 0;
 	while (str[i])
@@ -114,9 +112,9 @@ char	*ft_spaceredir(char *str, char *tmp, int idx, int i)
 	return (str);
 }
 
-char	*ft_checkbackredir(t_ms *g, int i, int nb)
+char *ft_checkbackredir(t_ms *g, int i, int nb)
 {
-	char	*tmp;
+	char *tmp;
 
 	tmp = NULL;
 	while (g->line[i])
@@ -142,7 +140,7 @@ char	*ft_checkbackredir(t_ms *g, int i, int nb)
 	return (g->line);
 }
 
-char	*check_in_out(t_ms *g, char *str)
+char *check_in_out(t_ms *g, char *str)
 {
 	if (ft_strchr(str, '>') || ft_strchr(str, '<'))
 		str = ft_checkredir(str);
@@ -156,10 +154,10 @@ char	*check_in_out(t_ms *g, char *str)
 //pipe_command  --> ft_pipe
 //command_exec  --> ft_command
 
-int		check_nb_pipe(const char *str, t_ms *g)
+int check_nb_pipe(const char *str, t_ms *g)
 {
-	int		i;
-	int		nb;
+	int i;
+	int nb;
 
 	i = 0;
 	nb = 0;
@@ -168,7 +166,7 @@ int		check_nb_pipe(const char *str, t_ms *g)
 		if (str[i] == '\'' || str[i] == '"')
 		{
 			if ((i = parseur_quotes(g, i + 1, str[i])) == -1)
-				break ;
+				break;
 		}
 		if (str[i] == '|')
 			nb++;
@@ -179,7 +177,7 @@ int		check_nb_pipe(const char *str, t_ms *g)
 	return (nb);
 }
 
-int 	count_split(char **split)
+int count_split(char **split)
 {
 	int i;
 
@@ -189,7 +187,7 @@ int 	count_split(char **split)
 	return (i);
 }
 
-void 	clean_line_cmd(t_ms *g)
+void clean_line_cmd(t_ms *g)
 {
 	char **dest;
 	int i;
@@ -210,7 +208,7 @@ void 	clean_line_cmd(t_ms *g)
 		{
 			str = ft_strjoin(str, " ");
 			str = ft_strjoin(str, dest[i]);
-			break ;
+			break;
 		}
 		else if (i != 0)
 		{
@@ -223,11 +221,11 @@ void 	clean_line_cmd(t_ms *g)
 	g->line = str;
 }
 
-int	clean_command(t_ms *g)
+int clean_command(t_ms *g)
 {
-	int	i;
-	int	pipe;
-	char 	*command;
+	int i;
+	int pipe;
+	char *command;
 
 	command = NULL;
 	i = -1;
@@ -235,7 +233,7 @@ int	clean_command(t_ms *g)
 	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
 		return (1);
 	clean_line(g);
-	clean_line_cmd(g);
+	// clean_line_cmd(g);
 	if (g->line)
 	{
 		command = check_in_out(g, g->line);
@@ -248,24 +246,24 @@ int	clean_command(t_ms *g)
 			ft_putstr(": command not found\n");
 		}
 	}
-	return(0);
+	return (0);
 }
 
-int	main(int argc, char **argv, char **env)
+int main(int argc, char **argv, char **env)
 {
-	char	*cmd;
-	t_ms	g;
+	char *cmd;
+	t_ms g;
 
 	(void)argv;
 	cmd = NULL;
 	if (argc != 1)
-		return(printf(_RED"Error number arguments\n"_NC));
+		return (printf(_RED "Error number arguments\n"_NC));
 	signal(SIGINT, signal_in);
 	begin(env, &g);
 	while (1)
 	{
 		init_pipe(&g);
-		ft_putstr(_GREEN"thhusser> "_NC);
+		ft_putstr(_GREEN "thhusser> "_NC);
 		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
 			ft_exit(2, &g);
 		clean_command(&g);
@@ -278,4 +276,3 @@ int	main(int argc, char **argv, char **env)
 	}
 	return (0);
 }
-

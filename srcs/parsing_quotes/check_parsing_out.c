@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:47:18 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 18:34:01 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 18:04:18 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,15 @@ static int	norm_2(int res, t_ms *g)
 
 int	parsing_redirection_out(int i, int res, t_ms *g)
 {
-	if (g->line[i + 1] == '>' && g->line[i + 2] == '>'
-		&& g->line[i + 3 == '>'])
-		return (parse_error(1, ">>", g));
-	if (g->line[i + 1] == '>' && g->line[i + 2] == '>')
+	int y;
+
+	y = 0;
+	while (g->line[i + y] && g->line[i + y] == '>')
+		y++;
+	if (y == 3)
 		return (parse_error(1, ">", g));
+	else if (y > 3)
+		return (parse_error(1, ">>", g));
 	if (g->line[i + 1] == ' ' || g->line[i + 1] == '\0'
 		|| (g->line[i + 1] == '>' && (g->line[i + 2] == ' '
 				|| g->line[i + 2] == '\0')) || g->line[i + 1] == '<')
