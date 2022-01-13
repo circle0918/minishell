@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 18:20:35 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 19:18:33 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,7 +233,7 @@ int clean_command(t_ms *g)
 	if (parseur(g, -1, 0)) // envoie i a -1 et le comteur d'erreur a 0
 		return (1);
 	clean_line(g);
-	// clean_line_cmd(g);
+	clean_line_cmd(g);
 	if (g->line)
 	{
 		command = check_in_out(g, g->line);

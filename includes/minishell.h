@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 18:30:23 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 19:03:28 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef struct 	s_ms
 {
 				int		retcode;
 
-				char 	*ret_dir; //--> penser a le free !
+				char 	*ret_dir;
 				pid_t		pid[2];
 				int			last_cmd;
 				int 		nb_cmd_pipe;
