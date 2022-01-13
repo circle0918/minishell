@@ -64,14 +64,23 @@ void set_env(char *key, char *val, t_list *env)
 	record_list(&env, s);
 	ft_lstadd_back(&env, last);
 }
-void change_path(char *path, t_ms *g)
+void change_path(char *path, t_ms *g, int change_back)
 {
 	char* pwd;
-	pwd = get_env("PWD", g->env);
-	//if (!pwd)
-		//errorout;
-	set_env("OLDPWD", pwd, g->env);
-	set_env("PWD", path, g->env);
+
+	if (change_back)
+	{
+		pwd = ft_strdup(get_env("PWD", g->env));
+		set_env("PWD", path, g->env);
+		set_env("OLDPWD", pwd, g->env);
+		free(pwd);
+	}
+	else
+	{
+		pwd = get_env("PWD", g->env);
+		set_env("OLDPWD", pwd, g->env);
+		set_env("PWD", path, g->env);
+	}
 }
 void ft_cd(char *comd, char *cmd, t_ms *g)
 {
@@ -98,6 +107,20 @@ void ft_cd(char *comd, char *cmd, t_ms *g)
 		free(path);
 		path = get_env("HOME", g->env);
 	}
+	if (ft_strequ(path, "-"))
+	{
+		//path == OLDPWD
+		free(path);
+		path = get_env("OLDPWD", g->env);
+		printf("cd - :%s\n", path);
+		if (chdir(path) == 0)
+			change_path(path, g, 1);
+		else
+		{
+			error_out2("cd", path, "No such file or directory");
+		}
+		return ;
+	}
 	if(path[0] == '~')
 	{
 		//path: replace ~ to home
@@ -111,15 +134,15 @@ void ft_cd(char *comd, char *cmd, t_ms *g)
         ft_strcat(cwd, "/");
         ft_strcat(cwd, path);
         if (chdir(cwd) == 0)
-			change_path(cwd, g);
+			change_path(cwd, g, 0);
 		else
 		{
 			error_out2("cd", path, "No such file or directory");
 		}
 		
-    }else{//true for dir w.r.t. /
+    }else{
         if (chdir(path) == 0)
-			change_path(path, g);
+			change_path(path, g, 0);
 		else
 		{
 			error_out2("cd", path, "No such file or directory");

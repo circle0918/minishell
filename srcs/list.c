@@ -29,6 +29,7 @@ void	print_list(t_list *error)
 	{
 		line = ft_strdup(error->content);
 		ft_putstr(line);
+		ft_putstr("\n");
 		free(line);
 		error = error->next;
 	}

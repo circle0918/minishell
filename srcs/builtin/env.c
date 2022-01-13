@@ -161,9 +161,26 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	else
 	{
 		// Parent process
+//		if (ft_strequ(comd, "minishell"))
+//			signal(SIGINT, SIG_IGN);
 		do {
 			wpid = waitpid(pid, &status, WUNTRACED);
+/*            if (wpid == -1) {
+                perror("ERROR waitpid");
+                exit(EXIT_FAILURE);
+            }
+
+            if (WIFEXITED(status)) {
+                printf("terminé, code=%d\n", WEXITSTATUS(status));
+            } else if (WIFSIGNALED(status)) {
+                printf("tué par le signal %d\n", WTERMSIG(status));
+            } else if (WIFSTOPPED(status)) {
+                printf("arrêté par le signal %d\n", WSTOPSIG(status));
+            } else if (WIFCONTINUED(status)) {
+                printf("relancé\n");
+            }*/
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+       // printf("Parent: child %d died with status 0x%.4X\n", pid, status);
 	} 
 	return 1;
 }
@@ -224,6 +241,14 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	int				i;
 	char			*comd;
 	i = 0;
+
+	if(ft_strequ(g->line, "\0"))
+		return (1);
+	if(ft_strequ(g->line, "env"))
+	{
+		print_list(g->env);
+		return (1);
+	}
 	comd = get_cmd_in_line(cmd);
 	if(ft_strcmp(comd, "export") == 0)
 	{
@@ -243,8 +268,8 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	  		perror("launch error");
 		return (1);
 	}
-	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
-		return (1);
+//	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
+//		return (1);
 	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);
