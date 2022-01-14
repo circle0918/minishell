@@ -1,40 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit_free.c                                        :+:      :+:    :+:   */
+/*   utils_pipe.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 10:33:33 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 19:02:55 by thhusser         ###   ########.fr       */
+/*   Created: 2022/01/12 14:35:56 by thhusser          #+#    #+#             */
+/*   Updated: 2022/01/12 14:37:56 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	free_split(char **split)
+int		move_space_after(char *str, int i)
 {
-	int i;
-
-	i = -1;
-	if (split)
-	{
-		while (split[++i])
-				free(split[i]);
-		free(split);
-	}
+	while (str[i + 1] == ' ')
+		i++;
+	return (i);
 }
 
-void	ft_exit(int nb, t_ms *g)
+int		move_space_before(char *str, int c)
 {
-	if (nb == 2)
-		ft_putstr("exit\n");
-	ft_del_line(g->line);
-	ft_del_line(g->ret_dir);
-	ft_lstclear(&g->env, &ft_del_list);
-	ft_lstclear(&g->cmd, &ft_del_list);
-	ft_lstclear(&g->cmd_tmp, &ft_del_list);
-	ft_lstclear(&g->error, &ft_del_list);
-	free_split(g->path);
-	exit(1);
+	while (str[c - 1] == ' ')
+		c--;
+	return (c);
 }

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_chevron.c                                       :+:      :+:    :+:   */
+/*   clean_redir_in_out.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/23 10:53:12 by grigo             #+#    #+#             */
-/*   Updated: 2021/12/16 12:36:47 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 18:10:15 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,12 +123,14 @@ char	*ft_checkredir(char *str)
 {
 	char	*tmp;
 
-	if (!(tmp = (char *)malloc(sizeof(char) * (ft_strlen(str) +
-			ft_nbchevron((const char *)str) + 1))))
+	tmp = (char *)malloc(sizeof(char) * (ft_strlen(str) +
+			ft_nbchevron((const char *)str) + 1));
+	if (!tmp)
 		return (NULL);
 	tmp = ft_checkredir2(str, tmp, 0, 0);
 	free(str);
-	if (!(str = (char *)malloc(sizeof(char) * (ft_strlen(tmp) + 1))))
+	str = (char *)malloc(sizeof(char) * (ft_strlen(tmp) + 1));
+	if (!str)
 		return (NULL);
 	ft_strcpy(str, tmp);
 	free(tmp);

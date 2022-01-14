@@ -1,4 +1,55 @@
 #include "../includes/minishell.h"
+int     count_space(char *tmp)
+{
+    int i;
+    int x;
+
+    i = -1;
+    x = 0;
+    while (tmp[++i])
+    {
+        if (tmp[i] == ' ')
+            x++;
+    }
+    return (x);
+}
+
+void    strcpy_del_c(char *tmp, t_ms *g)
+{
+    int x;
+    int i;
+
+    x = 0;
+    i = 0;
+    g->ret_dir = malloc(sizeof(char) * (ft_strlen(tmp) - count_space(tmp) + 1));
+    if (!g->ret_dir)
+        return ;
+    while (tmp[i])
+    {
+        if (tmp[i] != ' ')
+            g->ret_dir[x++] = tmp[i++];
+        else
+            i++;
+    }
+    g->ret_dir[x] = 0;
+}
+
+void    test_redir_flag(char *cmd, t_ms *g)
+{
+    int i;
+    char *tmp;
+
+    i = 0;
+    tmp = NULL;
+    if (ft_strchr(cmd, '>') || ft_strchr(cmd, '<'))
+    {
+        while (cmd[i] && cmd[i] != '>')
+            i++;
+        tmp = ft_strdup(cmd + i);
+        strcpy_del_c(tmp, g);
+        free(tmp);
+    }
+}
 
 void	exit_free(char **str)
 {
@@ -89,50 +140,80 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 		ft_unset(comd, cmd, g);
 		return (1);
 	}
+	else if (ft_strcmp(comd, "env") == 0)
+	{
+		print_list(g->env);		
+		return (1);
+	}
 	else
 		return (0);
+}
+void init_argv(char **argv, char *cmd)
+{
+	int	j;
+	char **split_cmd;
+
+	split_cmd = ft_split(cmd, ' ');
+	j = 0;
+	while(split_cmd[j])
+	{
+		argv[j] = ft_strdup(split_cmd[j]);
+		free(split_cmd[j]);
+		//printf("in argv[%d]: %s\n", j, argv[j]);
+		j++;
+	}
+	argv[j] = NULL;
+	free(split_cmd);
+}
+
+void init_abs_comd(char **abs_cmd, char *comd, t_ms *g, char *abs_path_test, int i)
+{
+	char *dir_cmd;
+	
+	if (abs_path_test == NULL)
+		dir_cmd = ft_strjoin(g->path[i], "/");
+	else
+		dir_cmd = ft_strjoin(abs_path_test, "/");
+	*abs_cmd = ft_strjoin(dir_cmd, comd);
+	//printf("abs_cmd: %s\n", *abs_cmd);
+	free(dir_cmd);
+}
+
+int get_cmd_size(char *cmd)
+{
+	int j;
+	char **split_cmd;
+
+	j = 0;
+	split_cmd = ft_split(cmd, ' ');
+	while(split_cmd[j])
+	{
+		j++;
+		free(split_cmd[j]);
+	}
+	free(split_cmd);
+	return (j);
 }
 
 int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 {
 	int j;
-	int size;
 
-	j = 0;
-	char **split_cmd = ft_split(cmd, ' ');
-	while(split_cmd[j])
-	{
-		j++;
-	}
-	size = j + 1 ;
 	//printf("size %d\n", size);
-	char *argv[size];
-	j = 0;
-	while(j < size -1)
-	{
-		argv[j] = ft_strdup(split_cmd[j]);
-		free(split_cmd[j]);
-		//printf("argv[%d]: %s\n", j, argv[j]);
-		j++;
-	}
-	argv[j] = NULL;
-	char *dir_cmd;
-	if (abs_path_test == NULL)
-		dir_cmd = ft_strjoin(g->path[i], "/");
-	else
-		dir_cmd = ft_strjoin(abs_path_test, "/");
-	char *abs_cmd = ft_strjoin(dir_cmd, comd); //str_replace TODO (ls    -a = ls -a)
-	//printf("abs_cmd: %s\n", abs_cmd);
+	char *argv[get_cmd_size(cmd) + 1];
+	init_argv(argv, cmd);	
+	char *abs_comd;
+	init_abs_comd(&abs_comd, comd, g, abs_path_test, i);
 	if (is_buildin(comd, cmd, g) == 0)	
 	{
-		if (execve(abs_cmd, argv, NULL) == -1)
+		if (execve(abs_comd, argv, NULL) == -1)
 			return (-1);
 	}
-	free(dir_cmd);
-	free(abs_cmd);
+	free(abs_comd);
 	j = 0;
-	while(j < size)
+	while(argv[j])
 	{
+		//printf("out argv[%d]: %s\n", j, argv[j]);
 		free (argv[j]);
 		j++;
 	}
@@ -244,12 +325,12 @@ int		find_cmd_path(char *cmd, t_ms *g)
 
 	if(ft_strequ(g->line, "\0"))
 		return (1);
-	if(ft_strequ(g->line, "env"))
-	{
-		print_list(g->env);
-		return (1);
-	}
+	test_redir_flag(cmd, g);
 	comd = get_cmd_in_line(cmd);
+	if(g->ret_dir)
+	{
+		//go_redir(comd, g->ret_dir);
+	}
 	if(ft_strcmp(comd, "export") == 0)
 	{
 		if (launch(cmd, comd, g, i, NULL) == -1)

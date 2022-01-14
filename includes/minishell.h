@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/11 15:17:51 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/13 19:03:28 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,14 @@
 
 # define DEBUG 0
 
-// typedef struct	s_data
-// {
-				// une structure par commande
-				// forcement que une commande ! car pas de ';'
-// }				t_data;
-
 typedef struct 	s_ms
 {
 				int		retcode;
-				// t_data	parsing;
-				// t_data	parsing;
+
+				char 	*ret_dir;
+				pid_t		pid[2];
+				int			last_cmd;
+				int 		nb_cmd_pipe;
 				char 	*line;
 				t_list	*env;
 				char	**path;
@@ -41,6 +38,16 @@ typedef struct 	s_ms
 				t_list	*cmd_tmp;
 				t_list	*error;
 }				t_ms;
+
+//doucle char
+
+//pipe
+void    pipe_command(t_ms *g, int pipe);
+void	init_pipe(t_ms *g);
+
+//utils pipe
+int		move_space_after(char *str, int i);
+int		move_space_before(char *str, int c);
 
 //list
 void	record_list(t_list **list, char *str);
@@ -79,4 +86,5 @@ void ft_unset(char *comd, char *cmd, t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
 char* get_env(char *str, t_list *env);
+char **get_file(char *str);
 #endif
