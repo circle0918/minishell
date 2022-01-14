@@ -41,6 +41,7 @@ SRCS_FILES	= \
 				clean_redir_in_out.c \
 				pipe.c \
 				utils_pipe.c \
+				new_double_cmd.c \
 				redir/plus.c \
 				
 				

@@ -321,6 +321,10 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	struct dirent	*dirp;
 	int				i;
 	char			*comd;
+//	char			**master_cmd;
+
+//	master_cmd = creat_list_arg(g,cmd);
+//	print_split(master_cmd);
 	i = 0;
 
 	if(ft_strequ(g->line, "\0"))
@@ -329,7 +333,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	comd = get_cmd_in_line(cmd);
 	if(g->ret_dir)
 	{
-		//go_redir(comd, g->ret_dir);
+	//S	go_redir(comd, g->ret_dir);
 	}
 	if(ft_strcmp(comd, "export") == 0)
 	{

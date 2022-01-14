@@ -40,6 +40,8 @@ typedef struct 	s_ms
 }				t_ms;
 
 //doucle char
+char	**creat_list_arg(t_ms *g, char *line);
+void print_split(char **cmd);//tmp
 
 //pipe
 void    pipe_command(t_ms *g, int pipe);
