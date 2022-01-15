@@ -340,7 +340,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	master_cmd = creat_list_arg(cmd);
 	test_redir_flag(cmd, g);
 	// comd = get_cmd_in_line(cmd);
-	// print_split(master_cmd);
+	print_split(master_cmd);
 	if(g->ret_dir)
 	{
 	//S	go_redir(comd, g->ret_dir);

@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 10:33:33 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 20:48:12 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/15 20:57:34 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	ft_exit(int nb, t_ms *g)
 {
 	if (nb == 2)
 		ft_putstr("exit\n");
-	// ft_del_line(g->line);
+	// ft_del_line(g->line); --> re check si a enlever !
 	ft_del_line(g->ret_dir);
 	ft_lstclear(&g->env, &ft_del_list);
 	ft_lstclear(&g->cmd, &ft_del_list);
