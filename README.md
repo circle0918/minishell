@@ -1,4 +1,4 @@
-# minishell
+# minishellSHELL
 
 ## Restruturer --> 11/01/2022
     * Ne plus passer par find path pour executer les commande mais par clean_commande
