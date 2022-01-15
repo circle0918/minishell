@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:07:49 by thhusser          #+#    #+#             */
-/*   Updated: 2021/12/14 15:33:00 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/14 19:31:09 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,19 @@ int		parseur_quotes(t_ms *g, int i, int c)
 		i++;
 	}
 	if (g->line[i] == '\0')
+		return (-1);
+	return (i);
+}
+
+int		parseur_quotes_str(char *str, int i, int c)
+{
+	while (str[i] != c && str[i])
+	{
+		if (str[i] == '\\' && c != '\'')
+			i++;
+		i++;
+	}
+	if (str[i] == '\0')
 		return (-1);
 	return (i);
 }

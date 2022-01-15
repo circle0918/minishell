@@ -34,21 +34,23 @@ void    strcpy_del_c(char *tmp, t_ms *g)
     g->ret_dir[x] = 0;
 }
 
-void    test_redir_flag(char *cmd, t_ms *g)
+void	test_redir_flag(char *cmd, t_ms *g)
 {
-    int i;
-    char *tmp;
+	int i;
+	char *tmp;
+	(void)g;
 
-    i = 0;
-    tmp = NULL;
-    if (ft_strchr(cmd, '>') || ft_strchr(cmd, '<'))
-    {
-        while (cmd[i] && cmd[i] != '>')
-            i++;
-        tmp = ft_strdup(cmd + i);
-        strcpy_del_c(tmp, g);
-        free(tmp);
-    }
+	i = 0;
+	tmp = NULL;
+	if (ft_strchr(cmd, '>') || ft_strchr(cmd, '<'))
+	{
+		while (cmd[i] && cmd[i] != '>')
+			i++;
+		tmp = ft_strdup(cmd + i);
+		strcpy_del_c(tmp, g);
+		free(tmp);
+	}
+	// return (tmp);
 }
 
 void	exit_free(char **str)
@@ -142,7 +144,7 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 	}
 	else if (ft_strcmp(comd, "env") == 0)
 	{
-		print_list(g->env);		
+		print_list(g->env);
 		return (1);
 	}
 	else
@@ -169,7 +171,7 @@ void init_argv(char **argv, char *cmd)
 void init_abs_comd(char **abs_cmd, char *comd, t_ms *g, char *abs_path_test, int i)
 {
 	char *dir_cmd;
-	
+
 	if (abs_path_test == NULL)
 		dir_cmd = ft_strjoin(g->path[i], "/");
 	else
@@ -201,10 +203,10 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 
 	//printf("size %d\n", size);
 	char *argv[get_cmd_size(cmd) + 1];
-	init_argv(argv, cmd);	
+	init_argv(argv, cmd);
 	char *abs_comd;
 	init_abs_comd(&abs_comd, comd, g, abs_path_test, i);
-	if (is_buildin(comd, cmd, g) == 0)	
+	if (is_buildin(comd, cmd, g) == 0)
 	{
 		if (execve(abs_comd, argv, NULL) == -1)
 			return (-1);
@@ -225,7 +227,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 {
 	pid_t pid, wpid;
 	int status;
-	
+
 	pid = fork();
 	if (pid == 0)
 	{
@@ -233,7 +235,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		if (launch(cmd, comd, g, i, abs_path_test) == -1)
 	  		perror("launch error");
 		exit(EXIT_FAILURE);
-	} 
+	}
 	else if (pid < 0)
 	{
 		// Error forking
@@ -262,7 +264,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
             }*/
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
        // printf("Parent: child %d died with status 0x%.4X\n", pid, status);
-	} 
+	}
 	return 1;
 }
 int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
@@ -315,20 +317,24 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 		free(comd);
 	return (0);
 }
+
 int		find_cmd_path(char *cmd, t_ms *g)
 {
 	DIR				*dir;
 	struct dirent	*dirp;
 	int				i;
 	char			*comd;
-//	char			**master_cmd;
+	// char			*cmd_tmp;
+	char			**master_cmd;
 
-//	master_cmd = creat_list_arg(g,cmd);
-//	print_split(master_cmd);
 	i = 0;
-
-	if(ft_strequ(g->line, "\0"))
-		return (1);
+	if (ft_strchr(cmd, '$'))
+	{
+		cmd = check_var_cmd(g, cmd);
+		if (!cmd || ft_strequ(cmd, "\0"))
+			return (1);
+	}
+	master_cmd = creat_list_arg(cmd);
 	test_redir_flag(cmd, g);
 	comd = get_cmd_in_line(cmd);
 	if(g->ret_dir)
@@ -375,6 +381,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		i++;
 	}
 	free(comd);
+	free_split(master_cmd);
 	return (0);
 }
 

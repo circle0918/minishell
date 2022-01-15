@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 19:03:28 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/15 15:17:47 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <errno.h>
 # include <sys/wait.h>
 
+# define PATH_MAX_ENV 4096
 # define DEBUG 0
 
 typedef struct 	s_ms
@@ -39,8 +40,12 @@ typedef struct 	s_ms
 				t_list	*error;
 }				t_ms;
 
+//echo $
+char	*check_var_cmd(t_ms *g, char *cmd);
+// int		takepath(char *str, int idx, char *tmp, t_ms *g);
+
 //doucle char
-char	**creat_list_arg(t_ms *g, char *line);
+char	**creat_list_arg(char *line);
 void print_split(char **cmd);//tmp
 
 //pipe
@@ -61,6 +66,7 @@ void	free_split(char **split);
 
 //utils parsing check
 int		parseur_quotes(t_ms *g, int i, int c);
+int		parseur_quotes_str(char *str, int i, int c);
 int		parsing_redirection_out(int i, int res, t_ms *g);
 int		parsing_redirection_in(int i, int res, t_ms *g);
 int		parsing_pipe(int i, int res, t_ms *g);
