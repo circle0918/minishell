@@ -206,20 +206,19 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	argv = init_argv(cmd);	
 	abs_comd = init_abs_comd(comd, g->path[i], abs_path_test);
 
-	char *redir_out;
-	int fd;
-	if (g->ret_dir)
+	int redir_out_fd;
+	int redir_in_fd;
+	char *redir_inin_delimitor;
+	if (g->ret_dir)// > <
 	{
-		redir_out = get_redir_out_file(g->ret_dir);
-		//printf("redir_out: %s\n", redir_out);
-		fd = open(redir_out, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-        free(redir_out);
-		if (fd < 0)
-        {
-            perror("open file error\n");
-            return (0);
-        }
-    	dup2(fd, STDOUT_FILENO);
+		redir_in_fd = get_redir_in_file(g->ret_dir);
+		if (refir_in_fd < 0)
+		{
+			perror("open file error\n");
+            		return (0);
+        	}
+		redir_out_fd = get_redir_out_file(g->ret_dir);
+            	dup2(fd, STDOUT_FILENO);
 		exit_free(argv);
 		argv = get_argv_redir(g, cmd);
 	}
@@ -232,7 +231,8 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	free(abs_comd);
 	exit_free(argv);
 	
-	close(fd);
+	close(redir_out_fd);
+	close(redir_in_fd);
 	return (0);
 }
 
