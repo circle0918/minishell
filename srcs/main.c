@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 16:54:01 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/15 20:08:09 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,9 +194,11 @@ void clean_line_cmd(t_ms *g)
 	char **dest;
 	int i;
 	char *str;
+	char *tmp;
 	int count;
 
 	str = NULL;
+	tmp = NULL;
 	i = -1;
 	dest = ft_split(g->line, ' ');
 	count = count_split(dest);
@@ -206,14 +208,18 @@ void clean_line_cmd(t_ms *g)
 			str = ft_strjoin(dest[i], "");
 		else if (count - 1 == i)
 		{
-			str = ft_strjoin(str, " ");
-			str = ft_strjoin(str, dest[i]);
+			tmp = ft_strjoin(str, " ");
+			ft_del_line(str);
+			str = ft_strjoin(tmp, dest[i]);
+			ft_del_line(tmp);
 			break;
 		}
 		else if (i != 0)
 		{
-			str = ft_strjoin(str, " ");
-			str = ft_strjoin(str, dest[i]);
+			tmp = ft_strjoin(str, " ");
+			ft_del_line(str);
+			str = ft_strjoin(tmp, dest[i]);
+			ft_del_line(tmp);
 		}
 	}
 	free_split(dest);
@@ -242,11 +248,13 @@ int clean_command(t_ms *g)
 			pipe_command(g, pipe);
 		else if (!find_cmd_path(command, g)) // --> lancement partie yyuan
 		{
+			ft_lstclear(&g->env, &ft_del_list);
 			ft_putstr(command);
 			ft_putstr(": command not found\n");
 			errno = 127;
 		}
 	}
+	// free(command);
 	return (0);
 }
 
@@ -273,7 +281,7 @@ int main(int argc, char **argv, char **env)
 			print_list(g.error);
 			ft_lstclear(&g.error, &ft_del_list);
 		}
-		ft_del_line(g.line);
+		// ft_del_line(g.line);
 	}
 	return (0);
 }

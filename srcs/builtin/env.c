@@ -191,7 +191,7 @@ int get_cmd_size(char *cmd)
 	while(split_cmd[j])
 	{
 		j++;
-		free(split_cmd[j]);
+		// free(split_cmd[j]);
 	}
 	free_split(split_cmd);
 	return (j);
@@ -323,7 +323,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	DIR				*dir;
 	struct dirent	*dirp;
 	int				i;
-	char			*comd;
+	// char			*comd;
 	// char			*cmd_tmp;
 	char			**master_cmd;
 
@@ -332,34 +332,41 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	{
 		cmd = check_var_cmd(g, cmd);
 		if (!cmd || ft_strequ(cmd, "\0"))
+		{
+			free(cmd);
 			return (1);
+		}
 	}
 	master_cmd = creat_list_arg(cmd);
 	test_redir_flag(cmd, g);
-	comd = get_cmd_in_line(cmd);
+	// comd = get_cmd_in_line(cmd);
+	// print_split(master_cmd);
 	if(g->ret_dir)
 	{
 	//S	go_redir(comd, g->ret_dir);
 	}
-	if(ft_strcmp(comd, "export") == 0)
+	if(ft_strcmp(master_cmd[0], "export") == 0)
 	{
-		if (launch(cmd, comd, g, i, NULL) == -1)
+		if (launch(cmd, master_cmd[0], g, i, NULL) == -1)
 	  		perror("launch error");
 		free_split(master_cmd);
+		free(cmd);
 		return (1);
 	}
-	if(ft_strcmp(comd, "unset") == 0)
+	if(ft_strcmp(master_cmd[0], "unset") == 0)
 	{
-		if (launch(cmd, comd, g, i, NULL) == -1)
+		if (launch(cmd, master_cmd[0], g, i, NULL) == -1)
 	  		perror("launch error");
 		free_split(master_cmd);
+		free(cmd);
 		return (1);
 	}
-	if(ft_strcmp(comd, "cd") == 0)
+	if(ft_strcmp(master_cmd[0], "cd") == 0)
 	{
-		if (launch(cmd, comd, g, i, NULL) == -1)
+		if (launch(cmd, master_cmd[0], g, i, NULL) == -1)
 	  		perror("launch error");
 		free_split(master_cmd);
+		free(cmd);
 		return (1);
 	}
 //	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
@@ -371,12 +378,13 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		{
 			while ((dirp = readdir(dir)) != NULL)
 			{
-				if (ft_strequ(dirp->d_name, comd))
+				if (ft_strequ(dirp->d_name, master_cmd[0]))
 				{
-					launcher(cmd, comd, g, i, NULL);
-					free(comd);
+					launcher(cmd, master_cmd[0], g, i, NULL);
+					// free(comd);
 					closedir(dir);
 					free_split(master_cmd);
+					free(cmd);
 					return (1);
 				}
 			}
@@ -384,8 +392,8 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		closedir(dir);
 		i++;
 	}
-	free(comd);
-	printf("caca");
+	// free(comd);
+	free(cmd);
 	free_split(master_cmd);
 	return (0);
 }
