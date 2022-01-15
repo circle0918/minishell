@@ -20,6 +20,8 @@
 # include <dirent.h>
 # include <errno.h>
 # include <sys/wait.h>
+# include <string.h>
+
 
 # define DEBUG 0
 
@@ -88,5 +90,12 @@ void ft_unset(char *comd, char *cmd, t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
 char* get_env(char *str, t_list *env);
+int get_cmd_size(char *cmd);
+
+
+//redir fonctions
+int ft_output(char *comd, char *direct, t_ms *g);
 char **get_file(char *str);
+char *get_redir_out_file(char *direct);
+char **get_argv_redir(t_ms *g, char *cmd);
 #endif

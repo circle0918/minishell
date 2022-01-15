@@ -114,7 +114,6 @@ void	get_path(t_ms *g)
 }
 int		is_buildin(char *comd, char *cmd, t_ms *g)
 {
-//	printf("comd %s\n",comd);
 	if (ft_strcmp(comd, "pwd") == 0)
 	{
 		ft_pwd();
@@ -148,11 +147,13 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 	else
 		return (0);
 }
-void init_argv(char **argv, char *cmd)
+char **init_argv(char *cmd)
 {
 	int	j;
 	char **split_cmd;
+	char **argv;
 
+	argv = (char **)malloc(sizeof(char *) * (get_cmd_size(cmd) + 1));
 	split_cmd = ft_split(cmd, ' ');
 	j = 0;
 	while(split_cmd[j])
@@ -164,19 +165,21 @@ void init_argv(char **argv, char *cmd)
 	}
 	argv[j] = NULL;
 	free(split_cmd);
+	return (argv);
 }
 
-void init_abs_comd(char **abs_cmd, char *comd, t_ms *g, char *abs_path_test, int i)
+char *init_abs_comd(char *comd, char *path_i, char *abs_path_test)
 {
 	char *dir_cmd;
-	
+	char *abs;
+
 	if (abs_path_test == NULL)
-		dir_cmd = ft_strjoin(g->path[i], "/");
+		dir_cmd = ft_strjoin(path_i, "/");
 	else
 		dir_cmd = ft_strjoin(abs_path_test, "/");
-	*abs_cmd = ft_strjoin(dir_cmd, comd);
-	//printf("abs_cmd: %s\n", *abs_cmd);
+	abs = ft_strjoin(dir_cmd, comd);
 	free(dir_cmd);
+	return (abs);
 }
 
 int get_cmd_size(char *cmd)
@@ -197,26 +200,39 @@ int get_cmd_size(char *cmd)
 
 int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 {
-	int j;
-
-	//printf("size %d\n", size);
-	char *argv[get_cmd_size(cmd) + 1];
-	init_argv(argv, cmd);	
+	char **argv;
 	char *abs_comd;
-	init_abs_comd(&abs_comd, comd, g, abs_path_test, i);
+
+	argv = init_argv(cmd);	
+	abs_comd = init_abs_comd(comd, g->path[i], abs_path_test);
+
+	char *redir_out;
+	int fd;
+	if (g->ret_dir)
+	{
+		redir_out = get_redir_out_file(g->ret_dir);
+		//printf("redir_out: %s\n", redir_out);
+		fd = open(redir_out, O_WRONLY | O_CREAT | O_TRUNC, 0664);
+        free(redir_out);
+		if (fd < 0)
+        {
+            perror("open file error\n");
+            return (0);
+        }
+    	dup2(fd, STDOUT_FILENO);
+		exit_free(argv);
+		argv = get_argv_redir(g, cmd);
+	}
+
 	if (is_buildin(comd, cmd, g) == 0)	
 	{
 		if (execve(abs_comd, argv, NULL) == -1)
 			return (-1);
 	}
 	free(abs_comd);
-	j = 0;
-	while(argv[j])
-	{
-		//printf("out argv[%d]: %s\n", j, argv[j]);
-		free (argv[j]);
-		j++;
-	}
+	exit_free(argv);
+	
+	close(fd);
 	return (0);
 }
 
@@ -321,20 +337,14 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	struct dirent	*dirp;
 	int				i;
 	char			*comd;
-//	char			**master_cmd;
 
-//	master_cmd = creat_list_arg(g,cmd);
-//	print_split(master_cmd);
 	i = 0;
 
 	if(ft_strequ(g->line, "\0"))
 		return (1);
 	test_redir_flag(cmd, g);
+
 	comd = get_cmd_in_line(cmd);
-	if(g->ret_dir)
-	{
-	//S	go_redir(comd, g->ret_dir);
-	}
 	if(ft_strcmp(comd, "export") == 0)
 	{
 		if (launch(cmd, comd, g, i, NULL) == -1)
@@ -353,8 +363,8 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	  		perror("launch error");
 		return (1);
 	}
-//	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
-//		return (1);
+	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
+		return (1);
 	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);
