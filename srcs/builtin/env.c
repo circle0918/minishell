@@ -222,13 +222,13 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 //			perror("open file error\n");
   //          		return (0);
    //    	}
-		redir_out_fd = get_redir_out_file(g, cmd);
+		redir_out_fd = get_redir_out_file(cmd);
         	if (redir_out_fd)
 	    		dup2(redir_out_fd, STDOUT_FILENO);
         	if (redir_in_fd)
 	    		dup2(redir_in_fd, STDIN_FILENO);
 		exit_free(argv);
-		argv = get_argv_redir(g, cmd);
+		argv = get_argv_redir(cmd);
 		print_2Dtab(argv, "argv");
 	}
 

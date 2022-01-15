@@ -28,7 +28,7 @@ char *get_pwd()
     return(cwd);
 }
 
-char **get_argv_redir(t_ms *g, char *cmd)
+char **get_argv_redir(char *cmd)
 {
 	char			**tab;
 	char			**argv;
@@ -37,7 +37,7 @@ char **get_argv_redir(t_ms *g, char *cmd)
 
 	i = 0;
 	argc = 1;
-	tab = creat_list_arg(g, cmd);
+	tab = creat_list_arg(cmd);
 	//print_split(tab);
 	while (tab[i+1])
 	{
@@ -83,7 +83,7 @@ char **get_env_tab(t_list *env)
 	return (ret);
 }
 	
-int get_redir_out_file(t_ms *g, char *cmd)
+int get_redir_out_file(char *cmd)
 {
 	char  **tab;
 	int i;
@@ -93,7 +93,7 @@ int get_redir_out_file(t_ms *g, char *cmd)
 
 	out_file = NULL;
 	is_moremore = 0;
-	tab = creat_list_arg(g, cmd);
+	tab = creat_list_arg(cmd);
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
