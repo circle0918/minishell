@@ -41,7 +41,7 @@ char **get_argv_redir(t_ms *g, char *cmd)
 	//print_split(tab);
 	while (tab[i+1])
 	{
-		if (ft_strequ(tab[i+1], ">"))
+		if (ft_strequ(tab[i+1], ">") || ft_strequ(tab[i+1], ">>"))
 		{
 			//TODO: other descriptor ...
 			if (ft_strequ(tab[i], "1") || ft_strequ(tab[i], "2") || ft_strequ(tab[i], "&"))
@@ -83,24 +83,48 @@ char **get_env_tab(t_list *env)
 	return (ret);
 }
 	
-char *get_redir_out_file(char *direct)
+int get_redir_out_file(t_ms *g, char *cmd)
 {
-    char  **files;
-    int i;
-    int fd;
-    char  *out_file;
+	char  **tab;
+	int i;
+	int fd;
+	int is_moremore;
+	char *out_file;
 
-    files = get_file(direct);
-    i = 0;
-    while (files[i])
-    {
-        fd = open(files[i], O_WRONLY | O_CREAT | O_TRUNC, 0664);
-		close(fd);
-	//	printf("files[%d] : %s\n", i, files[i]);
+	out_file = NULL;
+	is_moremore = 0;
+	tab = creat_list_arg(g, cmd);
+	i = 0;
+	while (tab[i] && tab[i + 1])
+	{
+		//find file name after > >> 
+        	if (ft_strequ(tab[i], ">"))
+		{
+			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+			close(fd);
+			if (out_file)
+				free(out_file);
+			out_file = ft_strdup(tab[i + 1]);
+		}
+        	else if (ft_strequ(tab[i], ">>"))
+		{
+			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
+			close(fd);
+			if (out_file)
+				free(out_file);
+			out_file = ft_strdup(tab[i + 1]);
+			is_moremore = 1;
+		}
+		printf("tab[%d + 1] : %s\n", i, tab[i+1]);
 		i++;
 	}
-	out_file = ft_strdup(files[i-1]);
-	exit_free(files);
-	return (out_file);
+	exit_free(tab);
+	printf("out_file : %s\n", out_file);
+	if (is_moremore == 0)
+		fd = open(out_file, O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	else
+		fd = open(out_file, O_WRONLY | O_CREAT | O_APPEND, 0664);
+	free(out_file);
+	return (fd);
 }
 

@@ -96,6 +96,7 @@ int get_cmd_size(char *cmd);
 //redir fonctions
 int ft_output(char *comd, char *direct, t_ms *g);
 char **get_file(char *str);
-char *get_redir_out_file(char *direct);
+int get_redir_out_file(t_ms *g, char *cmd);
 char **get_argv_redir(t_ms *g, char *cmd);
+void print_2Dtab(char** tab, char *str);
 #endif

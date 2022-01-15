@@ -208,19 +208,26 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 
 	int redir_out_fd;
 	int redir_in_fd;
-	char *redir_inin_delimitor;
+	
+	redir_out_fd = 0;
+	redir_in_fd = 0;
+//	char *redir_inin_delimitor;
 	if (g->ret_dir)// > <
 	{
-		redir_in_fd = get_redir_in_file(g->ret_dir);
-		if (refir_in_fd < 0)
-		{
-			perror("open file error\n");
-            		return (0);
-        	}
-		redir_out_fd = get_redir_out_file(g->ret_dir);
-            	dup2(fd, STDOUT_FILENO);
+//		redir_in_fd = get_redir_in_file(g->ret_dir);
+//		if (redir_in_fd < 0)
+//		{
+//			perror("open file error\n");
+  //          		return (0);
+   //    	}
+		redir_out_fd = get_redir_out_file(g, cmd);
+        	if (redir_out_fd)
+	    		dup2(redir_out_fd, STDOUT_FILENO);
+        	if (redir_in_fd)
+	    		dup2(redir_in_fd, STDIN_FILENO);
 		exit_free(argv);
 		argv = get_argv_redir(g, cmd);
+		print_2Dtab(argv, "argv");
 	}
 
 	if (is_buildin(comd, cmd, g) == 0)	
