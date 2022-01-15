@@ -1,19 +1,22 @@
 #include "../includes/minishell.h"
 
+void print_2Dtab(char** tab, char *str)
+{  
+	int i = 0;
+    
+	while(tab[i])
+    {
+		printf("%s: tab[%d]: %s\n", str, i, tab[i]);
+		i++;
+    }
+}
+
 char **get_file(char *str)
 {
     char **out_file;
+	//not simple split
     out_file = ft_split(str, '>');
- /*   int i = 0;
-    while(out_file[i])
-    {
-        while(out_file[i])
-        {
-            printf("file : %s\n", out_file[i]);
-         i++;
-        }
-    }*/
-    return (out_file);
+	return (out_file);
 }
 
 char *get_pwd()
