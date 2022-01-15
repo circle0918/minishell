@@ -193,7 +193,7 @@ int get_cmd_size(char *cmd)
 		j++;
 		free(split_cmd[j]);
 	}
-	free(split_cmd);
+	free_split(split_cmd);
 	return (j);
 }
 
@@ -345,18 +345,21 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	{
 		if (launch(cmd, comd, g, i, NULL) == -1)
 	  		perror("launch error");
+		free_split(master_cmd);
 		return (1);
 	}
 	if(ft_strcmp(comd, "unset") == 0)
 	{
 		if (launch(cmd, comd, g, i, NULL) == -1)
 	  		perror("launch error");
+		free_split(master_cmd);
 		return (1);
 	}
 	if(ft_strcmp(comd, "cd") == 0)
 	{
 		if (launch(cmd, comd, g, i, NULL) == -1)
 	  		perror("launch error");
+		free_split(master_cmd);
 		return (1);
 	}
 //	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
@@ -373,6 +376,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 					launcher(cmd, comd, g, i, NULL);
 					free(comd);
 					closedir(dir);
+					free_split(master_cmd);
 					return (1);
 				}
 			}
@@ -381,6 +385,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		i++;
 	}
 	free(comd);
+	printf("caca");
 	free_split(master_cmd);
 	return (0);
 }

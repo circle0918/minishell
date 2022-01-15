@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 16:27:39 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/15 16:54:01 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,9 +203,7 @@ void clean_line_cmd(t_ms *g)
 	while (dest[++i])
 	{
 		if (i == 0)
-		{
 			str = ft_strjoin(dest[i], "");
-		}
 		else if (count - 1 == i)
 		{
 			str = ft_strjoin(str, " ");
