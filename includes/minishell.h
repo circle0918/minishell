@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 15:17:47 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/15 20:33:14 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ typedef struct 	s_ms
 				t_list	*cmd_tmp;
 				t_list	*error;
 }				t_ms;
+
+void		ft_exit_plus(char **cmd);
 
 //echo $
 char	*check_var_cmd(t_ms *g, char *cmd);

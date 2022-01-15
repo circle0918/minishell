@@ -345,6 +345,13 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	{
 	//S	go_redir(comd, g->ret_dir);
 	}
+	if (!ft_strcmp(master_cmd[0], "exit"))
+	{
+		ft_exit_plus(master_cmd);
+		free_split(master_cmd);
+		free(cmd);
+		ft_exit(2, g);
+	}
 	if(ft_strcmp(master_cmd[0], "export") == 0)
 	{
 		if (launch(cmd, master_cmd[0], g, i, NULL) == -1)

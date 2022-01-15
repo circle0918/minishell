@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 20:08:09 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/15 20:20:07 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,7 +273,7 @@ int main(int argc, char **argv, char **env)
 	{
 		init_pipe(&g);
 		ft_putstr(_GREEN "thhusser> "_NC);
-		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
+		if (!get_next_line(0, &g.line))
 			ft_exit(2, &g);
 		clean_command(&g);
 		if (g.error)
