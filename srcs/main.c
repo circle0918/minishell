@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 04:48:24 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/15 16:27:39 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void begin(char **env, t_ms *g)
 void signal_in(int signal)
 {
 	(void)signal;
+	errno = 130;
 	ft_putstr("\n");
 	ft_putstr(_GREEN "thhusser> "_NC);
 }
@@ -43,6 +44,7 @@ int parseur(t_ms *g, int i, int res)
 			if (i == -1)
 			{
 				record_list(&g->error, "bash: syntax error: unexpected end of file\n"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
+				errno = 2;
 				return (1);																//generer une erreur correspondante a bash
 			}
 		}
@@ -244,6 +246,7 @@ int clean_command(t_ms *g)
 		{
 			ft_putstr(command);
 			ft_putstr(": command not found\n");
+			errno = 127;
 		}
 	}
 	return (0);
