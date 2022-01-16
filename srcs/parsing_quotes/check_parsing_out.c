@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:47:18 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 23:51:44 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/17 00:46:34 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int parsing_redirection_out(int i, int res, t_ms *g)
 	else if (y > 3)
 		return (parse_error(1, ">>", g));
 	i += y;
-	while (g->line[i] && g->line[i] != ' ')
+	while (g->line[i] && g->line[i] == ' ')
 		i++;
 	if (g->line[i] == '#')
 		return (parse_error(1, "newline", g));

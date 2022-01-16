@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:47:52 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 23:44:10 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/17 00:49:21 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int		parsing_redirection_in(int i, int res, t_ms *g)
 	i++;
 	if (g->line[i] == '<')
 		return (parse_error(1, "<", g));
-	while (g->line[i] && g->line[i] != ' ')
+	while (g->line[i] && g->line[i] == ' ')
 		i++;
 	if (g->line[i] == '#')
 		return (parse_error(1, "newline", g));
