@@ -219,9 +219,9 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		redir_in_fd = get_redir_in_file(cmd);
 		if (redir_in_fd == -1)
 	      		return (1);
-		printf("get_redir_in fd: %d\n", redir_in_fd);
+		//printf("get_redir_in fd: %d\n", redir_in_fd);
 		redir_out_fd = get_redir_out_file(cmd);
-		printf("get_redir_out fd: %d\n", redir_out_fd);
+		//printf("get_redir_out fd: %d\n", redir_out_fd);
         	if (redir_out_fd > 0)
 	    		dup2(redir_out_fd, STDOUT_FILENO);
         	if (redir_in_fd > 0)
@@ -359,13 +359,14 @@ int		count_tab(char **tab)
 	return (i);
 }
 
+
+
 int		find_cmd_path(char *cmd, t_ms *g)
 {
 	DIR				*dir;
 	struct dirent	*dirp;
 	int				i;
 	char			*comd;
-//	char			**master_cmd;
 
 	i = 0;
 	if (ft_strchr(cmd, '$'))
@@ -375,10 +376,17 @@ int		find_cmd_path(char *cmd, t_ms *g)
 			return (1);
 	}
 	g->cmd_tab = creat_list_arg(cmd);
-	g->cmd_ac = count_tab(g->cmd_tab);
-//	printf("cd_ac ; %d\n", g->cmd_ac);
-//	print_2Dtab(g->cmd_tab, "www");
+	
 	test_redir_flag(cmd, g);
+	if (g->ret_dir)
+	{
+		exit_free(g->cmd_tab);
+		g->cmd_tab = get_argv_redir(cmd);	
+	}
+	
+	g->cmd_ac = count_tab(g->cmd_tab);
+	//printf("cd_ac ; %d\n", g->cmd_ac);
+	//print_2Dtab(g->cmd_tab, "www");
 
 	comd = get_cmd_in_line(cmd);
 	if(ft_strcmp(comd, "export") == 0)
