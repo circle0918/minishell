@@ -85,26 +85,24 @@ void change_path(char *path, t_ms *g, int change_back)
 		set_env("PWD", path, g->env);
 	}
 }
-void ft_cd(char *comd, char *cmd, t_ms *g)
+void ft_cd(t_ms *g)
 {
-	//TODO $home/$pwd change env PWD and OLDPWD
 	char *path;
-	(void)comd;
 	int only_cd;
-
 	only_cd = 0;
-//	TODO error if too many args
-	path = ft_substr(cmd, 3, (ft_strlen(cmd)-3));
+	printf("cd_ac ; %d\n", g->cmd_ac);
+	if(g->cmd_ac >= 2)
+		path = ft_strdup(g->cmd_tab[1]);
 
 	char cwd[1024];
 	char *tmp_path;
 
-	if(ft_strchr(path, ' '))
+	if(g->cmd_ac > 2)
 	{
 		error_out2("cd", path, "Too many arguements");
 		free(path);
 	}
-	if (ft_strlen(cmd)<=3 || ft_strequ(path, "~") || ft_strequ(path, "--"))
+	if (g->cmd_ac == 1|| ft_strequ(path, "~") || ft_strequ(path, "--"))
 	{
 		//path == home
 		free(path);

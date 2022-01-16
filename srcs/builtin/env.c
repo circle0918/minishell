@@ -121,14 +121,14 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 		ft_pwd();
 		return (1);
 	}
-	else if (ft_strcmp(comd, "echo") == 0)
+	else if (ft_strcmp(g->cmd_tab[0], "echo") == 0)
 	{
-		ft_echo(cmd, g);
+		ft_echo(g);
 		return (1);
 	}
-	else if (ft_strcmp(comd, "cd") == 0)
+	else if (ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
-		ft_cd(comd, cmd, g);
+		ft_cd(g);
 		return (1);
 	}
 	else if (ft_strcmp(comd, "export") == 0)
@@ -347,6 +347,17 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 		free(comd);
 	return (0);
 }
+int		count_tab(char **tab)
+{
+	int i;
+
+	i = 0;
+	while(tab[i])
+	{
+		i++;
+	}
+	return (i);
+}
 
 int		find_cmd_path(char *cmd, t_ms *g)
 {
@@ -354,7 +365,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	struct dirent	*dirp;
 	int				i;
 	char			*comd;
-	char			**master_cmd;
+//	char			**master_cmd;
 
 	i = 0;
 	if (ft_strchr(cmd, '$'))
@@ -363,7 +374,10 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		if (!cmd || ft_strequ(cmd, "\0"))
 			return (1);
 	}
-	master_cmd = creat_list_arg(cmd);
+	g->cmd_tab = creat_list_arg(cmd);
+	g->cmd_ac = count_tab(g->cmd_tab);
+//	printf("cd_ac ; %d\n", g->cmd_ac);
+//	print_2Dtab(g->cmd_tab, "www");
 	test_redir_flag(cmd, g);
 
 	comd = get_cmd_in_line(cmd);
@@ -379,7 +393,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	  		perror("launch error");
 		return (1);
 	}
-	if(ft_strcmp(comd, "cd") == 0)
+	if(ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
 		if (launch(cmd, comd, g, i, NULL) == -1)
 	  		perror("launch error");
@@ -407,7 +421,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		i++;
 	}
 	free(comd);
-	free_split(master_cmd);
+	free_split(g->cmd_tab);
 	return (0);
 }
 

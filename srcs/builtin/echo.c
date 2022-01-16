@@ -49,33 +49,33 @@ void echo_printf(char *s)
 	}
 }
 */
-void ft_echo(char *cmd, t_ms *g)
+void ft_echo(t_ms *g)
 {
 	//TODO
 	// ' ', "", \" ==> ", $ env,
 	//echo $? return 0 (normal)/1 (error)
-	char **tab;
+//	char **tab;
 	int i;
 	int is_opt_n;
 
 	g->retcode = 0;
-	tab = ft_split(cmd, ' ');
-	if(!tab[1])
+	//tab = ft_split(cmd, ' ');
+	if(g->cmd_ac == 1)
 	{
 		printf("\n");
-		exit_free(tab);
+		//exit_free(tab);
 		return;
 	}
-	i = check_n(tab);
+	i = check_n(g->cmd_tab);
 	is_opt_n = i > 1 ? 1 : 0;
-	while(tab[i])
+	while(g->cmd_tab[i])
 	{
-		printf("%s", tab[i]);
+		printf("%s", g->cmd_tab[i]);
 		i++;
-		if (tab[i])
+		if (g->cmd_tab[i])
 			printf(" ");
 	}
 	if (!is_opt_n)
 		printf("\n");
-	exit_free(tab);
+//	exit_free(tab);
 }
