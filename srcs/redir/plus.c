@@ -37,7 +37,6 @@ char **get_argv_redir(char *cmd)
 	i = 0;
 	argc = 1;
 	tab = creat_list_arg(cmd);
-	//print_split(tab);
 	while (tab[i] && tab[i+1])
 	{
 		if (ft_strequ(tab[i+1], ">") || ft_strequ(tab[i+1], ">>"))
@@ -49,7 +48,7 @@ char **get_argv_redir(char *cmd)
 				argc = i + 1;
 			break;
 		}
-		else if (ft_strequ(tab[i+1], "<") /*|| ft_strequ(tab[i+1], "<<")*/)
+		else if (ft_strequ(tab[i+1], "<") || ft_strequ(tab[i+1], "<<"))
 		{
 			argc = i + 1;
 			break;
@@ -57,7 +56,7 @@ char **get_argv_redir(char *cmd)
 		i++;
 		argc++;	
 	}
-	//printf("arvg redir argc : %d\n", argc);	
+	printf("arvg redir argc : %d\n", argc);	
 	argv = (char **)malloc(sizeof(char *) * (argc + 1));
 	argv[argc] = NULL;
 	i = 0;
@@ -66,6 +65,7 @@ char **get_argv_redir(char *cmd)
 		argv[i] = ft_strdup(tab[i]);
 		i++;
 	}
+	print_2Dtab(argv, "finish argv");
 	exit_free(tab);
 	return (argv);	
 }
@@ -92,16 +92,19 @@ int get_redir_in_file(char *cmd)
 	char  **tab;
 	int i;
 	int fd;
-	int is_double;
-	char *redir_file;
 
-	redir_file = NULL;
-	is_double = 0;
 	fd = 0;
+	
+	free(cmd);
+	cmd = ft_strdup("cat << d > file_out");
+	printf("what cmd: %s\n", cmd);
+	
 	tab = creat_list_arg(cmd);
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
+		if (fd > 0)
+			close(fd);
 		//find file name after > >> 
         	if (ft_strequ(tab[i], "<"))
 		{
@@ -112,31 +115,30 @@ int get_redir_in_file(char *cmd)
 				exit_free(tab);
 				return (-1);
 			}
-			close(fd);
-			if (redir_file)
-				free(redir_file);
-			redir_file = ft_strdup(tab[i + 1]);
+			printf("redir < :fd: %d\n", fd);
 		}
         	else if (ft_strequ(tab[i], "<<"))
 		{
-		/*	redir_inin(tab[i]);
-			if (redir_file)
-				free(redir_file);
-			redir_file = ft_strdup(tab[i + 1]);
-			is_double = 1;
-		*/
-			exit_free(tab);
-			return 0;
+			char *delimitor = tab[i + 1]; //TDDO: delimitor quote ?
+			//fd = open("redir_lessless", O_CREAT | O_EXCL | O_RDWR | O_APPEND, 0644);
+			fd = open("redir_lessless", O_CREAT | O_WRONLY | O_APPEND | O_TRUNC, 0644);
+			while (1)
+			{
+				char *s = readline("> ");
+				printf("readline s: %s\n", s);
+				if (ft_strequ(s, delimitor))
+					break;
+				ft_putstr_fd(s, fd);
+				ft_putstr_fd("\n", fd);
+			}
+			close(fd);
+			fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
+			printf("redir << :fd: %d\n", fd);
 		}
 		i++;
 	}
 	exit_free(tab);
-	printf("redir in: %s\n", redir_file);
-	if (redir_file)
-	{
-		fd = open(redir_file, O_RDONLY);
-		free(redir_file);
-	}
+	printf("redir in fd: %d\n", fd);
 	return (fd);
 }
 int get_redir_out_file(char *cmd)

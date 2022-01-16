@@ -219,9 +219,9 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		redir_in_fd = get_redir_in_file(cmd);
 		if (redir_in_fd == -1)
 	      		return (1);
-		//printf("get_redir_in fd: %d\n", redir_in_fd);
+		printf("get_redir_in fd: %d\n", redir_in_fd);
 		redir_out_fd = get_redir_out_file(cmd);
-		//printf("get_redir_out fd: %d\n", redir_out_fd);
+		printf("get_redir_out fd: %d\n", redir_out_fd);
         	if (redir_out_fd > 0)
 	    		dup2(redir_out_fd, STDOUT_FILENO);
         	if (redir_in_fd > 0)
