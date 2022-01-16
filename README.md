@@ -1,4 +1,4 @@
-# minishell
+# minishellSHELL
 
 echo $?
     -> multi ligne = 130

@@ -116,20 +116,19 @@ void	get_path(t_ms *g)
 }
 int		is_buildin(char *comd, char *cmd, t_ms *g)
 {
-//	printf("comd %s\n",comd);
 	if (ft_strcmp(comd, "pwd") == 0)
 	{
 		ft_pwd();
 		return (1);
 	}
-	else if (ft_strcmp(comd, "echo") == 0)
+	else if (ft_strcmp(g->cmd_tab[0], "echo") == 0)
 	{
-		ft_echo(cmd, g);
+		ft_echo(g);
 		return (1);
 	}
-	else if (ft_strcmp(comd, "cd") == 0)
+	else if (ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
-		ft_cd(comd, cmd, g);
+		ft_cd(g);
 		return (1);
 	}
 	else if (ft_strcmp(comd, "export") == 0)
@@ -150,11 +149,13 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 	else
 		return (0);
 }
-void init_argv(char **argv, char *cmd)
+char **init_argv(char *cmd)
 {
 	int	j;
 	char **split_cmd;
+	char **argv;
 
+	argv = (char **)malloc(sizeof(char *) * (get_cmd_size(cmd) + 1));
 	split_cmd = ft_split(cmd, ' ');
 	j = 0;
 	while(split_cmd[j])
@@ -166,19 +167,21 @@ void init_argv(char **argv, char *cmd)
 	}
 	argv[j] = NULL;
 	free(split_cmd);
+	return (argv);
 }
 
-void init_abs_comd(char **abs_cmd, char *comd, t_ms *g, char *abs_path_test, int i)
+char *init_abs_comd(char *comd, char *path_i, char *abs_path_test)
 {
 	char *dir_cmd;
+	char *abs;
 
 	if (abs_path_test == NULL)
-		dir_cmd = ft_strjoin(g->path[i], "/");
+		dir_cmd = ft_strjoin(path_i, "/");
 	else
 		dir_cmd = ft_strjoin(abs_path_test, "/");
-	*abs_cmd = ft_strjoin(dir_cmd, comd);
-	//printf("abs_cmd: %s\n", *abs_cmd);
+	abs = ft_strjoin(dir_cmd, comd);
 	free(dir_cmd);
+	return (abs);
 }
 
 int get_cmd_size(char *cmd)
@@ -199,26 +202,53 @@ int get_cmd_size(char *cmd)
 
 int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 {
-	int j;
-
-	//printf("size %d\n", size);
-	char *argv[get_cmd_size(cmd) + 1];
-	init_argv(argv, cmd);
+	char **argv;
 	char *abs_comd;
-	init_abs_comd(&abs_comd, comd, g, abs_path_test, i);
+
+	argv = init_argv(cmd);
+	abs_comd = init_abs_comd(comd, g->path[i], abs_path_test);
+
+	int redir_out_fd;
+	int redir_in_fd;
+
+	redir_out_fd = 0;
+	redir_in_fd = 0;
+//	char *redir_inin_delimitor;
+	if (g->ret_dir)// > <
+	{
+		redir_in_fd = get_redir_in_file(cmd);
+		if (redir_in_fd == -1)
+	      		return (1);
+		//printf("get_redir_in fd: %d\n", redir_in_fd);
+		redir_out_fd = get_redir_out_file(cmd);
+		//printf("get_redir_out fd: %d\n", redir_out_fd);
+        	if (redir_out_fd > 0)
+	    		dup2(redir_out_fd, STDOUT_FILENO);
+        	if (redir_in_fd > 0)
+		{
+			close(0);
+	    		dup2(redir_in_fd, STDIN_FILENO);
+		}
+		exit_free(argv);
+		argv = get_argv_redir(cmd);
+	}
+
 	if (is_buildin(comd, cmd, g) == 0)
 	{
+	//	printf("b==============\n");
+	//	printf("abs_comd: %s\n", abs_comd);
+	//	print_2Dtab(argv, "argv");
 		if (execve(abs_comd, argv, NULL) == -1)
 			return (-1);
+	//	printf("e==============\n");
 	}
 	free(abs_comd);
-	j = 0;
-	while(argv[j])
-	{
-		//printf("out argv[%d]: %s\n", j, argv[j]);
-		free (argv[j]);
-		j++;
-	}
+	exit_free(argv);
+
+	if (redir_out_fd)
+		close(redir_out_fd);
+	if (redir_in_fd)
+		close(redir_in_fd);
 	return (0);
 }
 
@@ -318,15 +348,26 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 		free(comd);
 	return (0);
 }
+int		count_tab(char **tab)
+{
+	int i;
+
+	i = 0;
+	while(tab[i])
+	{
+		i++;
+	}
+	return (i);
+}
+
+
 
 int		find_cmd_path(char *cmd, t_ms *g)
 {
 	DIR				*dir;
 	struct dirent	*dirp;
 	int				i;
-	// char			*comd;
-	// char			*cmd_tmp;
-	char			**master_cmd;
+	char			*comd;
 
 	i = 0;
 	if (ft_strchr(cmd, '$'))
@@ -338,47 +379,55 @@ int		find_cmd_path(char *cmd, t_ms *g)
 			return (1);
 		}
 	}
-	master_cmd = creat_list_arg(cmd);
+	g->cmd_tab = creat_list_arg(cmd);
+
 	test_redir_flag(cmd, g);
 	// comd = get_cmd_in_line(cmd);
 	// print_split(master_cmd);
-	if(g->ret_dir)
+	if (g->ret_dir)
 	{
-	//S	go_redir(comd, g->ret_dir);
+		exit_free(g->cmd_tab);
+		g->cmd_tab = get_argv_redir(cmd);
 	}
-	if (!ft_strcmp(master_cmd[0], "exit"))
+
+	g->cmd_ac = count_tab(g->cmd_tab);
+	//printf("cd_ac ; %d\n", g->cmd_ac);
+	//print_2Dtab(g->cmd_tab, "www");
+
+	comd = get_cmd_in_line(cmd);
+	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
-		ft_exit_plus(master_cmd);
-		free_split(master_cmd);
+		ft_exit_plus(g->cmd_tab);
+		free_split(g->cmd_tab);
 		g->exit = 1;
 		ft_exit(2, g, g->ret, g->line);
 	}
-	if(ft_strcmp(master_cmd[0], "export") == 0)
+	if(ft_strcmp(g->cmd_tab[0], "export") == 0)
 	{
-		if (launch(cmd, master_cmd[0], g, i, NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
-		free_split(master_cmd);
+		free_split(g->cmd_tab);
 		// free(cmd);
 		return (1);
 	}
-	if(ft_strcmp(master_cmd[0], "unset") == 0)
+	if(ft_strcmp(g->cmd_tab[0], "unset") == 0)
 	{
-		if (launch(cmd, master_cmd[0], g, i, NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
-		free_split(master_cmd);
+		free_split(g->cmd_tab);
 		// free(cmd);
 		return (1);
 	}
-	if(ft_strcmp(master_cmd[0], "cd") == 0)
+	if(ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
-		if (launch(cmd, master_cmd[0], g, i, NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
-		free_split(master_cmd);
+		free_split(g->cmd_tab);
 		// free(cmd);
 		return (1);
 	}
-//	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
-//		return (1);
+	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
+		return (1);
 	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);
@@ -386,12 +435,12 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		{
 			while ((dirp = readdir(dir)) != NULL)
 			{
-				if (ft_strequ(dirp->d_name, master_cmd[0]))
+				if (ft_strequ(dirp->d_name, g->cmd_tab[0]))
 				{
-					launcher(cmd, master_cmd[0], g, i, NULL);
+					launcher(cmd, g->cmd_tab[0], g, i, NULL);
 					// free(comd);
 					closedir(dir);
-					free_split(master_cmd);
+					free_split(g->cmd_tab);
 					// free(cmd);
 					return (1);
 				}
@@ -402,7 +451,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	// free(comd);
 	// free(cmd);
-	free_split(master_cmd);
+	free_split(g->cmd_tab);
 	return (0);
 }
 
