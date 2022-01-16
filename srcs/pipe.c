@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 15:31:37 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 17:26:30 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 19:27:40 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	init_pipe(t_ms *g)
 void		execution(char *cmd, int fd_in[2], int fd_out[2], t_ms *g)
 {
 	g->pid[1] = fork();
-	errno = 0;
+	g->ret_errno = 0;
 	if (g->pid[1] == -1)
 		exit(EXIT_FAILURE);
 	else if (g->pid[1] == 0)
@@ -42,7 +42,7 @@ void		execution(char *cmd, int fd_in[2], int fd_out[2], t_ms *g)
 			close(fd_out[1]);
 		}
 		find_cmd_path(cmd, g); //--> launch_all_cmd()
-		exit(errno);
+		exit(g->ret_errno);
 	}
 }
 
@@ -90,7 +90,7 @@ static void		my_pipe(char **cmd, t_ms *g)
 	while (waitpid(0, &status, 0) > 0)
 	{
 	}
-	errno = status / 256;
+	g->ret_errno = status / 256;
 }
 
 static char		**reccord_cmd_pipe(char **pipe_command, t_ms *g)
@@ -117,7 +117,7 @@ static char		**reccord_cmd_pipe(char **pipe_command, t_ms *g)
 			first = i + 1;
 		}
 		if (g->line[i] == '\\')
-			i++; 
+			i++;
 	}
 	pipe_command[j] = (char *)malloc(sizeof(char) * (i - first) + 1);
     if (!pipe_command[j])
