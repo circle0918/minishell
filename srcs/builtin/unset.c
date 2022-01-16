@@ -1,17 +1,48 @@
 #include "../includes/minishell.h"
+int		check_unset_error(char *str)
+{
+	int i;
+
+	i = 1;
+	if (!(ft_isalpha(str[0]) || str[0] == '_'))//first char can't be 0-9, but can be '_'
+		{
+			printf("minishell: uset: '%s': not a valid identifier\n", str);
+			return (1);
+		}
+	while(str[i])
+	{
+//		printf("out str[i]%c\n",str[i]);
+		if (!(ft_isalnum(str[i] )|| str[i] == '_'))
+		{
+			
+//		printf("int str[i]%c\n",str[i]);
+			printf("minishell: unset: '%s': not a valid identifier\n", str);
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
 
 void ft_unset(t_ms *g)
 {
-//	char *str;
-
-//	str = ft_substr(cmd, 6, (ft_strlen(cmd)-6));
 	t_list *tmp;
 	char *pos;
 	t_list *pre;
 	int		i;
-	print_2Dtab(g->cmd_tab,"hello :");
-	i  = 0;
+	i  = 1;
 	tmp = g->env;
+
+	g->ret_errno = 0;
+	if (!g->cmd_tab[1])
+		return;
+	
+	if(check_unset_error(g->cmd_tab[1]))
+	{
+		g->ret_errno = 1;
+		return;
+	}
+
 	while (g->cmd_tab[i])
 	{
 		while (tmp)
@@ -29,13 +60,13 @@ void ft_unset(t_ms *g)
 					}
 					free(tmp->content);
 					free(tmp);
-				//	free(str);
 					break;
 				}
 			}
 			pre = tmp;
 			tmp = tmp->next;
 		}
+		tmp = g->env;
 		i++;
 	}
 }

@@ -96,9 +96,10 @@ void ft_cd(t_ms *g)
 
 	char cwd[1024];
 	char *tmp_path;
-
+	g->ret_errno = 0;
 	if(g->cmd_ac > 2)
 	{
+		g->ret_errno = 1;
 		error_out2("cd", path, "Too many arguements");
 		free(path);
 	}
@@ -118,6 +119,7 @@ void ft_cd(t_ms *g)
 			change_path(path, g, 1);
 		else
 		{
+			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
 		}
 		return ;
@@ -138,6 +140,7 @@ void ft_cd(t_ms *g)
 			change_path(cwd, g, 0);
 		else
 		{
+			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
 		}
 		
@@ -146,6 +149,7 @@ void ft_cd(t_ms *g)
 			change_path(path, g, 0);
 		else
 		{
+			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
 		}
     }

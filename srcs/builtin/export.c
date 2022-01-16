@@ -105,7 +105,7 @@ int export_checker(char **tab, int i, t_ms *g)
 	//if AAA =aaa -> error : export: « =aaa » : identifiant non valable and echo $? == 1
 	if (!(ft_isalpha(tab[i][0]) || tab[i][0] == '_'))//first char can't be 0-9, but can be '_'
 	{
-		g->retcode = 1;
+		g->ret_errno = 1;
 		printf("minishell: export: '%s': not a valid identifier\n", tab[i]);
 		return (1);
 	}
@@ -116,7 +116,7 @@ int export_checker(char **tab, int i, t_ms *g)
 			break ;
 		if (!(ft_isalnum(tab[i][j]) || tab[i][j] == '_'))
 		{
-			g->retcode = 1;
+			g->ret_errno = 1;
 			printf("minishell: export: '%s': not a valid identifier\n", tab[i]);
 			return 1;
 		}
@@ -187,7 +187,7 @@ void ft_export(char *cmd, t_ms *g)
 	char **tab;
 	int i;
 
-	g->retcode = 0;
+	g->ret_errno = 0;
 	tab = ft_split(cmd, ' ');
 	if (!tab[1]) //if only export == export p : declare -x all env=
 	{
