@@ -6,8 +6,11 @@ void error_out2(char *comd, char *opt, char *msg)
 
 	str[0] = '\0';
 	ft_strcat(str, "minishell : ");
-	ft_strcat(str, comd);
-	ft_strcat(str, ": ");
+	if (comd)
+	{
+		ft_strcat(str, comd);
+		ft_strcat(str, ": ");
+	}
 	ft_strcat(str, opt);
 	ft_strcat(str, ": ");
 	ft_strcat(str, msg);
