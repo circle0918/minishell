@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:47:18 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 18:04:18 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 23:51:44 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	norm_1(int res, t_ms *g, int comp)
 	if (comp == 1)
 	{
 		if (g->line[res + 1] == '&')
-			return (parse_error(1, ">&", g));
+			return (parse_error(1, "<&", g));
 		if (g->line[res + 1] == '|')
 			return (parse_error(1, ">|", g));
 		if (g->line[res + 1] == '>')
@@ -25,7 +25,7 @@ static int	norm_1(int res, t_ms *g, int comp)
 		return (parse_error(1, ">", g));
 	}
 	if (g->line[res + 1] == '&')
-		return (parse_error(1, "<&", g));
+		return (parse_error(1, ">&", g));
 	if (g->line[res + 1] == '>')
 		return (parse_error(1, "<>", g));
 	if (g->line[res + 1] == '<')
@@ -33,16 +33,10 @@ static int	norm_1(int res, t_ms *g, int comp)
 	return (parse_error(1, "<", g));
 }
 
-static int	norm_2(int res, t_ms *g)
-{
-	if (g->line[res + 1] == '|')
-		return (parse_error(1, "||", g));
-	return (parse_error(1, "|", g));
-}
-
-int	parsing_redirection_out(int i, int res, t_ms *g)
+int parsing_redirection_out(int i, int res, t_ms *g)
 {
 	int y;
+	(void)res;
 
 	y = 0;
 	while (g->line[i + y] && g->line[i + y] == '>')
@@ -51,24 +45,21 @@ int	parsing_redirection_out(int i, int res, t_ms *g)
 		return (parse_error(1, ">", g));
 	else if (y > 3)
 		return (parse_error(1, ">>", g));
-	if (g->line[i + 1] == ' ' || g->line[i + 1] == '\0'
-		|| (g->line[i + 1] == '>' && (g->line[i + 2] == ' '
-				|| g->line[i + 2] == '\0')) || g->line[i + 1] == '<')
-	{
-		if (g->line[i + 1] == '>')
-			res = i + 2;
-		else
-			res = i + 1;
-		while (g->line[res] && g->line[res] == ' ')
-			res++;
-		if (g->line[res] == '\0')
-			return (parse_error(1, "newline", g));
-		if (g->line[res] == '>')
-			return (norm_1(res, g, 1));
-		if (g->line[res] == '<')
-			return (norm_1(res, g, 0));
-		if (g->line[res] == '|')
-			return (norm_2(res, g));
-	}
+	i += y;
+	while (g->line[i] && g->line[i] != ' ')
+		i++;
+	if (g->line[i] == '#')
+		return (parse_error(1, "newline", g));
+	if (g->line[i] == '|' && g->line[i + 1] == '|')
+		return (parse_error(1, "||", g));
+	if (g->line[i] == '&' || g->line[i] == '(' || g->line[i] == ')'
+			|| g->line[i] == ';' || g->line[i] == '|')
+		return (parse_error(1, &g->line[i], g));
+	if (g->line[i] == '\0')
+		return (parse_error(1, "newline", g));
+	if (g->line[i] == '<')
+		return (norm_1(i, g, 1));
+	if (g->line[i] == '>')
+		return (norm_1(i, g, 0));
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 18:14:39 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 23:37:50 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,19 @@ int parseur(t_ms *g, int i, int res)
 		if (g->line[i] == '>')
 		{
 			res = parsing_redirection_out(i, 0, g);
+			if (g->line[i] == '>')
+				i++;
 			if (res != 0)
 				return (res);
 		}
 		if (g->line[i] == '<')
 		{
 			res = parsing_redirection_in(i, 0, g);
+			if (g->line[i + 1] == '<')
+				i++;
 			if (res != 0)
 				return (res);
+
 		}
 		// check pipe (compter nombre de pipe ? compter nombre de sous commande ? utiliser les global pour le multi pipe ?)
 		if (g->line[i] == '|')
