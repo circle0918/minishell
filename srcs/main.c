@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 20:20:07 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 05:39:59 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,6 @@ void begin(char **env, t_ms *g)
 }
 
 //Signal pour le 'ctrl + C'
-void signal_in(int signal)
-{
-	(void)signal;
-	errno = 130;
-	ft_putstr("\n");
-	ft_putstr(_GREEN "thhusser> "_NC);
-}
 
 int parseur(t_ms *g, int i, int res)
 {
@@ -258,6 +251,39 @@ int clean_command(t_ms *g)
 	return (0);
 }
 
+void	end(int sig)
+{
+	(void)sig;
+	if (g_ms->pid[0] != 0 && g_ms->pid[1] == 0)
+	{
+		write(2, "Quit (core dumped)\n", ft_strlen("Quit (core dumped)\n"));
+		errno = 131;
+	}
+	else
+		ft_putstr("\b \b\b \b");
+}
+
+void	recovery(int sig)
+{
+	(void)sig;
+	if (g_ms->pid[0] == 0 && g_ms->pid[1] == 0)
+	{
+		ft_putstr("\b \b\b \b\n");
+		ft_putstr(_GREEN "thhusser> "_NC);
+		errno = 1;
+	}
+	else
+	{
+		// if (g_ms->pid[1] != 0)
+			// kill(g_ms->pid[1], SIGINT);
+		// else
+			// kill(g_ms->pid[0], SIGINT);
+		write(1, "\n", 1);
+		errno = 130;
+	}
+}
+
+
 int main(int argc, char **argv, char **env)
 {
 	char *cmd;
@@ -265,17 +291,28 @@ int main(int argc, char **argv, char **env)
 
 	(void)argv;
 	cmd = NULL;
+	g_ms = &g;
 	if (argc != 1)
 		return (printf(_RED "Error number arguments\n"_NC));
-	signal(SIGINT, signal_in);
+	// signal(SIGINT, signal_in);
+	// signal(SIGQUIT, end);
+	signal(SIGINT, recovery);
+	signal(SIGQUIT, end);
 	begin(env, &g);
+	g.ret = 1;
 	while (1)
 	{
 		init_pipe(&g);
-		ft_putstr(_GREEN "thhusser> "_NC);
-		if (!get_next_line(0, &g.line))
-			ft_exit(2, &g);
-		clean_command(&g);
+		// if (g.ret)
+			// ft_putstr(_GREEN "thhusser> "_NC);
+		// g.ret = get_next_line(0, &g.line);
+		// if (!g.ret && g.line == 0)
+			// ft_exit(2, &g, g.ret, g.line);
+		// else
+			// ft_putstr("  \b\b \b");
+		// if (g.ret && g.line[0] != 0)
+		g.line = readline(_GREEN "thhusser> "_NC);
+			clean_command(&g);
 		if (g.error)
 		{
 			print_list(g.error);

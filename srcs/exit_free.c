@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 10:33:33 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 20:57:34 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 04:40:49 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,27 @@ void	free_split(char **split)
 	}
 }
 
-void	ft_exit(int nb, t_ms *g)
+void	ft_exit(int nb, t_ms *g, int ret, char *line)
 {
-	if (nb == 2)
-		ft_putstr("exit\n");
-	// ft_del_line(g->line); --> re check si a enlever !
-	ft_del_line(g->ret_dir);
-	ft_lstclear(&g->env, &ft_del_list);
-	ft_lstclear(&g->cmd, &ft_del_list);
-	ft_lstclear(&g->cmd_tmp, &ft_del_list);
-	ft_lstclear(&g->error, &ft_del_list);
-	free_split(g->path);
-	exit(errno);
+	if ((!ret && line[0] == '\0') || g->exit)
+	{
+		if (nb == 2)
+			ft_putstr("exit\n");
+		ft_del_line(g->line); //--> re check si a enlever !
+		ft_del_line(g->ret_dir);
+		ft_lstclear(&g->env, &ft_del_list);
+		ft_lstclear(&g->cmd, &ft_del_list);
+		ft_lstclear(&g->cmd_tmp, &ft_del_list);
+		ft_lstclear(&g->error, &ft_del_list);
+		free_split(g->path);
+		exit(errno);
+	}
+	if ((!ret && line[0] != '\0'))
+	{
+		ft_putstr("  \b\b \b");
+		// write(0, "\n", 1);
+	}
+
 }
 
 int		ft_strisdigit(char *str)

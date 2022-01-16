@@ -225,18 +225,19 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 
 int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 {
-	pid_t pid, wpid;
+	// pid_t pid;
+	pid_t wpid;
 	int status;
 
-	pid = fork();
-	if (pid == 0)
+	g_ms->pid[0] = fork();
+	if (g_ms->pid[0] == 0)
 	{
 	  // Child process
 		if (launch(cmd, comd, g, i, abs_path_test) == -1)
 	  		perror("launch error");
 		exit(EXIT_FAILURE);
 	}
-	else if (pid < 0)
+	else if (g_ms->pid[0] < 0)
 	{
 		// Error forking
 		perror("lsh");
@@ -247,7 +248,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 //		if (ft_strequ(comd, "minishell"))
 //			signal(SIGINT, SIG_IGN);
 		do {
-			wpid = waitpid(pid, &status, WUNTRACED);
+			wpid = waitpid(g_ms->pid[0], &status, WUNTRACED);
 /*            if (wpid == -1) {
                 perror("ERROR waitpid");
                 exit(EXIT_FAILURE);
@@ -349,8 +350,8 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	{
 		ft_exit_plus(master_cmd);
 		free_split(master_cmd);
-		free(cmd);
-		ft_exit(2, g);
+		g->exit = 1;
+		ft_exit(2, g, g->ret, g->line);
 	}
 	if(ft_strcmp(master_cmd[0], "export") == 0)
 	{
