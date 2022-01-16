@@ -21,6 +21,8 @@
 # include <errno.h>
 # include <sys/wait.h>
 # include <string.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 
 # define PATH_MAX_ENV 4096

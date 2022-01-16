@@ -266,8 +266,10 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		init_pipe(&g);
-		ft_putstr(_GREEN "thhusser> "_NC);
-		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
+		g.line = readline(_GREEN "thhusser> "_NC);
+		if (!ft_strequ(g.line, ""))
+			add_history(g.line);
+		if (!g.line || !ft_strcmp(g.line, "exit"))
 			ft_exit(2, &g);
 		clean_command(&g);
 		if (g.error)
@@ -275,7 +277,6 @@ int main(int argc, char **argv, char **env)
 			print_list(g.error);
 			ft_lstclear(&g.error, &ft_del_list);
 		}
-		ft_del_line(g.line);
 	}
 	return (0);
 }

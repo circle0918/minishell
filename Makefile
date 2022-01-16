@@ -50,6 +50,8 @@ CC			=	clang
 
 FLAGS		= 	-Werror -Wextra -Wall -g
 
+LFLAGS		= 	-lreadline
+
 PATH_LIBFT 	= ./libft/
 
 HEADER		= -I ./includes
@@ -67,7 +69,7 @@ all:		${NAME}
 $(NAME): 	${OBJS}
 			@make -C libft/
 			@echo ""
-			@$(CC) $(FLAGS) $(HEADER) $(OBJS) -o $(NAME) -L ${PATH_LIBFT} -lft
+			@$(CC) $(FLAGS) $(HEADER) $(OBJS) -o $(NAME) -L ${PATH_LIBFT} -lft $(LFLAGS)
 			@echo "$(_GREEN)Generating $(NAME)$(_NC)"
 
 clean:
