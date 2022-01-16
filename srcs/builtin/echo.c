@@ -58,7 +58,7 @@ void ft_echo(t_ms *g)
 	int i;
 	int is_opt_n;
 
-	g->retcode = 0;
+	g->ret_errno = 0;
 	//tab = ft_split(cmd, ' ');
 	if(g->cmd_ac == 1)
 	{
