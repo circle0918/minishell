@@ -229,6 +229,11 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 			close(0);	
 	    		dup2(redir_in_fd, STDIN_FILENO);
 		}
+		else if (redir_in_fd == 0)
+		{
+			printf("redir << here begins \n");
+	    	//	dup2(redir_in_fd, STDIN_FILENO);
+		}
 		exit_free(argv);
 		argv = get_argv_redir(cmd);
 	}

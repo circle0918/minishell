@@ -109,6 +109,7 @@ int get_redir_in_file(char *cmd)
 			if (fd < 0)
 			{
 				error_out2(NULL, tab[i + 1], "No such file or directory");
+				exit_free(tab);
 				return (-1);
 			}
 			close(fd);
@@ -124,6 +125,8 @@ int get_redir_in_file(char *cmd)
 			redir_file = ft_strdup(tab[i + 1]);
 			is_double = 1;
 		*/
+			exit_free(tab);
+			return 0;
 		}
 		i++;
 	}
