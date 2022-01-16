@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 05:39:59 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 05:57:24 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,6 +283,42 @@ void	recovery(int sig)
 	}
 }
 
+int	contains_only_whitespaces(char *line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i])
+	{
+		if (line[i] != ' '
+			&& line[i] != '\t'
+			&& line[i] != '\r'
+			&& line[i] != '\v')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+char	*extract_string(char *str, int len)
+{
+	char	*res;
+	int		i;
+
+	i = 0;
+	if (len == -1)
+		len = ft_strlen(str);
+	res = malloc(sizeof(char) * (len + 1));
+	if (!(res))
+		return (NULL);
+	while (str[i] && i < len)
+	{
+		res[i] = str[i];
+		i++;
+	}
+	res[i] = '\0';
+	return (res);
+}
 
 int main(int argc, char **argv, char **env)
 {
@@ -312,7 +348,13 @@ int main(int argc, char **argv, char **env)
 			// ft_putstr("  \b\b \b");
 		// if (g.ret && g.line[0] != 0)
 		g.line = readline(_GREEN "thhusser> "_NC);
+		if (!g.line)
+			g.line = extract_string("exit", -1);
+		if (*(g.line) != '\0'  && contains_only_whitespaces(g.line))
+		{
+			add_history(g.line);
 			clean_command(&g);
+		}
 		if (g.error)
 		{
 			print_list(g.error);

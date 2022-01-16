@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2022/01/15 15:17:37 by thhusser         ###   ########.fr        #
+#    Updated: 2022/01/16 05:44:20 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,6 +50,8 @@ CC			=	clang
 
 FLAGS		= 	-Werror -Wextra -Wall -g
 
+LFLAGS		= 	-lreadline
+
 PATH_LIBFT 	= ./libft/
 
 HEADER		= -I ./includes
@@ -67,7 +69,7 @@ all:		${NAME}
 $(NAME): 	${OBJS}
 			@make -C libft/
 			@echo ""
-			@$(CC) $(FLAGS) $(HEADER) $(OBJS) -o $(NAME) -L ${PATH_LIBFT} -lft
+			@$(CC) $(FLAGS) $(HEADER) $(OBJS) -o $(NAME) -L ${PATH_LIBFT} -lft $(LFLAGS)
 			@echo "$(_GREEN)Generating $(NAME)$(_NC)"
 
 clean:
