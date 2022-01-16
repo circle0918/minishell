@@ -216,32 +216,39 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 //	char *redir_inin_delimitor;
 	if (g->ret_dir)// > <
 	{
-//		redir_in_fd = get_redir_in_file(g->ret_dir);
-//		if (redir_in_fd < 0)
-//		{
-//			perror("open file error\n");
-  //          		return (0);
-   //    	}
+		redir_in_fd = get_redir_in_file(cmd);
+		if (redir_in_fd == -1)
+	      		return (1);
+		printf("get_redir_in fd: %d\n", redir_in_fd);
 		redir_out_fd = get_redir_out_file(cmd);
-        	if (redir_out_fd)
+		printf("get_redir_out fd: %d\n", redir_out_fd);
+        	if (redir_out_fd > 0)
 	    		dup2(redir_out_fd, STDOUT_FILENO);
-        	if (redir_in_fd)
+        	if (redir_in_fd > 0)
+		{
+			close(0);	
 	    		dup2(redir_in_fd, STDIN_FILENO);
+		}
 		exit_free(argv);
 		argv = get_argv_redir(cmd);
-		print_2Dtab(argv, "argv");
 	}
 
 	if (is_buildin(comd, cmd, g) == 0)	
 	{
+	//	printf("b==============\n");
+	//	printf("abs_comd: %s\n", abs_comd);
+	//	print_2Dtab(argv, "argv");
 		if (execve(abs_comd, argv, NULL) == -1)
 			return (-1);
+	//	printf("e==============\n");
 	}
 	free(abs_comd);
 	exit_free(argv);
 	
-	close(redir_out_fd);
-	close(redir_in_fd);
+	if (redir_out_fd)
+		close(redir_out_fd);
+	if (redir_in_fd)
+		close(redir_in_fd);
 	return (0);
 }
 

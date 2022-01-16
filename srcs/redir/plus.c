@@ -3,12 +3,11 @@
 void print_2Dtab(char** tab, char *str)
 {  
 	int i = 0;
-    
 	while(tab[i])
-    {
-		printf("%s: tab[%d]: %s\n", str, i, tab[i]);
+    	{
+		printf("%s[%d]: %s\n", str, i, tab[i]);
 		i++;
-    }
+    	}
 }
 
 char **get_file(char *str)
@@ -39,7 +38,7 @@ char **get_argv_redir(char *cmd)
 	argc = 1;
 	tab = creat_list_arg(cmd);
 	//print_split(tab);
-	while (tab[i+1])
+	while (tab[i] && tab[i+1])
 	{
 		if (ft_strequ(tab[i+1], ">") || ft_strequ(tab[i+1], ">>"))
 		{
@@ -48,6 +47,11 @@ char **get_argv_redir(char *cmd)
 				argc = i;
 			else
 				argc = i + 1;
+			break;
+		}
+		else if (ft_strequ(tab[i+1], "<") /*|| ft_strequ(tab[i+1], "<<")*/)
+		{
+			argc = i + 1;
 			break;
 		}
 		i++;
@@ -82,17 +86,66 @@ char **get_env_tab(t_list *env)
 	}
 	return (ret);
 }
-	
+
+int get_redir_in_file(char *cmd)
+{
+	char  **tab;
+	int i;
+	int fd;
+	int is_double;
+	char *redir_file;
+
+	redir_file = NULL;
+	is_double = 0;
+	fd = 0;
+	tab = creat_list_arg(cmd);
+	i = 0;
+	while (tab[i] && tab[i + 1])
+	{
+		//find file name after > >> 
+        	if (ft_strequ(tab[i], "<"))
+		{
+			fd = open(tab[i + 1], O_WRONLY, 0664);
+			if (fd < 0)
+			{
+				error_out2(NULL, tab[i + 1], "No such file or directory");
+				return (-1);
+			}
+			close(fd);
+			if (redir_file)
+				free(redir_file);
+			redir_file = ft_strdup(tab[i + 1]);
+		}
+        	else if (ft_strequ(tab[i], "<<"))
+		{
+		/*	redir_inin(tab[i]);
+			if (redir_file)
+				free(redir_file);
+			redir_file = ft_strdup(tab[i + 1]);
+			is_double = 1;
+		*/
+		}
+		i++;
+	}
+	exit_free(tab);
+	printf("redir in: %s\n", redir_file);
+	if (redir_file)
+	{
+		fd = open(redir_file, O_RDONLY);
+		free(redir_file);
+	}
+	return (fd);
+}
 int get_redir_out_file(char *cmd)
 {
 	char  **tab;
 	int i;
 	int fd;
-	int is_moremore;
-	char *out_file;
+	int is_double;
+	char *redir_file;
 
-	out_file = NULL;
-	is_moremore = 0;
+	redir_file = NULL;
+	is_double = 0;
 	tab = creat_list_arg(cmd);
 	i = 0;
 	while (tab[i] && tab[i + 1])
@@ -102,29 +155,30 @@ int get_redir_out_file(char *cmd)
 		{
 			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
 			close(fd);
-			if (out_file)
-				free(out_file);
-			out_file = ft_strdup(tab[i + 1]);
+			if (redir_file)
+				free(redir_file);
+			redir_file = ft_strdup(tab[i + 1]);
 		}
         	else if (ft_strequ(tab[i], ">>"))
 		{
 			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
 			close(fd);
-			if (out_file)
-				free(out_file);
-			out_file = ft_strdup(tab[i + 1]);
-			is_moremore = 1;
+			if (redir_file)
+				free(redir_file);
+			redir_file = ft_strdup(tab[i + 1]);
+			is_double = 1;
 		}
-		printf("tab[%d + 1] : %s\n", i, tab[i+1]);
 		i++;
 	}
 	exit_free(tab);
-	printf("out_file : %s\n", out_file);
-	if (is_moremore == 0)
-		fd = open(out_file, O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	printf("redir out: %s\n", redir_file);
+	if (!redir_file)
+		return (0);
+	if (is_double == 0)
+		fd = open(redir_file, O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	else
-		fd = open(out_file, O_WRONLY | O_CREAT | O_APPEND, 0664);
-	free(out_file);
+		fd = open(redir_file, O_WRONLY | O_CREAT | O_APPEND, 0664);
+	free(redir_file);
 	return (fd);
 }
 

@@ -107,4 +107,6 @@ char **get_file(char *str);
 int get_redir_out_file(char *cmd);
 char **get_argv_redir(char *cmd);
 void print_2Dtab(char** tab, char *str);
+int get_redir_in_file(char *cmd);
+void error_out2(char *comd, char *opt, char *msg);
 #endif
