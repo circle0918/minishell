@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 23:37:50 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 23:56:23 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int parseur(t_ms *g, int i, int res)
 			if (i == -1)
 			{
 				record_list(&g->error, "bash: syntax error: unexpected end of file\n"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
-				errno = 2;
+				g->ret_errno = 2;
 				return (1);																//generer une erreur correspondante a bash
 			}
 		}
@@ -249,8 +249,11 @@ int clean_command(t_ms *g)
 			ft_lstclear(&g->env, &ft_del_list);
 			ft_putstr(command);
 			ft_putstr(": command not found\n");
-			errno = 127;
+			if (g->ret_errno == 0)
+				g->ret_errno = 127;
 		}
+		else
+			g->ret_errno = 0;
 	}
 	// free(command);
 	return (0);
@@ -262,10 +265,13 @@ void	end(int sig)
 	if (g_ms->pid[0] != 0 && g_ms->pid[1] == 0)
 	{
 		write(2, "Quit (core dumped)\n", ft_strlen("Quit (core dumped)\n"));
-		errno = 131;
+		g_ms->ret_errno = 131;
 	}
 	else
+	{
 		ft_putstr("\b \b\b \b");
+		g_ms->ret_errno = 1;
+	}
 }
 
 void	recovery(int sig)
@@ -273,18 +279,20 @@ void	recovery(int sig)
 	(void)sig;
 	if (g_ms->pid[0] == 0 && g_ms->pid[1] == 0)
 	{
-		ft_putstr("\b \b\b \b\n");
-		ft_putstr(_GREEN "thhusser> "_NC);
-		errno = 1;
+		ft_putstr("\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+		g_ms->ret_errno = 1;
 	}
 	else
 	{
-		// if (g_ms->pid[1] != 0)
-			// kill(g_ms->pid[1], SIGINT);
-		// else
-			// kill(g_ms->pid[0], SIGINT);
+		if (g_ms->pid[1] != 0)
+			kill(g_ms->pid[1], SIGINT);
+		else
+			kill(g_ms->pid[0], SIGINT);
 		write(1, "\n", 1);
-		errno = 130;
+		g_ms->ret_errno = 130;
 	}
 }
 
@@ -344,14 +352,6 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		init_pipe(&g);
-		// if (g.ret)
-			// ft_putstr(_GREEN "thhusser> "_NC);
-		// g.ret = get_next_line(0, &g.line);
-		// if (!g.ret && g.line == 0)
-			// ft_exit(2, &g, g.ret, g.line);
-		// else
-			// ft_putstr("  \b\b \b");
-		// if (g.ret && g.line[0] != 0)
 		g.line = readline(_GREEN "thhusser> "_NC);
 		if (!g.line)
 			g.line = extract_string("exit", -1);
@@ -360,12 +360,6 @@ int main(int argc, char **argv, char **env)
 			add_history(g.line);
 			clean_command(&g);
 		}
-		// g.line = readline(_GREEN "thhusser> "_NC);
-		// if (!ft_strequ(g.line, ""))
-		// 	add_history(g.line);
-		// if (!g.line || !ft_strcmp(g.line, "exit"))
-		// 	ft_exit(2, &g);
-		// clean_command(&g);
 		if (g.error)
 		{
 			print_list(g.error);

@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:07:49 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/14 19:31:09 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 19:24:55 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ int		parse_error(int res, char *erreur, t_ms *g)
 		ft_del_line(line_1);
 		record_list(&g->error, dest);
 		ft_del_line(dest);
-		errno = 2;
+		g->ret_errno = 2;
 	}
 	else if (res == 2)
 	{
 		record_list(&g->error, "bash: missing quote\n");
-		errno = 130;
+		g->ret_errno = 130;
 		return (-1);
 	}
 	return (res);

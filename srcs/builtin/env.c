@@ -451,7 +451,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	// free(comd);
 	// free(cmd);
-	free_split(g->cmd_tab);
+	// free_split(g->cmd_tab);
 	return (0);
 }
 

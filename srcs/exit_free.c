@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 10:33:33 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 17:59:06 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 19:23:54 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	ft_exit(int nb, t_ms *g, int ret, char *line)
 		ft_lstclear(&g->cmd_tmp, &ft_del_list);
 		ft_lstclear(&g->error, &ft_del_list);
 		free_split(g->path);
-		exit(errno);
+		exit(g->ret_errno);
 	}
 	if ((!ret && line[0] != '\0'))
 	{
@@ -77,11 +77,11 @@ void		ft_exit_plus(char **cmd)
 			if (cmd[2] != NULL)
 			{
 				write(2, "bash: exit: too many arguments\n", 31);
-				errno = 1;
+				g_ms->ret_errno = 1;
 				return ;
 			}
 			res = ft_atoi(cmd[1]);
-			errno = res;
+			g_ms->ret_errno = res;
 			return ;
 		}
 		else if (cmd[1] != NULL)
@@ -89,9 +89,9 @@ void		ft_exit_plus(char **cmd)
 			ft_putstr_fd("bash: exit: ", 2);
 			ft_putstr_fd(cmd[1], 2);
 			ft_putstr_fd(": numeric argument required\n", 2);
-			errno = 2;
+			g_ms->ret_errno = 2;
 			return ;
 		}
-		errno = 0;
+		g_ms->ret_errno = 0;
 	}
 }
