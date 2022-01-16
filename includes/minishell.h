@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 15:17:47 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 05:40:03 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 # define MINISHELL_H
 
 # include "../libft/libft.h"
-# include "signal.h"
+// # include "signal.h"
+# include <readline/readline.h>
+# include <readline/history.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <dirent.h>
@@ -31,7 +33,7 @@
 typedef struct 	s_ms
 {
 				int		retcode;
-
+				int 	ret;
 				char 	*ret_dir;
 				pid_t		pid[2];
 				int			last_cmd;
@@ -44,7 +46,12 @@ typedef struct 	s_ms
 				t_list	*cmd;
 				t_list	*cmd_tmp;
 				t_list	*error;
+				int exit;
 }				t_ms;
+
+t_ms			*g_ms;
+
+void		ft_exit_plus(char **cmd);
 
 //echo $
 char	*check_var_cmd(t_ms *g, char *cmd);
@@ -67,7 +74,7 @@ void	record_list(t_list **list, char *str);
 void	print_list(t_list *error);
 
 //free and exit
-void	ft_exit(int nb, t_ms *g);
+void	ft_exit(int nb, t_ms *g, int ret, char *line);
 void	free_split(char **split);
 
 //utils parsing check
@@ -96,7 +103,7 @@ void ft_echo(t_ms *g);
 void ft_export(char *cmd, t_ms *g);
 void ft_cd(t_ms *g);
 void ft_pwd();
-void ft_unset(char *comd, char *cmd, t_ms *g);
+void ft_unset(t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
 char* get_env(char *str, t_list *env);

@@ -136,9 +136,9 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 		ft_export(cmd, g);
 		return (1);
 	}
-	else if (ft_strcmp(comd, "unset") == 0)
+	else if (ft_strcmp(g->cmd_tab[0], "unset") == 0)
 	{
-		ft_unset(comd, cmd, g);
+		ft_unset(g);
 		return (1);
 	}
 	else if (ft_strcmp(comd, "env") == 0)
@@ -194,9 +194,9 @@ int get_cmd_size(char *cmd)
 	while(split_cmd[j])
 	{
 		j++;
-		free(split_cmd[j]);
+		// free(split_cmd[j]);
 	}
-	free(split_cmd);
+	free_split(split_cmd);
 	return (j);
 }
 
@@ -205,12 +205,12 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	char **argv;
 	char *abs_comd;
 
-	argv = init_argv(cmd);	
+	argv = init_argv(cmd);
 	abs_comd = init_abs_comd(comd, g->path[i], abs_path_test);
 
 	int redir_out_fd;
 	int redir_in_fd;
-	
+
 	redir_out_fd = 0;
 	redir_in_fd = 0;
 //	char *redir_inin_delimitor;
@@ -226,7 +226,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	    		dup2(redir_out_fd, STDOUT_FILENO);
         	if (redir_in_fd > 0)
 		{
-			close(0);	
+			close(0);
 	    		dup2(redir_in_fd, STDIN_FILENO);
 		}
 		else if (redir_in_fd == 0)
@@ -238,7 +238,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		argv = get_argv_redir(cmd);
 	}
 
-	if (is_buildin(comd, cmd, g) == 0)	
+	if (is_buildin(comd, cmd, g) == 0)
 	{
 	//	printf("b==============\n");
 	//	printf("abs_comd: %s\n", abs_comd);
@@ -249,7 +249,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	}
 	free(abs_comd);
 	exit_free(argv);
-	
+
 	if (redir_out_fd)
 		close(redir_out_fd);
 	if (redir_in_fd)
@@ -260,18 +260,19 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 
 int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 {
-	pid_t pid, wpid;
+	// pid_t pid;
+	pid_t wpid;
 	int status;
 
-	pid = fork();
-	if (pid == 0)
+	g_ms->pid[0] = fork();
+	if (g_ms->pid[0] == 0)
 	{
 	  // Child process
 		if (launch(cmd, comd, g, i, abs_path_test) == -1)
 	  		perror("launch error");
 		exit(EXIT_FAILURE);
 	}
-	else if (pid < 0)
+	else if (g_ms->pid[0] < 0)
 	{
 		// Error forking
 		perror("lsh");
@@ -282,7 +283,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 //		if (ft_strequ(comd, "minishell"))
 //			signal(SIGINT, SIG_IGN);
 		do {
-			wpid = waitpid(pid, &status, WUNTRACED);
+			wpid = waitpid(g_ms->pid[0], &status, WUNTRACED);
 /*            if (wpid == -1) {
                 perror("ERROR waitpid");
                 exit(EXIT_FAILURE);
@@ -378,38 +379,56 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	{
 		cmd = check_var_cmd(g, cmd);
 		if (!cmd || ft_strequ(cmd, "\0"))
+		{
+			// free(cmd);
 			return (1);
+		}
 	}
 	g->cmd_tab = creat_list_arg(cmd);
-	
+
 	test_redir_flag(cmd, g);
+	// comd = get_cmd_in_line(cmd);
+	// print_split(master_cmd);
 	if (g->ret_dir)
 	{
 		exit_free(g->cmd_tab);
-		g->cmd_tab = get_argv_redir(cmd);	
+		g->cmd_tab = get_argv_redir(cmd);
 	}
-	
+
 	g->cmd_ac = count_tab(g->cmd_tab);
 	//printf("cd_ac ; %d\n", g->cmd_ac);
 	//print_2Dtab(g->cmd_tab, "www");
 
 	comd = get_cmd_in_line(cmd);
-	if(ft_strcmp(comd, "export") == 0)
+	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
-		if (launch(cmd, comd, g, i, NULL) == -1)
+		ft_exit_plus(g->cmd_tab);
+		free_split(g->cmd_tab);
+		g->exit = 1;
+		ft_exit(2, g, g->ret, g->line);
+	}
+	if(ft_strcmp(g->cmd_tab[0], "export") == 0)
+	{
+		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
+		free_split(g->cmd_tab);
+		// free(cmd);
 		return (1);
 	}
-	if(ft_strcmp(comd, "unset") == 0)
+	if(ft_strcmp(g->cmd_tab[0], "unset") == 0)
 	{
-		if (launch(cmd, comd, g, i, NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
+		free_split(g->cmd_tab);
+		// free(cmd);
 		return (1);
 	}
 	if(ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
-		if (launch(cmd, comd, g, i, NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
+		free_split(g->cmd_tab);
+		// free(cmd);
 		return (1);
 	}
 	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
@@ -421,11 +440,13 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		{
 			while ((dirp = readdir(dir)) != NULL)
 			{
-				if (ft_strequ(dirp->d_name, comd))
+				if (ft_strequ(dirp->d_name, g->cmd_tab[0]))
 				{
-					launcher(cmd, comd, g, i, NULL);
-					free(comd);
+					launcher(cmd, g->cmd_tab[0], g, i, NULL);
+					// free(comd);
 					closedir(dir);
+					free_split(g->cmd_tab);
+					// free(cmd);
 					return (1);
 				}
 			}
@@ -433,7 +454,8 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		closedir(dir);
 		i++;
 	}
-	free(comd);
+	// free(comd);
+	// free(cmd);
 	free_split(g->cmd_tab);
 	return (0);
 }

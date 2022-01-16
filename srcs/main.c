@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 16:27:39 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 18:14:39 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,6 @@ void begin(char **env, t_ms *g)
 }
 
 //Signal pour le 'ctrl + C'
-void signal_in(int signal)
-{
-	(void)signal;
-	errno = 130;
-	ft_putstr("\n");
-	ft_putstr(_GREEN "thhusser> "_NC);
-}
 
 int parseur(t_ms *g, int i, int res)
 {
@@ -194,28 +187,32 @@ void clean_line_cmd(t_ms *g)
 	char **dest;
 	int i;
 	char *str;
+	char *tmp;
 	int count;
 
 	str = NULL;
+	tmp = NULL;
 	i = -1;
 	dest = ft_split(g->line, ' ');
 	count = count_split(dest);
 	while (dest[++i])
 	{
 		if (i == 0)
-		{
 			str = ft_strjoin(dest[i], "");
-		}
 		else if (count - 1 == i)
 		{
-			str = ft_strjoin(str, " ");
-			str = ft_strjoin(str, dest[i]);
+			tmp = ft_strjoin(str, " ");
+			ft_del_line(str);
+			str = ft_strjoin(tmp, dest[i]);
+			ft_del_line(tmp);
 			break;
 		}
 		else if (i != 0)
 		{
-			str = ft_strjoin(str, " ");
-			str = ft_strjoin(str, dest[i]);
+			tmp = ft_strjoin(str, " ");
+			ft_del_line(str);
+			str = ft_strjoin(tmp, dest[i]);
+			ft_del_line(tmp);
 		}
 	}
 	free_split(dest);
@@ -244,12 +241,83 @@ int clean_command(t_ms *g)
 			pipe_command(g, pipe);
 		else if (!find_cmd_path(command, g)) // --> lancement partie yyuan
 		{
+			ft_lstclear(&g->env, &ft_del_list);
 			ft_putstr(command);
 			ft_putstr(": command not found\n");
 			errno = 127;
 		}
 	}
+	// free(command);
 	return (0);
+}
+
+void	end(int sig)
+{
+	(void)sig;
+	if (g_ms->pid[0] != 0 && g_ms->pid[1] == 0)
+	{
+		write(2, "Quit (core dumped)\n", ft_strlen("Quit (core dumped)\n"));
+		errno = 131;
+	}
+	else
+		ft_putstr("\b \b\b \b");
+}
+
+void	recovery(int sig)
+{
+	(void)sig;
+	if (g_ms->pid[0] == 0 && g_ms->pid[1] == 0)
+	{
+		ft_putstr("\b \b\b \b\n");
+		ft_putstr(_GREEN "thhusser> "_NC);
+		errno = 1;
+	}
+	else
+	{
+		// if (g_ms->pid[1] != 0)
+			// kill(g_ms->pid[1], SIGINT);
+		// else
+			// kill(g_ms->pid[0], SIGINT);
+		write(1, "\n", 1);
+		errno = 130;
+	}
+}
+
+int	contains_only_whitespaces(char *line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i])
+	{
+		if (line[i] != ' '
+			&& line[i] != '\t'
+			&& line[i] != '\r'
+			&& line[i] != '\v')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+char	*extract_string(char *str, int len)
+{
+	char	*res;
+	int		i;
+
+	i = 0;
+	if (len == -1)
+		len = ft_strlen(str);
+	res = malloc(sizeof(char) * (len + 1));
+	if (!(res))
+		return (NULL);
+	while (str[i] && i < len)
+	{
+		res[i] = str[i];
+		i++;
+	}
+	res[i] = '\0';
+	return (res);
 }
 
 int main(int argc, char **argv, char **env)
@@ -259,24 +327,46 @@ int main(int argc, char **argv, char **env)
 
 	(void)argv;
 	cmd = NULL;
+	g_ms = &g;
 	if (argc != 1)
 		return (printf(_RED "Error number arguments\n"_NC));
-	signal(SIGINT, signal_in);
+	// signal(SIGINT, signal_in);
+	// signal(SIGQUIT, end);
+	signal(SIGINT, recovery);
+	signal(SIGQUIT, end);
 	begin(env, &g);
+	g.ret = 1;
 	while (1)
 	{
 		init_pipe(&g);
+		// if (g.ret)
+			// ft_putstr(_GREEN "thhusser> "_NC);
+		// g.ret = get_next_line(0, &g.line);
+		// if (!g.ret && g.line == 0)
+			// ft_exit(2, &g, g.ret, g.line);
+		// else
+			// ft_putstr("  \b\b \b");
+		// if (g.ret && g.line[0] != 0)
 		g.line = readline(_GREEN "thhusser> "_NC);
-		if (!ft_strequ(g.line, ""))
+		if (!g.line)
+			g.line = extract_string("exit", -1);
+		if (*(g.line) != '\0'  && contains_only_whitespaces(g.line))
+		{
 			add_history(g.line);
-		if (!g.line || !ft_strcmp(g.line, "exit"))
-			ft_exit(2, &g);
-		clean_command(&g);
+			clean_command(&g);
+		}
+		// g.line = readline(_GREEN "thhusser> "_NC);
+		// if (!ft_strequ(g.line, ""))
+		// 	add_history(g.line);
+		// if (!g.line || !ft_strcmp(g.line, "exit"))
+		// 	ft_exit(2, &g);
+		// clean_command(&g);
 		if (g.error)
 		{
 			print_list(g.error);
 			ft_lstclear(&g.error, &ft_del_list);
 		}
+		// ft_del_line(g.line);
 	}
 	return (0);
 }
