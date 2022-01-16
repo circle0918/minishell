@@ -136,9 +136,9 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 		ft_export(cmd, g);
 		return (1);
 	}
-	else if (ft_strcmp(comd, "unset") == 0)
+	else if (ft_strcmp(g->cmd_tab[0], "unset") == 0)
 	{
-		ft_unset(comd, cmd, g);
+		ft_unset(g);
 		return (1);
 	}
 	else if (ft_strcmp(comd, "env") == 0)
