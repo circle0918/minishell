@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 20:10:46 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 20:43:37 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,6 +247,8 @@ int clean_command(t_ms *g)
 			if (g->ret_errno == 0)
 				g->ret_errno = 127;
 		}
+		else
+			g->ret_errno = 0;
 	}
 	// free(command);
 	return (0);
@@ -265,7 +267,6 @@ void	end(int sig)
 		ft_putstr("\b \b\b \b");
 		g_ms->ret_errno = 1;
 	}
-
 }
 
 void	recovery(int sig)
@@ -277,6 +278,7 @@ void	recovery(int sig)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
+		g_ms->ret_errno = 1;
 	}
 	else
 	{
@@ -285,8 +287,8 @@ void	recovery(int sig)
 		else
 			kill(g_ms->pid[0], SIGINT);
 		write(1, "\n", 1);
+		g_ms->ret_errno = 130;
 	}
-	g_ms->ret_errno = 130;
 }
 
 int	contains_only_whitespaces(char *line)
