@@ -378,6 +378,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 			return (1);
 		}
 	}
+	g->ret_errno = 0;
 	g->cmd_tab = creat_list_arg(cmd);
 
 	test_redir_flag(cmd, g);

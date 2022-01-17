@@ -1,7 +1,7 @@
 #include "../includes/minishell.h"
 
 void print_2Dtab(char** tab, char *str)
-{  
+{
 	int i = 0;
 	while(tab[i])
     	{
@@ -22,7 +22,7 @@ char *get_pwd()
 {
     char buf[1024];
 	char *cwd;
-	
+
 	cwd = getcwd(buf, sizeof(buf));
     return(cwd);
 }
@@ -55,9 +55,9 @@ char **get_argv_redir(char *cmd)
 			break;
 		}
 		i++;
-		argc++;	
+		argc++;
 	}
-	//printf("arvg redir argc : %d\n", argc);	
+	//printf("arvg redir argc : %d\n", argc);
 	argv = (char **)malloc(sizeof(char *) * (argc + 1));
 	argv[argc] = NULL;
 	i = 0;
@@ -67,7 +67,7 @@ char **get_argv_redir(char *cmd)
 		i++;
 	}
 	exit_free(tab);
-	return (argv);	
+	return (argv);
 }
 
 char **get_env_tab(t_list *env)
@@ -102,13 +102,14 @@ int get_redir_in_file(char *cmd)
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
-		//find file name after > >> 
+		//find file name after > >>
         	if (ft_strequ(tab[i], "<"))
 		{
 			fd = open(tab[i + 1], O_WRONLY, 0664);
 			if (fd < 0)
 			{
 				error_out2(NULL, tab[i + 1], "No such file or directory");
+				g_ms->ret_errno = 1;
 				return (-1);
 			}
 			close(fd);
@@ -150,7 +151,7 @@ int get_redir_out_file(char *cmd)
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
-		//find file name after > >> 
+		//find file name after > >>
         	if (ft_strequ(tab[i], ">"))
 		{
 			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
