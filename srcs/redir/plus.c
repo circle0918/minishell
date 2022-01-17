@@ -105,12 +105,13 @@ int get_redir_in_file(char *cmd)
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
-		if (fd > 0)
-			close(fd);
 		//find file name after > >> 
         	if (ft_strequ(tab[i], "<") && !ft_strequ(tab[i+1], "<"))
 		{
-			fd = open(tab[i + 1], O_WRONLY, 0664);
+			if (fd > 0)
+				close(fd);
+			//fd = open(tab[i + 1], O_WRONLY, 0664);
+			fd = open(tab[i + 1], O_RDONLY);
 			if (fd < 0)
 			{
 				error_out2(NULL, tab[i + 1], "No such file or directory");
@@ -121,6 +122,8 @@ int get_redir_in_file(char *cmd)
 		}
         	else if (ft_strequ(tab[i], "<") && ft_strequ(tab[i+1], "<") && tab[i + 2]) // "<<"
 		{
+			if (fd > 0)
+				close(fd);
 			char *delimitor = tab[i + 2]; //TDDO: delimitor quote ?
 			//fd = open("redir_lessless", O_CREAT | O_EXCL | O_RDWR | O_APPEND, 0644);
 			fd = open("redir_lessless", O_CREAT | O_WRONLY | O_APPEND | O_TRUNC, 0644);
@@ -162,6 +165,7 @@ int get_redir_out_file(char *cmd)
         	if (ft_strequ(tab[i], ">"))
 		{
 			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+			printf("redir > :fd: %d\n", fd);
 			close(fd);
 			if (redir_file)
 				free(redir_file);
@@ -170,6 +174,7 @@ int get_redir_out_file(char *cmd)
         	else if (ft_strequ(tab[i], ">>"))
 		{
 			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
+			printf("redir >> :fd: %d\n", fd);
 			close(fd);
 			if (redir_file)
 				free(redir_file);

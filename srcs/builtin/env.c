@@ -55,7 +55,9 @@ void	test_redir_flag(char *cmd, t_ms *g)
 void	exit_free(char **str)
 {
 	int i;
-
+	
+	if (!str)
+		return ;
 	i = 0;
 	while(str[i])
 	{
@@ -174,19 +176,12 @@ char *init_abs_comd(char *comd, char *path_i, char *abs_path_test)
 	char *dir_cmd;
 	char *abs;
 
-		printf("init abs b*****************\n");
-		printf("abs_path_test : %s\n", abs_path_test);
-		printf("pathi : %s\n", path_i);
-		printf("comd : %s\n", comd);
 	if (abs_path_test == NULL)
 		dir_cmd = ft_strjoin(path_i, "/");
 	else
 		dir_cmd = ft_strjoin(abs_path_test, "/");
-		printf("dir_cmd : %s\n", dir_cmd);
 	abs = ft_strjoin(dir_cmd, comd);
 	free(dir_cmd);
-		printf("abs : %s\n", abs);
-		printf("int abs e*****************\n");
 	return (abs);
 }
 
@@ -211,11 +206,8 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	char **argv;
 	char *abs_comd;
 
-	perror("bol 02");
 	argv = init_argv(cmd);
-	perror("bol 03");
 	abs_comd = init_abs_comd(comd, g->path[i], abs_path_test);
-	perror("bol 04");
 
 	int redir_out_fd;
 	int redir_in_fd;
@@ -224,9 +216,6 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	redir_in_fd = 0;
 	if (g->ret_dir)// > <
 	{
-		printf("get->ret_dir : %s\n", g->ret_dir);
-		printf("cmd : %s\n", cmd);
-		print_2Dtab(g->cmd_tab, "cmd_tab");
 
 		redir_in_fd = get_redir_in_file(cmd);
 		if (redir_in_fd == -1)
@@ -235,26 +224,32 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		redir_out_fd = get_redir_out_file(cmd);
 		printf("get_redir_out fd: %d\n", redir_out_fd);
         	if (redir_out_fd > 0)
-	    		dup2(redir_out_fd, STDOUT_FILENO);
-        	if (redir_in_fd > 0)
 		{
-			close(0);
-	    		dup2(redir_in_fd, STDIN_FILENO);
+	    		if (dup2(redir_out_fd, STDOUT_FILENO) == -1)
+				perror("Error redir out");
+		//	close(redir_out_fd);
 		}
-		else if (redir_in_fd == 0)
+		if (redir_in_fd > 0)
 		{
-			printf("redir << here begins \n");
-	    	//	dup2(redir_in_fd, STDIN_FILENO);
+	//		close(0);
+		/*	int _fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
+	    		if (dup2(_fd, STDIN_FILENO) == -1)
+				perror("Error redir in");
+			printf("_in fd after dup2: %d\n", _fd);
+	    	*/	if (dup2(redir_in_fd, STDIN_FILENO) == -1)
+				perror("Error redir in");
+			close(redir_in_fd);
+			printf("get_redir_in fd after dup2: %d\n", redir_in_fd);
 		}
 		exit_free(argv);
 		argv = get_argv_redir(cmd);
 	}
 	char **env;
+	printf("before exec: abs_comd: %s\n", abs_comd);
+	print_2Dtab(argv, "before exec: argv");
 	if (is_buildin(comd, cmd, g) == 0)
 	{
-		printf("b==============\n");
-		printf("abs_comd: %s\n", abs_comd);
-		print_2Dtab(argv, "argv");
+		printf("b exec==============\n");
 		env = get_env_tab(g->env);
 		if (execve(abs_comd, argv, env) == -1) {
 			free(abs_comd);
@@ -262,17 +257,17 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 			exit_free(env);
 			return (-1);
 		}
-		printf("e==============\n");
+		printf("e exec==============\n");
 	}
 	free(abs_comd);
 	exit_free(argv);
 	exit_free(env);
 
-	if (redir_out_fd)
+/*	if (redir_out_fd)
 		close(redir_out_fd);
 	if (redir_in_fd)
 		close(redir_in_fd);
-	return (0);
+*/	return (0);
 }
 
 
@@ -282,32 +277,26 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	pid_t wpid;
 	int status;
 
-	perror("launcher before fork");
 	g_ms->pid[0] = fork();
 	if (g_ms->pid[0] == 0)
 	{
-	  // Child process
 		if (launch(cmd, comd, g, i, abs_path_test) == -1)
-	  		perror("launch error");
-		exit(EXIT_FAILURE);
+	  		perror("Error fork launch");
+		//exit(EXIT_FAILURE);
 	}
 	else if (g_ms->pid[0] < 0)
-	{
-		// Error forking
-		perror("lsh");
-	}
+		perror("Error forking");
 	else
 	{
-		// Parent process
-		if (ft_strequ(comd, "minishell"))
-			signal(SIGINT, SIG_IGN);
-		do {
+		while (1)
+		{
+			if (ft_strequ(comd, "minishell"))
+				signal(SIGINT, SIG_IGN);
 			wpid = waitpid(g_ms->pid[0], &status, WUNTRACED);
 		      	if (wpid == -1) {
                 		perror("ERROR waitpid");
                 		exit(EXIT_FAILURE);
             		}
-
 	    		if (WIFEXITED(status)) {
                 		printf("terminé, code=%d\n", WEXITSTATUS(status));
             		} else if (WIFSIGNALED(status)) {
@@ -317,8 +306,9 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
             		} else if (WIFCONTINUED(status)) {
                 		printf("relancé\n");
             		}
-		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-       		// printf("Parent: child %d died with status 0x%.4X\n", pid, status);
+			if (WIFEXITED(status) || WIFSIGNALED(status))
+				break;
+		}
 	}
 	return 1;
 }
@@ -345,11 +335,7 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 	if (path[0] != '/')
 	{
 		char *tmp = path;
-		//char cwd[256];
-		//if (getcwd(cwd, sizeof(cwd)) == NULL)
-		//	perror("getcwd() error");	
 		char *tmp2 = ft_strjoin(getenv("PWD"), "/");
-		//char *tmp2 = ft_strjoin(get_env("PWD", g->env), "/");
 		path = ft_strjoin(tmp2, tmp);
 		printf("changing path: %s\n", path);
 		free(tmp);
@@ -450,7 +436,6 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	if(ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
-	perror("bol 01");
 		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
@@ -459,6 +444,14 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
 		return (1);
+	char *path_from_env = get_env("PATH", g->env);
+	printf("path: %s\n", path_from_env);
+	if (path_from_env == NULL)
+	{
+		error_out2(comd, NULL, "No such file or directory");
+		g->ret_errno = 127;
+		return (1);
+	}
 	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);

@@ -11,8 +11,11 @@ void error_out2(char *comd, char *opt, char *msg)
 		ft_strcat(str, comd);
 		ft_strcat(str, ": ");
 	}
-	ft_strcat(str, opt);
-	ft_strcat(str, ": ");
+	if (opt)
+	{
+		ft_strcat(str, opt);
+		ft_strcat(str, ": ");
+	}
 	ft_strcat(str, msg);
 	ft_strcat(str, "\n");
 	ft_putstr_fd(str, 2);

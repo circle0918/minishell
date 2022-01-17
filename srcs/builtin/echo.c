@@ -51,10 +51,6 @@ void echo_printf(char *s)
 */
 void ft_echo(t_ms *g)
 {
-	//TODO
-	// ' ', "", \" ==> ", $ env,
-	//echo $? return 0 (normal)/1 (error)
-//	char **tab;
 	int i;
 	int is_opt_n;
 
