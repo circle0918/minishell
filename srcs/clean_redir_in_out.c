@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/16 23:57:11 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 23:57:13 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/17 03:31:39 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,9 +110,9 @@ char	*ft_checkredir2(char *str, char *tmp, int i, int j)
 			tmp[j++] = str[i++];
 			tmp = get_tmp_che(tmp, str, &i, &j);
 		}
-		if (i != 0 && str[i] != '"' && str[i] != '\'')
-			if (ft_spacechevron(str, i))
-				tmp[j++] = ' ';
+		// if (i != 0 && str[i] != '"' && str[i] != '\'')
+			// if (ft_spacechevron(str, i))
+				// tmp[j++] = ' ';
 		tmp[j++] = str[i++];
 	}
 	tmp[j] = '\0';

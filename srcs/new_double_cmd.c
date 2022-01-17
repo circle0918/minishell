@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 22:21:29 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 20:01:17 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/17 03:32:24 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ char	*get_cmd_creat(char *cmd, char *line, int *i, int *k)
 		c = line[*i];
 		cmd = get_cmd_quote(cmd, line, &i, &k);
 	}
-	if (line[*i] == '\\' && line[*i + 1] != '>' && line[*i + 1] != '<')
+	if (line[*i] == '\\' && line[*i + 1] != '<' && line[*i + 1] != '>')
 		*i += 1;
 	if (line[*i] != c)
 	{

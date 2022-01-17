@@ -382,7 +382,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 
 	test_redir_flag(cmd, g);
 	// comd = get_cmd_in_line(cmd);
-	// print_split(master_cmd);
+	// print_split(g->cmd_tab);
 	if (g->ret_dir)
 	{
 		exit_free(g->cmd_tab);
