@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 10:33:33 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/17 19:17:14 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/17 23:49:25 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	ft_exit(int nb, t_ms *g, int ret, char *line)
 		ft_lstclear(&g->cmd, &ft_del_list);
 		ft_lstclear(&g->cmd_tmp, &ft_del_list);
 		ft_lstclear(&g->error, &ft_del_list);
+		free_split(g->cmd_tab);
 		free_split(g->path);
 		exit(g->ret_errno);
 	}

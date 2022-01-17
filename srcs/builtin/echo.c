@@ -63,7 +63,7 @@ void ft_echo(t_ms *g)
 	if(g->cmd_ac == 1)
 	{
 		printf("\n");
-		//exit_free(tab);
+		//free_split(tab);
 		return;
 	}
 	i = check_n(g->cmd_tab);
@@ -77,5 +77,5 @@ void ft_echo(t_ms *g)
 	}
 	if (!is_opt_n)
 		printf("\n");
-//	exit_free(tab);
+//	free_split(tab);
 }

@@ -66,7 +66,7 @@ char **get_argv_redir(char *cmd)
 		argv[i] = ft_strdup(tab[i]);
 		i++;
 	}
-	exit_free(tab);
+	free_split(tab);
 	return (argv);
 }
 
@@ -128,7 +128,7 @@ int get_redir_in_file(char *cmd)
 		}
 		i++;
 	}
-	exit_free(tab);
+	free_split(tab);
 	printf("redir in: %s\n", redir_file);
 	if (redir_file)
 	{
@@ -171,7 +171,7 @@ int get_redir_out_file(char *cmd)
 		}
 		i++;
 	}
-	exit_free(tab);
+	free_split(tab);
 	printf("redir out: %s\n", redir_file);
 	if (!redir_file)
 		return (0);

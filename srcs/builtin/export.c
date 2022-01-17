@@ -47,7 +47,7 @@ void export_no_arg (t_ms *g)
 tmp_env = tmp_env->next;
 	while(tmp_env->next)
 	{
-	
+
 	//    printf("env->content : %s\n", tmp_env->content);
 	//	printf("--------------------------------------------\n");
 		tmp_exp = export_lst;
@@ -77,7 +77,7 @@ tmp_env = tmp_env->next;
 					tmp_exp = node;*/
 					ft_lstadd_front(&export_lst, node);
 					break;
-				}	
+				}
 			}
 			tmp_exp_pre = tmp_exp;
 			if (tmp_exp->next == NULL)
@@ -89,7 +89,7 @@ tmp_env = tmp_env->next;
 			node = ft_lstnew(tmp_env->content);
 			last->next = node;
 		}
-			
+
 		tmp_env = tmp_env->next;
 	}
 	//print_list(export_lst);
@@ -159,7 +159,7 @@ t_list	*ft_lst_pop_last(t_list **lst)
 		return (NULL);
 	top = *lst;
 	if (top->next == NULL)
-	{	
+	{
 		pop = top;
 		top = NULL;
 		return (pop);
@@ -181,7 +181,7 @@ void export_append(char **tab, int i, t_ms *g)
 	ft_lstadd_back(&g->env, last);
 	//AAA= aaa ==> considered as two args. "" will be added to AAA
 }
-		
+
 void ft_export(char *cmd, t_ms *g)
 {
 	char **tab;
@@ -192,7 +192,7 @@ void ft_export(char *cmd, t_ms *g)
 	if (!tab[1]) //if only export == export p : declare -x all env=
 	{
 		export_no_arg(g);
-		exit_free(tab);
+		free_split(tab);
 		return ;
 	}
 	i = 0;
@@ -206,9 +206,9 @@ void ft_export(char *cmd, t_ms *g)
 		else
 		{
 			if (export_replaced(ptr, tab, i, g))
-				continue;	
+				continue;
 			export_append(tab, i, g);
 		}
 	}
-	exit_free(tab);
+	free_split(tab);
 }

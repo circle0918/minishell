@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/17 19:33:51 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 00:03:13 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,6 @@ char *check_in_out(t_ms *g, char *str)
 		str = ft_checkbackredir(g, 0, 0);
 	return (str);
 }
-
 //check_in_out  --> my_redirection
 //check_nb_pipe --> ft_nbpipe2
 //pipe_command  --> ft_pipe

@@ -52,19 +52,6 @@ void	test_redir_flag(char *cmd, t_ms *g)
 	// return (tmp);
 }
 
-void	exit_free(char **str)
-{
-	int i;
-
-	i = 0;
-	while(str[i])
-	{
-		free(str[i]);
-		i++;
-	}
-	free(str);
-}
-
 char	*get_cmd_in_line(char *line)
 {
 	char *cmd;
@@ -228,7 +215,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 			close(0);
 	    		dup2(redir_in_fd, STDIN_FILENO);
 		}
-		exit_free(argv);
+		free_split(argv);
 		argv = get_argv_redir(cmd);
 	}
 
@@ -242,7 +229,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	//	printf("e==============\n");
 	}
 	free(abs_comd);
-	exit_free(argv);
+	free_split(argv);
 
 	if (redir_out_fd)
 		close(redir_out_fd);
@@ -386,7 +373,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	// print_split(g->cmd_tab);
 	if (g->ret_dir)
 	{
-		exit_free(g->cmd_tab);
+		free_split(g->cmd_tab);
 		g->cmd_tab = get_argv_redir(cmd);
 	}
 
