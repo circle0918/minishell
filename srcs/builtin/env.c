@@ -38,13 +38,12 @@ void	test_redir_flag(char *cmd, t_ms *g)
 {
 	int i;
 	char *tmp;
-	(void)g;
 
 	i = 0;
 	tmp = NULL;
 	if (ft_strchr(cmd, '>') || ft_strchr(cmd, '<'))
 	{
-		while (cmd[i] && cmd[i] != '>')
+		while (cmd[i] && cmd[i] != '>' && cmd[i] != '<')
 			i++;
 		tmp = ft_strdup(cmd + i);
 		strcpy_del_c(tmp, g);
@@ -456,7 +455,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	// free(comd);
 	// free(cmd);
-	free_split(g->cmd_tab);
+	// free_split(g->cmd_tab);
 	return (0);
 }
 
