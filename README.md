@@ -1,4 +1,22 @@
-# minishell
+# minishellSHELL
+
+echo $?
+    -> multi ligne = 130
+    -> command not found = 127
+    -> bash: syntax error near unexpected token = 2
+    ->  thhusser> env | grep
+        Usage: grep [OPTION]... PATTERNS [FILE]...
+        Try 'grep --help' for more information.             = 2
+
+    ->
+
+
+
+
+
+
+
+
 
 ## Restruturer --> 11/01/2022
     * Ne plus passer par find path pour executer les commande mais par clean_commande
@@ -6,7 +24,7 @@
         * regarder si il y a des pipes --> Si oui les executer --> Sinon faire la commande avec une autre fonction
             * Si pipe les executer et les parser ligne entiere en suprimant les space à voir si enregistrement dans un double tableau pour les executer.
             * Sinon si pas de pipe, exeuter la commande ! et parser cette derniere --> la on recherche le $ (utiliser la meme fonction pour exceve les commande dans les pipes)
-    * Pour les pipes obliger d'utiliser des file descripteur et pid a envoyer dans la structure global pour gerer le processus global, surement aussi en local sur chaque pipe. --> Penser à bien les fermer 
+    * Pour les pipes obliger d'utiliser des file descripteur et pid a envoyer dans la structure global pour gerer le processus global, surement aussi en local sur chaque pipe. --> Penser à bien les fermer
 
 
 parseur --> voir les erreurs missings cotes --> "bash: missing quote" -- > ok pour pipe et chevron out

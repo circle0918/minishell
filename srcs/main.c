@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/13 19:18:33 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 00:03:13 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,6 @@ void begin(char **env, t_ms *g)
 }
 
 //Signal pour le 'ctrl + C'
-void signal_in(int signal)
-{
-	(void)signal;
-	ft_putstr("\n");
-	ft_putstr(_GREEN "thhusser> "_NC);
-}
 
 int parseur(t_ms *g, int i, int res)
 {
@@ -42,7 +36,8 @@ int parseur(t_ms *g, int i, int res)
 			i = parseur_quotes(g, i + 1, g->line[i]);
 			if (i == -1)
 			{
-				record_list(&g->error, "bash: syntax error: unexpected end of file\n"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
+				record_list(&g->error, "bash: syntax error: unexpected end of file"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
+				g->ret_errno = 2;
 				return (1);																//generer une erreur correspondante a bash
 			}
 		}
@@ -50,14 +45,19 @@ int parseur(t_ms *g, int i, int res)
 		if (g->line[i] == '>')
 		{
 			res = parsing_redirection_out(i, 0, g);
+			if (g->line[i] == '>')
+				i++;
 			if (res != 0)
 				return (res);
 		}
 		if (g->line[i] == '<')
 		{
 			res = parsing_redirection_in(i, 0, g);
+			if (g->line[i + 1] == '<')
+				i++;
 			if (res != 0)
 				return (res);
+
 		}
 		// check pipe (compter nombre de pipe ? compter nombre de sous commande ? utiliser les global pour le multi pipe ?)
 		if (g->line[i] == '|')
@@ -148,7 +148,6 @@ char *check_in_out(t_ms *g, char *str)
 		str = ft_checkbackredir(g, 0, 0);
 	return (str);
 }
-
 //check_in_out  --> my_redirection
 //check_nb_pipe --> ft_nbpipe2
 //pipe_command  --> ft_pipe
@@ -192,28 +191,32 @@ void clean_line_cmd(t_ms *g)
 	char **dest;
 	int i;
 	char *str;
+	char *tmp;
 	int count;
 
 	str = NULL;
+	tmp = NULL;
 	i = -1;
 	dest = ft_split(g->line, ' ');
 	count = count_split(dest);
 	while (dest[++i])
 	{
 		if (i == 0)
-		{
 			str = ft_strjoin(dest[i], "");
-		}
 		else if (count - 1 == i)
 		{
-			str = ft_strjoin(str, " ");
-			str = ft_strjoin(str, dest[i]);
+			tmp = ft_strjoin(str, " ");
+			ft_del_line(str);
+			str = ft_strjoin(tmp, dest[i]);
+			ft_del_line(tmp);
 			break;
 		}
 		else if (i != 0)
 		{
-			str = ft_strjoin(str, " ");
-			str = ft_strjoin(str, dest[i]);
+			tmp = ft_strjoin(str, " ");
+			ft_del_line(str);
+			str = ft_strjoin(tmp, dest[i]);
+			ft_del_line(tmp);
 		}
 	}
 	free_split(dest);
@@ -242,11 +245,89 @@ int clean_command(t_ms *g)
 			pipe_command(g, pipe);
 		else if (!find_cmd_path(command, g)) // --> lancement partie yyuan
 		{
+			ft_lstclear(&g->env, &ft_del_list);
 			ft_putstr(command);
 			ft_putstr(": command not found\n");
+			if (g->ret_errno == 0)
+				g->ret_errno = 127;
 		}
 	}
+	// free(command);
 	return (0);
+}
+
+void	end(int sig)
+{
+	(void)sig;
+	if (g_ms->pid[0] != 0 && g_ms->pid[1] == 0)
+	{
+		write(2, "Quit (core dumped)\n", ft_strlen("Quit (core dumped)\n"));
+		g_ms->ret_errno = 131;
+	}
+	else
+	{
+		ft_putstr("\b \b\b \b");
+		g_ms->ret_errno = 0;
+	}
+}
+
+void	recovery(int sig)
+{
+	(void)sig;
+	if (g_ms->pid[0] == 0 && g_ms->pid[1] == 0)
+	{
+		ft_putstr("\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+		g_ms->ret_errno = 130;
+	}
+	else
+	{
+		if (g_ms->pid[1] != 0)
+			kill(g_ms->pid[1], SIGINT);
+		else
+			kill(g_ms->pid[0], SIGINT);
+		write(1, "\n", 1);
+		g_ms->ret_errno = 130;
+	}
+}
+
+int	contains_only_whitespaces(char *line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i])
+	{
+		if (line[i] != ' '
+			&& line[i] != '\t'
+			&& line[i] != '\r'
+			&& line[i] != '\v')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+char	*extract_string(char *str, int len)
+{
+	char	*res;
+	int		i;
+
+	i = 0;
+	if (len == -1)
+		len = ft_strlen(str);
+	res = malloc(sizeof(char) * (len + 1));
+	if (!(res))
+		return (NULL);
+	while (str[i] && i < len)
+	{
+		res[i] = str[i];
+		i++;
+	}
+	res[i] = '\0';
+	return (res);
 }
 
 int main(int argc, char **argv, char **env)
@@ -256,23 +337,32 @@ int main(int argc, char **argv, char **env)
 
 	(void)argv;
 	cmd = NULL;
+	g_ms = &g;
 	if (argc != 1)
 		return (printf(_RED "Error number arguments\n"_NC));
-	signal(SIGINT, signal_in);
+	signal(SIGINT, recovery);
+	signal(SIGQUIT, end);
 	begin(env, &g);
+	g.ret = 1;
 	while (1)
 	{
 		init_pipe(&g);
-		ft_putstr(_GREEN "thhusser> "_NC);
-		if (!get_next_line(0, &g.line) || !ft_strcmp(g.line, "exit"))
-			ft_exit(2, &g);
-		clean_command(&g);
+		g.line = readline(_GREEN "thhusser> "_NC);
+		if (!g.line)
+			g.line = extract_string("exit", -1);
+		if (*(g.line) != '\0'  && contains_only_whitespaces(g.line))
+		{
+			add_history(g.line);
+			clean_command(&g);
+		}
+		// else if (g.pid[1] != 0)
+			// g.ret_errno = 1;
 		if (g.error)
 		{
 			print_list(g.error);
 			ft_lstclear(&g.error, &ft_del_list);
 		}
-		ft_del_line(g.line);
+		// ft_del_line(g.line);
 	}
 	return (0);
 }

@@ -6,10 +6,16 @@ void error_out2(char *comd, char *opt, char *msg)
 
 	str[0] = '\0';
 	ft_strcat(str, "minishell : ");
-	ft_strcat(str, comd);
-	ft_strcat(str, ": ");
-	ft_strcat(str, opt);
-	ft_strcat(str, ": ");
+	if (comd)
+	{
+		ft_strcat(str, comd);
+		ft_strcat(str, ": ");
+	}
+	if (opt)
+	{
+		ft_strcat(str, opt);
+		ft_strcat(str, ": ");
+	}
 	ft_strcat(str, msg);
 	ft_strcat(str, "\n");
 	ft_putstr_fd(str, 2);
@@ -67,6 +73,7 @@ void set_env(char *key, char *val, t_list *env)
 void change_path(char *path, t_ms *g, int change_back)
 {
 	char* pwd;
+	path = get_pwd();
 
 	if (change_back)
 	{
@@ -82,29 +89,25 @@ void change_path(char *path, t_ms *g, int change_back)
 		set_env("PWD", path, g->env);
 	}
 }
-void ft_cd(char *comd, char *cmd, t_ms *g)
+void ft_cd(t_ms *g)
 {
-	//TODO $home/$pwd change env PWD and OLDPWD
 	char *path;
-	(void)comd;
-	int only_cd;
-
-	only_cd = 0;
-//	TODO error if too many args
-	path = ft_substr(cmd, 3, (ft_strlen(cmd)-3));
+	if(g->cmd_ac == 2)
+		path = ft_strdup(g->cmd_tab[1]);
 
 	char cwd[1024];
 	char *tmp_path;
-
-	if(ft_strchr(path, ' '))
+	g->ret_errno = 0;
+	if(g->cmd_ac > 2)
 	{
+		g->ret_errno = 1;
 		error_out2("cd", path, "Too many arguements");
-		free(path);
 	}
-	if (ft_strlen(cmd)<=3 || ft_strequ(path, "~") || ft_strequ(path, "--"))
+	if (g->cmd_ac == 1|| ft_strequ(path, "~") || ft_strequ(path, "--"))
 	{
 		//path == home
-		free(path);
+		if (g->cmd_ac == 2)
+			free(path);
 		path = get_env("HOME", g->env);
 	}
 	if (ft_strequ(path, "-"))
@@ -117,7 +120,9 @@ void ft_cd(char *comd, char *cmd, t_ms *g)
 			change_path(path, g, 1);
 		else
 		{
+			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
+			g->ret_errno = 1;
 		}
 		return ;
 	}
@@ -137,15 +142,19 @@ void ft_cd(char *comd, char *cmd, t_ms *g)
 			change_path(cwd, g, 0);
 		else
 		{
+			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
+			g->ret_errno = 1;
 		}
-		
+
     }else{
         if (chdir(path) == 0)
 			change_path(path, g, 0);
 		else
 		{
+			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
+			g->ret_errno = 1;
 		}
     }
 }
