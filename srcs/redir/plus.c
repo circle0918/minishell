@@ -1,7 +1,7 @@
 #include "../includes/minishell.h"
 
 void print_2Dtab(char** tab, char *str)
-{  
+{
 	int i = 0;
 	while(tab[i])
     	{
@@ -22,7 +22,7 @@ char *get_pwd()
 {
     char buf[1024];
 	char *cwd;
-	
+
 	cwd = getcwd(buf, sizeof(buf));
     return(cwd);
 }
@@ -54,9 +54,8 @@ char **get_argv_redir(char *cmd)
 			break;
 		}
 		i++;
-		argc++;	
+		argc++;
 	}
-	printf("arvg redir argc : %d\n", argc);	
 	argv = (char **)malloc(sizeof(char *) * (argc + 1));
 	argv[argc] = NULL;
 	i = 0;
@@ -65,9 +64,8 @@ char **get_argv_redir(char *cmd)
 		argv[i] = ft_strdup(tab[i]);
 		i++;
 	}
-	print_2Dtab(argv, "finish argv");
-	exit_free(tab);
-	return (argv);	
+	free_split(tab);
+	return (argv);
 }
 
 char **get_env_tab(t_list *env)
@@ -105,17 +103,16 @@ int get_redir_in_file(char *cmd)
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
-		//find file name after > >> 
-        	if (ft_strequ(tab[i], "<") && !ft_strequ(tab[i+1], "<"))
+        if (ft_strequ(tab[i], "<") && !ft_strequ(tab[i+1], "<"))
 		{
 			if (fd > 0)
 				close(fd);
-			//fd = open(tab[i + 1], O_WRONLY, 0664);
 			fd = open(tab[i + 1], O_RDONLY);
 			if (fd < 0)
 			{
 				error_out2(NULL, tab[i + 1], "No such file or directory");
 				exit_free(tab);
+				g_ms->ret_errno = 1;
 				return (-1);
 			}
 			printf("redir < :fd: %d\n", fd);
@@ -143,8 +140,7 @@ int get_redir_in_file(char *cmd)
 		}
 		i++;
 	}
-	exit_free(tab);
-	printf("redir in fd: %d\n", fd);
+	free_split(tab);
 	return (fd);
 }
 int get_redir_out_file(char *cmd)
@@ -161,7 +157,7 @@ int get_redir_out_file(char *cmd)
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
-		//find file name after > >> 
+		//find file name after > >>
         	if (ft_strequ(tab[i], ">"))
 		{
 			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
@@ -183,7 +179,7 @@ int get_redir_out_file(char *cmd)
 		}
 		i++;
 	}
-	exit_free(tab);
+	free_split(tab);
 	printf("redir out: %s\n", redir_file);
 	if (!redir_file)
 		return (0);

@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/17 01:58:54 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 00:03:13 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,6 @@ char *check_in_out(t_ms *g, char *str)
 		str = ft_checkbackredir(g, 0, 0);
 	return (str);
 }
-
 //check_in_out  --> my_redirection
 //check_nb_pipe --> ft_nbpipe2
 //pipe_command  --> ft_pipe
@@ -252,8 +251,6 @@ int clean_command(t_ms *g)
 			if (g->ret_errno == 0)
 				g->ret_errno = 127;
 		}
-		else
-			g->ret_errno = 0;
 	}
 	// free(command);
 	return (0);
@@ -270,7 +267,7 @@ void	end(int sig)
 	else
 	{
 		ft_putstr("\b \b\b \b");
-		g_ms->ret_errno = 1;
+		g_ms->ret_errno = 0;
 	}
 }
 
@@ -283,7 +280,7 @@ void	recovery(int sig)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		g_ms->ret_errno = 1;
+		g_ms->ret_errno = 130;
 	}
 	else
 	{
@@ -343,8 +340,6 @@ int main(int argc, char **argv, char **env)
 	g_ms = &g;
 	if (argc != 1)
 		return (printf(_RED "Error number arguments\n"_NC));
-	// signal(SIGINT, signal_in);
-	// signal(SIGQUIT, end);
 	signal(SIGINT, recovery);
 	signal(SIGQUIT, end);
 	begin(env, &g);
@@ -360,6 +355,8 @@ int main(int argc, char **argv, char **env)
 			add_history(g.line);
 			clean_command(&g);
 		}
+		// else if (g.pid[1] != 0)
+			// g.ret_errno = 1;
 		if (g.error)
 		{
 			print_list(g.error);

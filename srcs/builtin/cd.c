@@ -122,6 +122,7 @@ void ft_cd(t_ms *g)
 		{
 			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
+			g->ret_errno = 1;
 		}
 		return ;
 	}
@@ -143,8 +144,9 @@ void ft_cd(t_ms *g)
 		{
 			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
+			g->ret_errno = 1;
 		}
-		
+
     }else{
         if (chdir(path) == 0)
 			change_path(path, g, 0);
@@ -152,6 +154,7 @@ void ft_cd(t_ms *g)
 		{
 			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
+			g->ret_errno = 1;
 		}
     }
 }

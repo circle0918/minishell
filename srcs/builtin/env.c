@@ -241,7 +241,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 			close(redir_in_fd);
 			printf("get_redir_in fd after dup2: %d\n", redir_in_fd);
 		}
-		exit_free(argv);
+		free_split(argv);
 		argv = get_argv_redir(cmd);
 	}
 	char **env;
@@ -260,8 +260,8 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		printf("e exec==============\n");
 	}
 	free(abs_comd);
-	exit_free(argv);
-	exit_free(env);
+	free_split(argv);
+	free_split(env);
 
 /*	if (redir_out_fd)
 		close(redir_out_fd);
@@ -394,14 +394,15 @@ int		find_cmd_path(char *cmd, t_ms *g)
 			return (1);
 		}
 	}
+	g->ret_errno = 0;
 	g->cmd_tab = creat_list_arg(cmd);
 
 	test_redir_flag(cmd, g);
 	// comd = get_cmd_in_line(cmd);
-	// print_split(master_cmd);
+	// print_split(g->cmd_tab);
 	if (g->ret_dir)
 	{
-		exit_free(g->cmd_tab);
+		free_split(g->cmd_tab);
 		g->cmd_tab = get_argv_redir(cmd);
 	}
 
