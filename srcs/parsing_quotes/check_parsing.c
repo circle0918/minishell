@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:07:49 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 19:24:55 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/17 01:54:12 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int		parse_error(int res, char *erreur, t_ms *g)
 	if (res == 1)
 	{
 		line_1 = ft_strjoin("bash: syntax error near unexpected token `", erreur);
-		dest = ft_strjoin(line_1, "'\n");
+		dest = ft_strjoin(line_1, "'");
 		ft_del_line(line_1);
 		record_list(&g->error, dest);
 		ft_del_line(dest);
@@ -30,7 +30,7 @@ int		parse_error(int res, char *erreur, t_ms *g)
 	}
 	else if (res == 2)
 	{
-		record_list(&g->error, "bash: missing quote\n");
+		record_list(&g->error, "bash: missing quote");
 		g->ret_errno = 130;
 		return (-1);
 	}
