@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 05:40:03 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 23:56:05 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef struct 	s_ms
 				t_list	*cmd;
 				t_list	*cmd_tmp;
 				t_list	*error;
-				int		ret_errno;
+				int	ret_errno;
 				int exit;
 }				t_ms;
 
@@ -119,4 +119,5 @@ char **get_argv_redir(char *cmd);
 void print_2Dtab(char** tab, char *str);
 int get_redir_in_file(char *cmd);
 void error_out2(char *comd, char *opt, char *msg);
+char **get_env_tab(t_list *env);
 #endif

@@ -38,13 +38,12 @@ void	test_redir_flag(char *cmd, t_ms *g)
 {
 	int i;
 	char *tmp;
-	(void)g;
 
 	i = 0;
 	tmp = NULL;
 	if (ft_strchr(cmd, '>') || ft_strchr(cmd, '<'))
 	{
-		while (cmd[i] && cmd[i] != '>')
+		while (cmd[i] && cmd[i] != '>' && cmd[i] != '<')
 			i++;
 		tmp = ft_strdup(cmd + i);
 		strcpy_del_c(tmp, g);
@@ -56,7 +55,9 @@ void	test_redir_flag(char *cmd, t_ms *g)
 void	exit_free(char **str)
 {
 	int i;
-
+	
+	if (!str)
+		return ;
 	i = 0;
 	while(str[i])
 	{
@@ -213,9 +214,9 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 
 	redir_out_fd = 0;
 	redir_in_fd = 0;
-//	char *redir_inin_delimitor;
 	if (g->ret_dir)// > <
 	{
+
 		redir_in_fd = get_redir_in_file(cmd);
 		if (redir_in_fd == -1)
 	      		return (1);
@@ -223,38 +224,50 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		redir_out_fd = get_redir_out_file(cmd);
 		printf("get_redir_out fd: %d\n", redir_out_fd);
         	if (redir_out_fd > 0)
-	    		dup2(redir_out_fd, STDOUT_FILENO);
-        	if (redir_in_fd > 0)
 		{
-			close(0);
-	    		dup2(redir_in_fd, STDIN_FILENO);
+	    		if (dup2(redir_out_fd, STDOUT_FILENO) == -1)
+				perror("Error redir out");
+		//	close(redir_out_fd);
 		}
-		else if (redir_in_fd == 0)
+		if (redir_in_fd > 0)
 		{
-			printf("redir << here begins \n");
-	    	//	dup2(redir_in_fd, STDIN_FILENO);
+	//		close(0);
+		/*	int _fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
+	    		if (dup2(_fd, STDIN_FILENO) == -1)
+				perror("Error redir in");
+			printf("_in fd after dup2: %d\n", _fd);
+	    	*/	if (dup2(redir_in_fd, STDIN_FILENO) == -1)
+				perror("Error redir in");
+			close(redir_in_fd);
+			printf("get_redir_in fd after dup2: %d\n", redir_in_fd);
 		}
 		exit_free(argv);
 		argv = get_argv_redir(cmd);
 	}
-
+	char **env;
+	printf("before exec: abs_comd: %s\n", abs_comd);
+	print_2Dtab(argv, "before exec: argv");
 	if (is_buildin(comd, cmd, g) == 0)
 	{
-	//	printf("b==============\n");
-	//	printf("abs_comd: %s\n", abs_comd);
-	//	print_2Dtab(argv, "argv");
-		if (execve(abs_comd, argv, NULL) == -1)
+		printf("b exec==============\n");
+		env = get_env_tab(g->env);
+		if (execve(abs_comd, argv, env) == -1) {
+			free(abs_comd);
+			exit_free(argv);
+			exit_free(env);
 			return (-1);
-	//	printf("e==============\n");
+		}
+		printf("e exec==============\n");
 	}
 	free(abs_comd);
 	exit_free(argv);
+	exit_free(env);
 
-	if (redir_out_fd)
+/*	if (redir_out_fd)
 		close(redir_out_fd);
 	if (redir_in_fd)
 		close(redir_in_fd);
-	return (0);
+*/	return (0);
 }
 
 
@@ -267,48 +280,44 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	g_ms->pid[0] = fork();
 	if (g_ms->pid[0] == 0)
 	{
-	  // Child process
 		if (launch(cmd, comd, g, i, abs_path_test) == -1)
-	  		perror("launch error");
-		exit(EXIT_FAILURE);
+	  		perror("Error fork launch");
+		//exit(EXIT_FAILURE);
 	}
 	else if (g_ms->pid[0] < 0)
-	{
-		// Error forking
-		perror("lsh");
-	}
+		perror("Error forking");
 	else
 	{
-		// Parent process
-//		if (ft_strequ(comd, "minishell"))
-//			signal(SIGINT, SIG_IGN);
-		do {
+		while (1)
+		{
+			if (ft_strequ(comd, "minishell"))
+				signal(SIGINT, SIG_IGN);
 			wpid = waitpid(g_ms->pid[0], &status, WUNTRACED);
-/*            if (wpid == -1) {
-                perror("ERROR waitpid");
-                exit(EXIT_FAILURE);
-            }
-
-            if (WIFEXITED(status)) {
-                printf("terminé, code=%d\n", WEXITSTATUS(status));
-            } else if (WIFSIGNALED(status)) {
-                printf("tué par le signal %d\n", WTERMSIG(status));
-            } else if (WIFSTOPPED(status)) {
-                printf("arrêté par le signal %d\n", WSTOPSIG(status));
-            } else if (WIFCONTINUED(status)) {
-                printf("relancé\n");
-            }*/
-		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-       // printf("Parent: child %d died with status 0x%.4X\n", pid, status);
+		      	if (wpid == -1) {
+                		perror("ERROR waitpid");
+                		exit(EXIT_FAILURE);
+            		}
+	    		if (WIFEXITED(status)) {
+                		printf("terminé, code=%d\n", WEXITSTATUS(status));
+            		} else if (WIFSIGNALED(status)) {
+                		printf("tué par le signal %d\n", WTERMSIG(status));
+            		} else if (WIFSTOPPED(status)) {
+                		printf("arrêté par le signal %d\n", WSTOPSIG(status));
+            		} else if (WIFCONTINUED(status)) {
+                		printf("relancé\n");
+            		}
+			if (WIFEXITED(status) || WIFSIGNALED(status))
+				break;
+		}
 	}
 	return 1;
 }
 int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 {
-	int l;
-	char *path;
-	char *exec;
-	DIR				*dir;
+	int	l;
+	char	*path;
+	char	*exec;
+	DIR	*dir;
 	struct dirent	*dirp;
 
 	l = ft_strlen(comd) - 1;
@@ -321,18 +330,19 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 	if (l == -1)
 		return 0;
 	path = ft_substr(comd, 0, l);
-	//printf("cutting path: %s\n", path);
+	printf("cutting path: %s\n", path);
 	//path-->abs_path
 	if (path[0] != '/')
 	{
 		char *tmp = path;
-		char *tmp2 = ft_strjoin(get_env("PWD", g->env), "/");
+		char *tmp2 = ft_strjoin(getenv("PWD"), "/");
 		path = ft_strjoin(tmp2, tmp);
+		printf("changing path: %s\n", path);
 		free(tmp);
 		free(tmp2);
 	}
 	exec = ft_substr(comd, l + 1, ft_strlen(comd) - l);
-	//printf("cutting exec: %s\n", exec);
+	printf("cutting exec: %s\n", exec);
 	dir = opendir(path);
 		if (dir)
 		{
@@ -399,6 +409,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	//printf("cd_ac ; %d\n", g->cmd_ac);
 	//print_2Dtab(g->cmd_tab, "www");
 
+	perror("bol 00");
 	comd = get_cmd_in_line(cmd);
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
@@ -433,6 +444,14 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
 		return (1);
+	char *path_from_env = get_env("PATH", g->env);
+	printf("path: %s\n", path_from_env);
+	if (path_from_env == NULL)
+	{
+		error_out2(comd, NULL, "No such file or directory");
+		g->ret_errno = 127;
+		return (1);
+	}
 	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);
@@ -456,7 +475,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	// free(comd);
 	// free(cmd);
-	free_split(g->cmd_tab);
+	// free_split(g->cmd_tab);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 16:22:39 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 19:25:40 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ int	main(int argc, char **argv, char **env)
 			ft_putstr("minishell: ");
 			ft_putstr(cmd);
 			ft_putstr(": command not found\n");
-			errno = 127;
+			g_ms->ret_errno = 127;
 		}
 		if (!ft_strcmp(g.line, "env"))
 			print_list(g.env);

@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 20:29:50 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/15 21:10:34 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/16 19:28:02 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ char	*variables_in_cmd(t_ms *g, char *cmd, int idx)
 		idx = takepath(cmd, idx, cmd_tmp, g);
 	else
 	{
-		tenv = ft_itoa(errno);
+		tenv = ft_itoa(g->ret_errno);
 		ft_strcat(cmd_tmp, tenv);
 		free(tenv);
 		idx++;
