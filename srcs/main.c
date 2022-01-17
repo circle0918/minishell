@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 23:56:23 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/17 01:58:54 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int parseur(t_ms *g, int i, int res)
 			i = parseur_quotes(g, i + 1, g->line[i]);
 			if (i == -1)
 			{
-				record_list(&g->error, "bash: syntax error: unexpected end of file\n"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
+				record_list(&g->error, "bash: syntax error: unexpected end of file"); //mieux gerer les erreurs avec une fonction qui record l'erreur le char en question et le numero errno !
 				g->ret_errno = 2;
 				return (1);																//generer une erreur correspondante a bash
 			}
