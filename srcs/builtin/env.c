@@ -118,7 +118,7 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 {
 	if (ft_strcmp(comd, "pwd") == 0)
 	{
-		ft_pwd();
+		ft_pwd(g);
 		return (1);
 	}
 	else if (ft_strcmp(g->cmd_tab[0], "echo") == 0)

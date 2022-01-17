@@ -32,7 +32,6 @@
 
 typedef struct 	s_ms
 {
-				int		ret_errno;
 				int 	ret;
 				char 	*ret_dir;
 				pid_t		pid[2];
@@ -46,6 +45,7 @@ typedef struct 	s_ms
 				t_list	*cmd;
 				t_list	*cmd_tmp;
 				t_list	*error;
+				int		ret_errno;
 				int exit;
 }				t_ms;
 
@@ -102,7 +102,7 @@ void	print_list(t_list *error);
 void ft_echo(t_ms *g);
 void ft_export(char *cmd, t_ms *g);
 void ft_cd(t_ms *g);
-void ft_pwd();
+void ft_pwd(t_ms *g);
 void ft_unset(t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
