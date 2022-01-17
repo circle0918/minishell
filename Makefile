@@ -48,7 +48,8 @@ SRCS_FILES	= \
 
 CC			=	clang
 
-FLAGS		= 	-Werror -Wextra -Wall -g
+#FLAGS		= 	-Werror -Wextra -Wall -g
+FLAGS		= 	-g
 
 LFLAGS		= 	-lreadline
 

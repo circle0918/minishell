@@ -215,6 +215,10 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 //	char *redir_inin_delimitor;
 	if (g->ret_dir)// > <
 	{
+		printf("get->ret_dir : %s\n", g->ret_dir);
+		printf("cmd : %s\n", cmd);
+		print_2Dtab(g->cmd_tab, "cmd_tab");
+
 		redir_in_fd = get_redir_in_file(cmd);
 		if (redir_in_fd == -1)
 	      		return (1);
@@ -267,8 +271,8 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	if (g_ms->pid[0] == 0)
 	{
 	  // Child process
-		if (launch(cmd, comd, g, i, abs_path_test) == -1)
-	  		perror("launch error");
+//		if (launch(cmd, comd, g, i, abs_path_test) == -1)
+//	  		perror("launch error");
 		exit(EXIT_FAILURE);
 	}
 	else if (g_ms->pid[0] < 0)
@@ -279,35 +283,35 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	else
 	{
 		// Parent process
-//		if (ft_strequ(comd, "minishell"))
-//			signal(SIGINT, SIG_IGN);
+		if (ft_strequ(comd, "minishell"))
+			signal(SIGINT, SIG_IGN);
 		do {
 			wpid = waitpid(g_ms->pid[0], &status, WUNTRACED);
-/*            if (wpid == -1) {
-                perror("ERROR waitpid");
-                exit(EXIT_FAILURE);
-            }
+		      	if (wpid == -1) {
+                		perror("ERROR waitpid");
+                		exit(EXIT_FAILURE);
+            		}
 
-            if (WIFEXITED(status)) {
-                printf("terminé, code=%d\n", WEXITSTATUS(status));
-            } else if (WIFSIGNALED(status)) {
-                printf("tué par le signal %d\n", WTERMSIG(status));
-            } else if (WIFSTOPPED(status)) {
-                printf("arrêté par le signal %d\n", WSTOPSIG(status));
-            } else if (WIFCONTINUED(status)) {
-                printf("relancé\n");
-            }*/
+	    		if (WIFEXITED(status)) {
+                		printf("terminé, code=%d\n", WEXITSTATUS(status));
+            		} else if (WIFSIGNALED(status)) {
+                		printf("tué par le signal %d\n", WTERMSIG(status));
+            		} else if (WIFSTOPPED(status)) {
+                		printf("arrêté par le signal %d\n", WSTOPSIG(status));
+            		} else if (WIFCONTINUED(status)) {
+                		printf("relancé\n");
+            		}
 		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-       // printf("Parent: child %d died with status 0x%.4X\n", pid, status);
+       		// printf("Parent: child %d died with status 0x%.4X\n", pid, status);
 	}
 	return 1;
 }
 int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 {
-	int l;
-	char *path;
-	char *exec;
-	DIR				*dir;
+	int	l;
+	char	*path;
+	char	*exec;
+	DIR	*dir;
 	struct dirent	*dirp;
 
 	l = ft_strlen(comd) - 1;

@@ -32,7 +32,6 @@
 
 typedef struct 	s_ms
 {
-				int		ret_errno;
 				int 	ret;
 				char 	*ret_dir;
 				pid_t		pid[2];

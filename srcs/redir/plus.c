@@ -95,18 +95,19 @@ int get_redir_in_file(char *cmd)
 
 	fd = 0;
 	
-	free(cmd);
-	cmd = ft_strdup("cat << d > file_out");
+	//free(cmd);
+	//cmd = ft_strdup("cat << d > file_out");
 	printf("what cmd: %s\n", cmd);
 	
 	tab = creat_list_arg(cmd);
+	print_2Dtab(tab, "cmd tab");
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
 		if (fd > 0)
 			close(fd);
 		//find file name after > >> 
-        	if (ft_strequ(tab[i], "<"))
+        	if (ft_strequ(tab[i], "<") && !ft_strequ(tab[i+1], "<"))
 		{
 			fd = open(tab[i + 1], O_WRONLY, 0664);
 			if (fd < 0)
@@ -117,9 +118,9 @@ int get_redir_in_file(char *cmd)
 			}
 			printf("redir < :fd: %d\n", fd);
 		}
-        	else if (ft_strequ(tab[i], "<<"))
+        	else if (ft_strequ(tab[i], "<") && ft_strequ(tab[i+1], "<") && tab[i + 2]) // "<<"
 		{
-			char *delimitor = tab[i + 1]; //TDDO: delimitor quote ?
+			char *delimitor = tab[i + 2]; //TDDO: delimitor quote ?
 			//fd = open("redir_lessless", O_CREAT | O_EXCL | O_RDWR | O_APPEND, 0644);
 			fd = open("redir_lessless", O_CREAT | O_WRONLY | O_APPEND | O_TRUNC, 0644);
 			while (1)
@@ -134,6 +135,7 @@ int get_redir_in_file(char *cmd)
 			close(fd);
 			fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
 			printf("redir << :fd: %d\n", fd);
+			i++;
 		}
 		i++;
 	}
