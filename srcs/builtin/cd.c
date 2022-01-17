@@ -70,6 +70,7 @@ void set_env(char *key, char *val, t_list *env)
 void change_path(char *path, t_ms *g, int change_back)
 {
 	char* pwd;
+	path = get_pwd();
 
 	if (change_back)
 	{
@@ -88,10 +89,7 @@ void change_path(char *path, t_ms *g, int change_back)
 void ft_cd(t_ms *g)
 {
 	char *path;
-	int only_cd;
-	only_cd = 0;
-	printf("cd_ac ; %d\n", g->cmd_ac);
-	if(g->cmd_ac >= 2)
+	if(g->cmd_ac == 2)
 		path = ft_strdup(g->cmd_tab[1]);
 
 	char cwd[1024];
@@ -101,12 +99,12 @@ void ft_cd(t_ms *g)
 	{
 		g->ret_errno = 1;
 		error_out2("cd", path, "Too many arguements");
-		free(path);
 	}
 	if (g->cmd_ac == 1|| ft_strequ(path, "~") || ft_strequ(path, "--"))
 	{
 		//path == home
-		free(path);
+		if (g->cmd_ac == 2)
+			free(path);
 		path = get_env("HOME", g->env);
 	}
 	if (ft_strequ(path, "-"))

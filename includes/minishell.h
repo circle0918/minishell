@@ -109,6 +109,7 @@ t_list	*ft_lst_pop_last(t_list **lst);
 char* get_env(char *str, t_list *env);
 int get_cmd_size(char *cmd);
 int		check_uset_error(char *str);
+char *get_pwd();
 
 //redir fonctions
 int ft_output(char *comd, char *direct, t_ms *g);
