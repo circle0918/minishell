@@ -347,6 +347,8 @@ int main(int argc, char **argv, char **env)
 	// signal(SIGQUIT, end);
 	signal(SIGINT, recovery);
 	signal(SIGQUIT, end);
+	print_2Dtab(env, "begin env");
+	perror("get begin env");
 	begin(env, &g);
 	g.ret = 1;
 	while (1)

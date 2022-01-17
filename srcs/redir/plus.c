@@ -76,7 +76,7 @@ char **get_env_tab(t_list *env)
 	char **ret;
 	int i;
 
-	ret = (char **)malloc(sizeof(char *) * ft_lstsize(env));
+	ret = (char **)malloc(sizeof(char *) * (ft_lstsize(env) + 1));
 	i = 0;
 	l = env;
 	while (l)
@@ -84,6 +84,7 @@ char **get_env_tab(t_list *env)
 		ret[i++] = ft_strdup((char*)(l->content));
 		l = l->next;
 	}
+	ret[i] = NULL;
 	return (ret);
 }
 

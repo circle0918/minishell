@@ -118,4 +118,5 @@ char **get_argv_redir(char *cmd);
 void print_2Dtab(char** tab, char *str);
 int get_redir_in_file(char *cmd);
 void error_out2(char *comd, char *opt, char *msg);
+char **get_env_tab(t_list *env);
 #endif

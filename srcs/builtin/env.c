@@ -174,12 +174,19 @@ char *init_abs_comd(char *comd, char *path_i, char *abs_path_test)
 	char *dir_cmd;
 	char *abs;
 
+		printf("init abs b*****************\n");
+		printf("abs_path_test : %s\n", abs_path_test);
+		printf("pathi : %s\n", path_i);
+		printf("comd : %s\n", comd);
 	if (abs_path_test == NULL)
 		dir_cmd = ft_strjoin(path_i, "/");
 	else
 		dir_cmd = ft_strjoin(abs_path_test, "/");
+		printf("dir_cmd : %s\n", dir_cmd);
 	abs = ft_strjoin(dir_cmd, comd);
 	free(dir_cmd);
+		printf("abs : %s\n", abs);
+		printf("int abs e*****************\n");
 	return (abs);
 }
 
@@ -204,15 +211,17 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	char **argv;
 	char *abs_comd;
 
+	perror("bol 02");
 	argv = init_argv(cmd);
+	perror("bol 03");
 	abs_comd = init_abs_comd(comd, g->path[i], abs_path_test);
+	perror("bol 04");
 
 	int redir_out_fd;
 	int redir_in_fd;
 
 	redir_out_fd = 0;
 	redir_in_fd = 0;
-//	char *redir_inin_delimitor;
 	if (g->ret_dir)// > <
 	{
 		printf("get->ret_dir : %s\n", g->ret_dir);
@@ -240,18 +249,24 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		exit_free(argv);
 		argv = get_argv_redir(cmd);
 	}
-
+	char **env;
 	if (is_buildin(comd, cmd, g) == 0)
 	{
-	//	printf("b==============\n");
-	//	printf("abs_comd: %s\n", abs_comd);
-	//	print_2Dtab(argv, "argv");
-		if (execve(abs_comd, argv, NULL) == -1)
+		printf("b==============\n");
+		printf("abs_comd: %s\n", abs_comd);
+		print_2Dtab(argv, "argv");
+		env = get_env_tab(g->env);
+		if (execve(abs_comd, argv, env) == -1) {
+			free(abs_comd);
+			exit_free(argv);
+			exit_free(env);
 			return (-1);
-	//	printf("e==============\n");
+		}
+		printf("e==============\n");
 	}
 	free(abs_comd);
 	exit_free(argv);
+	exit_free(env);
 
 	if (redir_out_fd)
 		close(redir_out_fd);
@@ -267,12 +282,13 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	pid_t wpid;
 	int status;
 
+	perror("launcher before fork");
 	g_ms->pid[0] = fork();
 	if (g_ms->pid[0] == 0)
 	{
 	  // Child process
-//		if (launch(cmd, comd, g, i, abs_path_test) == -1)
-//	  		perror("launch error");
+		if (launch(cmd, comd, g, i, abs_path_test) == -1)
+	  		perror("launch error");
 		exit(EXIT_FAILURE);
 	}
 	else if (g_ms->pid[0] < 0)
@@ -324,18 +340,23 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 	if (l == -1)
 		return 0;
 	path = ft_substr(comd, 0, l);
-	//printf("cutting path: %s\n", path);
+	printf("cutting path: %s\n", path);
 	//path-->abs_path
 	if (path[0] != '/')
 	{
 		char *tmp = path;
-		char *tmp2 = ft_strjoin(get_env("PWD", g->env), "/");
+		//char cwd[256];
+		//if (getcwd(cwd, sizeof(cwd)) == NULL)
+		//	perror("getcwd() error");	
+		char *tmp2 = ft_strjoin(getenv("PWD"), "/");
+		//char *tmp2 = ft_strjoin(get_env("PWD", g->env), "/");
 		path = ft_strjoin(tmp2, tmp);
+		printf("changing path: %s\n", path);
 		free(tmp);
 		free(tmp2);
 	}
 	exec = ft_substr(comd, l + 1, ft_strlen(comd) - l);
-	//printf("cutting exec: %s\n", exec);
+	printf("cutting exec: %s\n", exec);
 	dir = opendir(path);
 		if (dir)
 		{
@@ -402,6 +423,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	//printf("cd_ac ; %d\n", g->cmd_ac);
 	//print_2Dtab(g->cmd_tab, "www");
 
+	perror("bol 00");
 	comd = get_cmd_in_line(cmd);
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
@@ -428,6 +450,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	if(ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
+	perror("bol 01");
 		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
