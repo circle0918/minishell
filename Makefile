@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2022/01/16 05:44:20 by thhusser         ###   ########.fr        #
+#    Updated: 2022/01/18 15:59:00 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,8 +48,8 @@ SRCS_FILES	= \
 
 CC			=	clang
 
-#FLAGS		= 	-Werror -Wextra -Wall -g
-FLAGS		= 	-g
+FLAGS		= 	-Werror -Wextra -Wall -g -fcommon
+#FLAGS		= 	-g
 
 LFLAGS		= 	-lreadline
 

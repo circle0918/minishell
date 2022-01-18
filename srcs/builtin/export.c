@@ -185,6 +185,7 @@ void export_append(char **tab, int i, t_ms *g)
 void ft_export(char *cmd, t_ms *g)
 {
 	int i;
+	(void)cmd;
 	g->ret_errno = 0;
 	if (g->cmd_ac == 1) //if only export == export p : declare -x all env=
 	{
