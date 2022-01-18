@@ -34,6 +34,7 @@ void ft_unset(t_ms *g)
 	tmp = g->env;
 
 	g->ret_errno = 0;
+	g->unset_path = 0;
 	if (!g->cmd_tab[1])
 		return;
 	
@@ -42,7 +43,10 @@ void ft_unset(t_ms *g)
 		g->ret_errno = 1;
 		return;
 	}
-
+	if(ft_strequ("PATH", g->cmd_tab[1]))
+	{
+		g->unset_path = 1;
+	}
 	while (g->cmd_tab[i])
 	{
 		while (tmp)

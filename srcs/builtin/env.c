@@ -142,7 +142,9 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 		ft_unset(g);
 		return (1);
 	}
-	else if (ft_strcmp(comd, "env") == 0)
+	if (g->unset_path == 1)
+		return -1;
+	if (ft_strcmp(comd, "env") == 0)
 	{
 		print_list(g->env);
 		return (1);
@@ -248,7 +250,15 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	env = NULL;
 //	printf("before exec: abs_comd: %s\n", abs_comd);
 //	print_2Dtab(argv, "before exec: argv");
-	if (is_buildin(comd, cmd, g) == 0)
+	
+	int ret = is_buildin(comd, cmd, g);
+	if (ret == -1)
+	{
+		error_out2(comd, NULL, "No such file or directory");
+		g->ret_errno = 127;
+//		return (1);
+	}
+	else if (ret == 0)
 	{
 		//printf("b exec==============\n");
 		env = get_env_tab(g->env);
@@ -396,7 +406,6 @@ int		find_cmd_path(char *cmd, t_ms *g)
 			return (1);
 		}
 	}
-	g->ret_errno = 0;
 	g->cmd_tab = creat_list_arg(cmd);
 
 	test_redir_flag(cmd, g);
@@ -423,6 +432,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	if(ft_strcmp(g->cmd_tab[0], "export") == 0)
 	{
+		g->ret_errno = 0;
 		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
@@ -447,15 +457,16 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
 		return (1);
-/*	char *path_from_env = get_env("PATH", g->env);
-	printf("path: %s\n", path_from_env);
-	if (path_from_env == NULL)
+//	char *path_from_env = get_env("PATH", g->env);
+//	printf("path: %s\n", path_from_env);
+	/*if (g->unset_path == 1)
 	{
+		printf("unset path\n");
 		error_out2(comd, NULL, "No such file or directory");
 		g->ret_errno = 127;
 		return (1);
-	}
-*/	while (g->path[i])
+	}*/
+	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);
 		if (dir)

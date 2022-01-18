@@ -47,6 +47,7 @@ typedef struct 	s_ms
 				t_list	*error;
 				int	ret_errno;
 				int exit;
+				int unset_path;
 }				t_ms;
 
 t_ms			*g_ms;
