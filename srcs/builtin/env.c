@@ -422,6 +422,7 @@ int handle_cmd_noneed_fork(t_ms *g, char *cmd)
 {
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
+		ft_exit_plus(g->cmd_tab);
 		free_split(g->cmd_tab);
 		g->exit = 1;
 		ft_exit(2, g, g->ret, g->line);
@@ -433,6 +434,7 @@ int handle_cmd_noneed_fork(t_ms *g, char *cmd)
 		g->ret_errno = 0;
 		if (launch(cmd, g->cmd_tab[0], g, g->path[0], NULL) == -1)
 	  		perror("launch error");
+		free_split(g->cmd_tab);
 		return (1);
 	}
 	return (0);
@@ -444,7 +446,10 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	{
 		cmd = check_var_cmd(g, cmd);
 		if (!cmd || ft_strequ(cmd, "\0"))
+		{
+			free_split(g->cmd_tab);
 			return (1);
+		}
 	}
 	g->cmd_tab = creat_list_arg(cmd);
 	g->cmd_ac = count_tab(g->cmd_tab);
@@ -453,13 +458,17 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	if (handle_cmd_noneed_fork(g, cmd) == 1)
 		return (1);
 	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g, g->path[0]) == 1)
+	{
+		free_split(g->cmd_tab);
 		return (1);
+	}
 
 	char *path_i;
 	path_i = find_cmd_in_path_tab(g);
 	if (path_i)
 	{
 		launcher(cmd, g->cmd_tab[0], g, path_i, NULL);
+		free_split(g->cmd_tab);
 		return (1);
 	}
 	return (0);
