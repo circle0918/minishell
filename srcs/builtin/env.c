@@ -97,7 +97,9 @@ int		is_buildin_2(char *comd, char *cmd, t_ms *g)
 		ft_unset(g);
 		return (1);
 	}
-	else if (ft_strcmp(comd, "env") == 0)
+	if (g->unset_path == 1)
+		return -1;
+	if (ft_strcmp(comd, "env") == 0)
 	{
 		print_list(g->env);
 		return (1);
@@ -223,9 +225,17 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 		return (-1);
 	char **env;
 	env = NULL;
-	printf("before exec: abs_comd: %s\n", abs_comd);
-	print_2Dtab(argv, "before exec: argv");
-	if (is_buildin(comd, cmd, g) == 0)
+	//printf("before exec: abs_comd: %s\n", abs_comd);
+	//print_2Dtab(argv, "before exec: argv");
+	
+	int ret = is_buildin(comd, cmd, g);
+	if (ret == -1)
+	{
+		error_out2(comd, NULL, "No such file or directory");
+		g->ret_errno = 127;
+//		return (1);
+	}
+	else if (ret == 0)
 	{
 		//printf("b exec==============\n");
 		env = get_env_tab(g->env);
@@ -271,16 +281,17 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
                 		exit(EXIT_FAILURE);
             		}
 	    		if (WIFEXITED(status)) {
-                		printf("terminé, code=%d\n", WEXITSTATUS(status));
+                	//	printf("terminé, code=%d\n", WEXITSTATUS(status));
 				g->ret_errno = WEXITSTATUS(status);
-            		} else if (WIFSIGNALED(status)) {
+            		} 
+		/*	else if (WIFSIGNALED(status)) {
                 		printf("tué par le signal %d\n", WTERMSIG(status));
             		} else if (WIFSTOPPED(status)) {
                 		printf("arrêté par le signal %d\n", WSTOPSIG(status));
             		} else if (WIFCONTINUED(status)) {
                 		printf("relancé\n");
             		}
-			if (WIFEXITED(status) || WIFSIGNALED(status))
+		*/	if (WIFEXITED(status) || WIFSIGNALED(status))
 				break;
 		}
 	}
@@ -392,8 +403,6 @@ char *find_cmd_in_path_i(char *cmd, char *path_i)
 
 char *find_cmd_in_path_tab(t_ms *g)
 {
-	DIR	*dir;
-	struct dirent	*dirp;
 	int	i;
 	char	*path_i;
 
@@ -421,6 +430,7 @@ int handle_cmd_noneed_fork(t_ms *g, char *cmd)
 		|| ft_strcmp(g->cmd_tab[0], "unset") == 0
 		|| ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
+		g->ret_errno = 0;
 		if (launch(cmd, g->cmd_tab[0], g, g->path[0], NULL) == -1)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
@@ -446,15 +456,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		return (1);
 	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g, g->path[0]) == 1)
 		return (1);
-/*	char *path_from_env = get_env("PATH", g->env);
-	printf("path: %s\n", path_from_env);
-	if (path_from_env == NULL)
-	{
-		error_out2(comd, NULL, "No such file or directory");
-		g->ret_errno = 127;
-		return (1);
-	}
-*/	
+	
 	char *path_i;
 	path_i = find_cmd_in_path_tab(g); 
 	if (path_i)
