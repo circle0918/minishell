@@ -111,7 +111,7 @@ int get_redir_in_file(char *cmd)
 			if (fd < 0)
 			{
 				error_out2(NULL, tab[i + 1], "No such file or directory");
-				exit_free(tab);
+				free_split(tab);
 				g_ms->ret_errno = 1;
 				return (-1);
 			}
