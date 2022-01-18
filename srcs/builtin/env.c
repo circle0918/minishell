@@ -50,22 +50,6 @@ void	test_redir_flag(char *cmd, t_ms *g)
 		strcpy_del_c(tmp, g);
 		free(tmp);
 	}
-	// return (tmp);
-}
-
-void	exit_free(char **str)
-{
-	int i;
-	
-	if (!str)
-		return ;
-	i = 0;
-	while(str[i])
-	{
-		free(str[i]);
-		i++;
-	}
-	free(str);
 }
 
 char	*get_cmd_in_line(char *line)
@@ -90,29 +74,13 @@ char	*get_cmd_in_line(char *line)
 	cmd = ft_substr(line, pos, i-pos);
 	return (cmd);
 }
+
 void	get_path(t_ms *g)
 {
 	char *path;
-	char *path_tmp;
-	t_list *tmp;
-	char *pos;
 
-	tmp = g->env;
 	path = NULL;
-	path_tmp = NULL;
-	while (tmp)
-	{
-		pos = ft_strstr(tmp->content, "PATH=");
-		if (pos && pos - (char *)tmp->content == 0)
-		{
-			path_tmp = ft_strdup(tmp->content);
-			break;
-		}
-		free(path_tmp);
-		tmp = tmp->next;
-	}
-	path = ft_substr(path_tmp, 5, (ft_strlen(path_tmp) - 5));
-	free(path_tmp);
+	path = ft_strdup(get_env("PATH", g->env));
 	g->path = ft_split(path, ':');
 	free(path);
 }
@@ -263,8 +231,8 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 		env = get_env_tab(g->env);
 		if (execve(abs_comd, argv, env) == -1) {
 			free(abs_comd);
-			exit_free(argv);
-			exit_free(env);
+			free_split(argv);
+			free_split(env);
 			return (-1);
 		}
 	}
@@ -304,6 +272,7 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
             		}
 	    		if (WIFEXITED(status)) {
                 		printf("terminé, code=%d\n", WEXITSTATUS(status));
+				g->ret_errno = WEXITSTATUS(status);
             		} else if (WIFSIGNALED(status)) {
                 		printf("tué par le signal %d\n", WTERMSIG(status));
             		} else if (WIFSTOPPED(status)) {
