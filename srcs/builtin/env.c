@@ -202,12 +202,24 @@ int get_cmd_size(char *cmd)
 	return (j);
 }
 
+char **get_argv(t_ms *g, char *cmd)
+{
+	char **argv;
+	
+	argv = init_argv(cmd);
+	if (g->ret_dir)
+	{
+		free_split(argv);
+		argv = get_argv_redir(cmd);
+	}
+	return argv;
+}
 int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 {
 	char **argv;
 	char *abs_comd;
 
-	argv = init_argv(cmd);
+	argv = get_argv(g, cmd);
 	abs_comd = init_abs_comd(comd, path_i, abs_path_test);
 
 	int redir_out_fd;
@@ -228,22 +240,14 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 		{
 	    		if (dup2(redir_out_fd, STDOUT_FILENO) == -1)
 				perror("Error redir out");
-		//	close(redir_out_fd);
 		}
 		if (redir_in_fd > 0)
 		{
-	//		close(0);
-		/*	int _fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
-	    		if (dup2(_fd, STDIN_FILENO) == -1)
-				perror("Error redir in");
-			printf("_in fd after dup2: %d\n", _fd);
-	    	*/	if (dup2(redir_in_fd, STDIN_FILENO) == -1)
+	    		if (dup2(redir_in_fd, STDIN_FILENO) == -1)
 				perror("Error redir in");
 			close(redir_in_fd);
 			printf("get_redir_in fd after dup2: %d\n", redir_in_fd);
 		}
-		free_split(argv);
-		argv = get_argv_redir(cmd);
 	}
 	char **env;
 	env = NULL;
@@ -370,6 +374,15 @@ int		count_tab(char **tab)
 	return (i);
 }
 
+void do_redir(t_ms *g, char *cmd)
+{
+	if (g->ret_dir)
+	{
+		free_split(g->cmd_tab);
+		g->cmd_tab = get_argv_redir(cmd);
+	}
+}
+
 char *find_cmd_in_path_i(char *cmd, char *path_i)
 {
 	DIR	*dir;
@@ -423,19 +436,11 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	g->ret_errno = 0;
 	g->cmd_tab = creat_list_arg(cmd);
+	g->cmd_ac = count_tab(g->cmd_tab);
 
 	test_redir_flag(cmd, g);
-	if (g->ret_dir)
-	{
-		free_split(g->cmd_tab);
-		g->cmd_tab = get_argv_redir(cmd);
-	}
+	do_redir(g, cmd);
 
-	g->cmd_ac = count_tab(g->cmd_tab);
-	//printf("cd_ac ; %d\n", g->cmd_ac);
-	//print_2Dtab(g->cmd_tab, "www");
-
-	comd = get_cmd_in_line(cmd);
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
 		ft_exit_plus(g->cmd_tab);
@@ -464,7 +469,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		free_split(g->cmd_tab);
 		return (1);
 	}
-	if (exec_cmd_has_dir(cmd, comd, g, g->path[0]) == 1)
+	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g, g->path[0]) == 1)
 		return (1);
 /*	char *path_from_env = get_env("PATH", g->env);
 	printf("path: %s\n", path_from_env);
