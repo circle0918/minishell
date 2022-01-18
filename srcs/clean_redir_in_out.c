@@ -6,74 +6,50 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/16 23:57:11 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 00:29:56 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 17:07:51 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*get_tmp_che(char *tmp, char *str, int *i, int *j)
-{
-	int		c;
-
-	c = str[*i - 1];
-	while (str[*i] != c)
-	{
-		if ((str[*i] == '>' || str[*i] == '<'))
-		{
-			if (c == '"')
-			{
-				tmp[*j] = '\\';
-				*j += 1;
-			}
-			tmp[*j] = '\\';
-			*j += 1;
-		}
-		tmp[*j] = str[*i];
-		*j += 1;
-		*i += 1;
-	}
-	return (tmp);
-}
-
-int		ft_nbchevron2(const char *str, int i)
+int	ft_nbchevron2(const char *str, int i)
 {
 	if (i == 0)
 	{
-		if ((str[i] == '>' && ((str[i + 1] != '>' && str[i + 1] != ' ') ||
-			(str[i + 1] == '>' && str[i + 2] != ' '))) ||
-			(str[i] == '<' && str[i + 1] != ' '))
+		if ((str[i] == '>' && ((str[i + 1] != '>' && str[i + 1] != ' ')
+					|| (str[i + 1] == '>' && str[i + 2] != ' ')))
+			|| (str[i] == '<' && str[i + 1] != ' '))
 			return (1);
 	}
-	else if ((str[i] == '>' && str[i - 1] != '>' && str[i - 1] != ' ' &&
-		str[i + 1] != ' ' && str[i + 1] != '>') || (str[i] == '>' &&
-		str[i + 1] == '>' && str[i - 1] != ' ' && str[i + 2] != ' ') ||
-			(str[i] == '<' && str[i - 1] != ' ' && str[i + 1] != ' '))
+	else if ((str[i] == '>' && str[i - 1] != '>' && str[i - 1] != ' '
+			&& str[i + 1] != ' ' && str[i + 1] != '>') || (str[i] == '>'
+			&& str[i + 1] == '>' && str[i - 1] != ' ' && str[i + 2] != ' ')
+		|| (str[i] == '<' && str[i - 1] != ' ' && str[i + 1] != ' '))
 		return (2);
-	else if ((str[i] == '>' && str[i + 1] != '>' && str[i - 1] != '>' &&
-		(str[i - 1] != ' ' || str[i + 1] != ' ')) || (str[i] == '>' &&
-		str[i + 1] == '>' && (str[i - 1] != ' ' || str[i + 2] != ' ')) ||
-		(str[i] == '<' && (str[i - 1] != ' ' || str[i + 1] != ' ')))
+	else if ((str[i] == '>' && str[i + 1] != '>' && str[i - 1] != '>'
+			&& (str[i - 1] != ' ' || str[i + 1] != ' ')) || (str[i] == '>'
+			&& str[i + 1] == '>' && (str[i - 1] != ' ' || str[i + 2] != ' '))
+		|| (str[i] == '<' && (str[i - 1] != ' ' || str[i + 1] != ' ')))
 		return (1);
 	return (0);
 }
 
-int		ft_spacechevron(char *str, int i)
+int	ft_spacechevron(char *str, int i)
 {
-	if (((str[i] == '>' && str[i - 1] != ' ' && str[i - 1] != '>' &&
-	str[i - 1] != '\\') ||
-	(str[i] == '<' && str[i - 1] != ' ' && str[i - 1] != '\\')))
+	if (((str[i] == '>' && str[i - 1] != ' ' && str[i - 1] != '>'
+				&& str[i - 1] != '\\')
+			|| (str[i] == '<' && str[i - 1] != ' ' && str[i - 1] != '\\')))
 		return (1);
-	else if ((str[i - 1] == '>' && str[i] != ' ' && str[i] != '>' &&
-	str[i - 2] != '>' && str[i - 2] != '\\')
-	|| (str[i - 1] == '<' && str[i] != ' ' && str[i - 2] != '\\') ||
-		(str[i - 1] == '>' && str[i] != ' ' && str[i] != '>' &&
-		str[i - 2] == '>' && str[i - 3] != '\\'))
+	else if ((str[i - 1] == '>' && str[i] != ' ' && str[i] != '>'
+			&& str[i - 2] != '>' && str[i - 2] != '\\')
+		|| (str[i - 1] == '<' && str[i] != ' ' && str[i - 2] != '\\')
+		|| (str[i - 1] == '>' && str[i] != ' ' && str[i] != '>'
+			&& str[i - 2] == '>' && str[i - 3] != '\\'))
 		return (1);
 	return (0);
 }
 
-int		ft_nbchevron(const char *str)
+int	ft_nbchevron(const char *str)
 {
 	int		i;
 	int		nb;
@@ -123,8 +99,8 @@ char	*ft_checkredir(char *str)
 {
 	char	*tmp;
 
-	tmp = (char *)malloc(sizeof(char) * (ft_strlen(str) +
-			ft_nbchevron((const char *)str) + 1));
+	tmp = (char *)malloc(sizeof(char) * (ft_strlen(str)
+				+ ft_nbchevron((const char *)str) + 1));
 	if (!tmp)
 		return (NULL);
 	tmp = ft_checkredir2(str, tmp, 0, 0);
