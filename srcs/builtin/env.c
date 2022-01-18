@@ -262,13 +262,13 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	if (g_ms->pid[0] == 0)
 	{
 		if (launch(cmd, comd, g, path_i, abs_path_test) == -1)
-		{
-			ft_exit(0, g, 0, NULL);
 	 		perror("Error fork launch");
-			exit(EXIT_FAILURE);
-		}
-		ft_exit(0, g, 0, NULL);
-		exit(0);
+		// {
+			// ft_exit(0, g, 0, NULL);
+		exit(EXIT_FAILURE);
+		// }
+		// ft_exit(0, g, 0, NULL);
+		// exit(0);
 	}
 	else if (g_ms->pid[0] < 0)
 		perror("Error forking");
@@ -448,7 +448,6 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		if (!cmd || ft_strequ(cmd, "\0"))
 			return (1);
 	}
-	g->ret_errno = 0;
 	g->cmd_tab = creat_list_arg(cmd);
 	g->cmd_ac = count_tab(g->cmd_tab);
 	test_redir_flag(cmd, g);

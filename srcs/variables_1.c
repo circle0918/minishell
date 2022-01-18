@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 20:29:50 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 18:02:30 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 23:02:24 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,19 +106,17 @@ char	*variables_in_cmd(t_ms *g, char *cmd, int idx)
 char	*check_var_cmd(t_ms *g, char *cmd)
 {
 	int		i;
-	char	*tmp;
 	int		x;
 
 	x = 0;
-	i = -1;
-	tmp = NULL;
-	while (cmd[++i])
+	i = 0;
+	while (cmd[i])
 	{
 		if (cmd[i] == '"' && x)
 			x = 0;
 		else if (cmd[i] == '"')
 			x = 1;
-		if (cmd[i] == '\\')
+		if (cmd[i] == '\\' && cmd[i + 1] != '\0')
 			i += 2;
 		if (cmd[i] == '\'' && !x)
 			i = parseur_quotes_str(cmd, i + 1, '\'');
@@ -128,6 +126,7 @@ char	*check_var_cmd(t_ms *g, char *cmd)
 			if (!cmd)
 				return (NULL);
 		}
+		i++;
 	}
 	return (cmd);
 }

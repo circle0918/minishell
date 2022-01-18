@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 12:56:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 17:31:21 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 21:52:39 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,5 @@ void	init_global_struct(t_ms *g)
 	g->cmd = NULL;
 	g->cmd_tmp = NULL;
 	g->error = NULL;
+	g->unset_path = 0;
 }

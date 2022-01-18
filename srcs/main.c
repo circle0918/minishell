@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 19:19:21 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 22:58:12 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,8 +253,8 @@ int clean_command(t_ms *g)
 			if (g->ret_errno == 0)
 				g->ret_errno = 127;
 		}
+		ft_del_line(command);
 	}
-	// free(command);
 	return (0);
 }
 
@@ -364,7 +364,7 @@ int main(int argc, char **argv, char **env)
 			print_list(g.error);
 			ft_lstclear(&g.error, &ft_del_list);
 		}
-		ft_del_line(g.line);
+		// ft_del_line(g.line);
 		free_split(g.cmd_tab);
 	}
 	return (0);
