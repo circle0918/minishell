@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 18:54:28 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 19:19:21 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ char *ft_checkbackredir(t_ms *g, int i, int nb)
 			if (!(tmp = (char *)malloc(sizeof(char) * (ft_strlen(g->line) + 3))))
 				return (NULL);
 			g->line = ft_spaceredir(g->line, tmp, i, 0);
+			free(tmp);
 			i += 1;
 		}
 		else
@@ -364,6 +365,7 @@ int main(int argc, char **argv, char **env)
 			ft_lstclear(&g.error, &ft_del_list);
 		}
 		ft_del_line(g.line);
+		free_split(g.cmd_tab);
 	}
 	return (0);
 }

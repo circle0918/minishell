@@ -87,6 +87,7 @@ char	*get_cmd_in_line(char *line)
 		i++;
 	}
 	cmd = ft_substr(line, pos, i-pos);
+	// free(line);
 	return (cmd);
 }
 void	get_path(t_ms *g)
@@ -413,12 +414,14 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	//print_2Dtab(g->cmd_tab, "www");
 
 	//perror("bol 00");
+
 	comd = get_cmd_in_line(cmd);
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
 		ft_exit_plus(g->cmd_tab);
 		free_split(g->cmd_tab);
 		g->exit = 1;
+		ft_del_line(comd);
 		ft_exit(2, g, g->ret, g->line);
 	}
 	if(ft_strcmp(g->cmd_tab[0], "export") == 0)
@@ -427,6 +430,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
 		// free(cmd);
+		ft_del_line(comd);
 		return (1);
 	}
 	if(ft_strcmp(g->cmd_tab[0], "unset") == 0)
@@ -435,6 +439,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
 		// free(cmd);
+		ft_del_line(comd);
 		return (1);
 	}
 	if(ft_strcmp(g->cmd_tab[0], "cd") == 0)
@@ -443,10 +448,14 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
 		// free(cmd);
+		ft_del_line(comd);
 		return (1);
 	}
 	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
+	{
+		ft_del_line(comd);
 		return (1);
+	}
 /*	char *path_from_env = get_env("PATH", g->env);
 	printf("path: %s\n", path_from_env);
 	if (path_from_env == NULL)
@@ -465,7 +474,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 				if (ft_strequ(dirp->d_name, g->cmd_tab[0]))
 				{
 					launcher(cmd, g->cmd_tab[0], g, i, NULL);
-					// free(comd);
+					ft_del_line(comd);
 					closedir(dir);
 					free_split(g->cmd_tab);
 					// free(cmd);
@@ -476,6 +485,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		closedir(dir);
 		i++;
 	}
+	ft_del_line(comd);
 	// free(comd);
 	// free(cmd);
 	// free_split(g->cmd_tab);
