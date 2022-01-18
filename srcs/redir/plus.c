@@ -96,10 +96,10 @@ int get_redir_in_file(char *cmd)
 	
 	//free(cmd);
 	//cmd = ft_strdup("cat << d > file_out");
-	printf("what cmd: %s\n", cmd);
+	//printf("what cmd: %s\n", cmd);
 	
 	tab = creat_list_arg(cmd);
-	print_2Dtab(tab, "cmd tab");
+	//print_2Dtab(tab, "cmd tab");
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
@@ -115,7 +115,7 @@ int get_redir_in_file(char *cmd)
 				g_ms->ret_errno = 1;
 				return (-1);
 			}
-			printf("redir < :fd: %d\n", fd);
+			//printf("redir < :fd: %d\n", fd);
 		}
         	else if (ft_strequ(tab[i], "<") && ft_strequ(tab[i+1], "<") && tab[i + 2]) // "<<"
 		{
@@ -127,7 +127,7 @@ int get_redir_in_file(char *cmd)
 			while (1)
 			{
 				char *s = readline("> ");
-				printf("readline s: %s\n", s);
+				//printf("readline s: %s\n", s);
 				if (ft_strequ(s, delimitor))
 					break;
 				ft_putstr_fd(s, fd);
@@ -135,7 +135,7 @@ int get_redir_in_file(char *cmd)
 			}
 			close(fd);
 			fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
-			printf("redir << :fd: %d\n", fd);
+			//printf("redir << :fd: %d\n", fd);
 			i++;
 		}
 		i++;
@@ -161,7 +161,7 @@ int get_redir_out_file(char *cmd)
         	if (ft_strequ(tab[i], ">"))
 		{
 			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
-			printf("redir > :fd: %d\n", fd);
+			//printf("redir > :fd: %d\n", fd);
 			close(fd);
 			if (redir_file)
 				free(redir_file);
@@ -170,7 +170,7 @@ int get_redir_out_file(char *cmd)
         	else if (ft_strequ(tab[i], ">>"))
 		{
 			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
-			printf("redir >> :fd: %d\n", fd);
+			//printf("redir >> :fd: %d\n", fd);
 			close(fd);
 			if (redir_file)
 				free(redir_file);
@@ -180,7 +180,7 @@ int get_redir_out_file(char *cmd)
 		i++;
 	}
 	free_split(tab);
-	printf("redir out: %s\n", redir_file);
+	//printf("redir out: %s\n", redir_file);
 	if (!redir_file)
 		return (0);
 	if (is_double == 0)

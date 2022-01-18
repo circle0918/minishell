@@ -227,7 +227,7 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	print_2Dtab(argv, "before exec: argv");
 	if (is_buildin(comd, cmd, g) == 0)
 	{
-		printf("b exec==============\n");
+		//printf("b exec==============\n");
 		env = get_env_tab(g->env);
 		if (execve(abs_comd, argv, env) == -1) {
 			free(abs_comd);

@@ -184,31 +184,26 @@ void export_append(char **tab, int i, t_ms *g)
 
 void ft_export(char *cmd, t_ms *g)
 {
-	char **tab;
 	int i;
-
 	g->ret_errno = 0;
-	tab = ft_split(cmd, ' ');
-	if (!tab[1]) //if only export == export p : declare -x all env=
+	if (g->cmd_ac == 1) //if only export == export p : declare -x all env=
 	{
 		export_no_arg(g);
-		free_split(tab);
 		return ;
 	}
 	i = 0;
-	while(tab[++i])
+	while(g->cmd_tab[++i])
 	{
-		if (export_checker(tab, i, g))
+		if (export_checker(g->cmd_tab, i, g))
 			continue ;
-		char *ptr = ft_strchr(tab[i], '=');
+		char *ptr = ft_strchr(g->cmd_tab[i], '=');
 		if (ptr == NULL)
 			continue ;//if export AAA -> do nothing
 		else
 		{
-			if (export_replaced(ptr, tab, i, g))
+			if (export_replaced(ptr, g->cmd_tab, i, g))
 				continue;
-			export_append(tab, i, g);
+			export_append(g->cmd_tab, i, g);
 		}
 	}
-	free_split(tab);
 }
