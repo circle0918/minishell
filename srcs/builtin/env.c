@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 char *find_cmd_in_path_i(char *cmd, char *path_i);
-int     count_space(char *tmp)
+int	count_space(char *tmp)
 {
     int i;
     int x;

@@ -1,8 +1,8 @@
 #include "../includes/minishell.h"
 
-void error_out2(char *comd, char *opt, char *msg)
+void	error_out2(char *comd, char *opt, char *msg)
 {
-	char str[1024];
+	char	str[1024];
 
 	str[0] = '\0';
 	ft_strcat(str, "minishell : ");
@@ -20,10 +20,11 @@ void error_out2(char *comd, char *opt, char *msg)
 	ft_strcat(str, "\n");
 	ft_putstr_fd(str, 2);
 }
-char* get_env(char *str, t_list *env)
+
+char	*get_env(char *str, t_list *env)
 {
-	t_list *tmp;
-	char* pos;
+	t_list	*tmp;
+	char	*pos;
 
 	tmp = env;
 	pos = NULL;
@@ -38,13 +39,13 @@ char* get_env(char *str, t_list *env)
 	}
 	return NULL;
 }
+
 void set_env(char *key, char *val, t_list *env)
 {
 	t_list *tmp;
 	char* pos;
 	char s[1024];
 	t_list *last;
-
 
 	s[0] = '\0';
 	ft_strcat(s, key);
@@ -64,12 +65,12 @@ void set_env(char *key, char *val, t_list *env)
 		tmp = tmp->next;
 	}
 	//append
-
 	//record the new before the last(_=./minishell)
 	last = ft_lst_pop_last(&env);
 	record_list(&env, s);
 	ft_lstadd_back(&env, last);
 }
+
 void change_path(char *path, t_ms *g, int change_back)
 {
 	char* pwd;
@@ -89,14 +90,14 @@ void change_path(char *path, t_ms *g, int change_back)
 		set_env("PWD", path, g->env);
 	}
 }
+
 void ft_cd(t_ms *g)
 {
 	char *path;
-	if(g->cmd_ac == 2)
-		path = ft_strdup(g->cmd_tab[1]);
-
 	char cwd[1024];
 	char *tmp_path;
+	if(g->cmd_ac == 2)
+		path = ft_strdup(g->cmd_tab[1]);
 	g->ret_errno = 0;
 	if(g->cmd_ac > 2)
 	{
@@ -146,8 +147,9 @@ void ft_cd(t_ms *g)
 			error_out2("cd", path, "No such file or directory");
 			g->ret_errno = 1;
 		}
-
-    }else{
+    }
+	else
+	{
         if (chdir(path) == 0)
 			change_path(path, g, 0);
 		else
@@ -156,5 +158,5 @@ void ft_cd(t_ms *g)
 			error_out2("cd", path, "No such file or directory");
 			g->ret_errno = 1;
 		}
-    }
+	}
 }
