@@ -220,9 +220,9 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		redir_in_fd = get_redir_in_file(cmd);
 		if (redir_in_fd == -1)
 	      		return (1);
-		printf("get_redir_in fd: %d\n", redir_in_fd);
+		//printf("get_redir_in fd: %d\n", redir_in_fd);
 		redir_out_fd = get_redir_out_file(cmd);
-		printf("get_redir_out fd: %d\n", redir_out_fd);
+		//printf("get_redir_out fd: %d\n", redir_out_fd);
         	if (redir_out_fd > 0)
 		{
 	    		if (dup2(redir_out_fd, STDOUT_FILENO) == -1)
@@ -239,17 +239,18 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	    	*/	if (dup2(redir_in_fd, STDIN_FILENO) == -1)
 				perror("Error redir in");
 			close(redir_in_fd);
-			printf("get_redir_in fd after dup2: %d\n", redir_in_fd);
+			//printf("get_redir_in fd after dup2: %d\n", redir_in_fd);
 		}
 		free_split(argv);
 		argv = get_argv_redir(cmd);
 	}
 	char **env;
-	printf("before exec: abs_comd: %s\n", abs_comd);
-	print_2Dtab(argv, "before exec: argv");
+	env = NULL;
+//	printf("before exec: abs_comd: %s\n", abs_comd);
+//	print_2Dtab(argv, "before exec: argv");
 	if (is_buildin(comd, cmd, g) == 0)
 	{
-		printf("b exec==============\n");
+		//printf("b exec==============\n");
 		env = get_env_tab(g->env);
 		if (execve(abs_comd, argv, env) == -1) {
 			free(abs_comd);
@@ -257,7 +258,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 			exit_free(env);
 			return (-1);
 		}
-		printf("e exec==============\n");
+		//printf("e exec==============\n");
 	}
 	free(abs_comd);
 	free_split(argv);
@@ -297,7 +298,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
                 		perror("ERROR waitpid");
                 		exit(EXIT_FAILURE);
             		}
-	    		if (WIFEXITED(status)) {
+/*	    		if (WIFEXITED(status)) {
                 		printf("terminé, code=%d\n", WEXITSTATUS(status));
             		} else if (WIFSIGNALED(status)) {
                 		printf("tué par le signal %d\n", WTERMSIG(status));
@@ -306,7 +307,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
             		} else if (WIFCONTINUED(status)) {
                 		printf("relancé\n");
             		}
-			if (WIFEXITED(status) || WIFSIGNALED(status))
+*/			if (WIFEXITED(status) || WIFSIGNALED(status))
 				break;
 		}
 	}
@@ -330,19 +331,19 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 	if (l == -1)
 		return 0;
 	path = ft_substr(comd, 0, l);
-	printf("cutting path: %s\n", path);
+	//printf("cutting path: %s\n", path);
 	//path-->abs_path
 	if (path[0] != '/')
 	{
 		char *tmp = path;
 		char *tmp2 = ft_strjoin(getenv("PWD"), "/");
 		path = ft_strjoin(tmp2, tmp);
-		printf("changing path: %s\n", path);
+		//printf("changing path: %s\n", path);
 		free(tmp);
 		free(tmp2);
 	}
 	exec = ft_substr(comd, l + 1, ft_strlen(comd) - l);
-	printf("cutting exec: %s\n", exec);
+	//printf("cutting exec: %s\n", exec);
 	dir = opendir(path);
 		if (dir)
 		{
@@ -410,7 +411,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	//printf("cd_ac ; %d\n", g->cmd_ac);
 	//print_2Dtab(g->cmd_tab, "www");
 
-	perror("bol 00");
+	//perror("bol 00");
 	comd = get_cmd_in_line(cmd);
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
@@ -445,7 +446,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
 		return (1);
-	char *path_from_env = get_env("PATH", g->env);
+/*	char *path_from_env = get_env("PATH", g->env);
 	printf("path: %s\n", path_from_env);
 	if (path_from_env == NULL)
 	{
@@ -453,7 +454,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		g->ret_errno = 127;
 		return (1);
 	}
-	while (g->path[i])
+*/	while (g->path[i])
 	{
 		dir = opendir(g->path[i]);
 		if (dir)
