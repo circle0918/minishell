@@ -356,6 +356,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	char			*comd;
 
 	i = 0;
+	g->cmd_tab = NULL;
 	if (ft_strchr(cmd, '$'))
 	{
 		cmd = check_var_cmd(g, cmd);
