@@ -10,38 +10,27 @@ void print_2Dtab(char** tab, char *str)
     	}
 }
 
-char **get_file(char *str)
-{
-    char **out_file;
-	//not simple split
-    out_file = ft_split(str, '>');
-	return (out_file);
-}
-
 char *get_pwd()
 {
-    char buf[1024];
-	char *cwd;
+	char	buf[1024];
+	char	*cwd;
 
 	cwd = getcwd(buf, sizeof(buf));
-    return(cwd);
+	return (cwd);
 }
 
-char **get_argv_redir(char *cmd)
+int	get_argc_redir(char **tab)
 {
-	char			**tab;
-	char			**argv;
 	int	i;
 	int	argc;
 
 	i = 0;
 	argc = 1;
-	tab = creat_list_arg(cmd);
 	while (tab[i] && tab[i+1])
 	{
 		if (ft_strequ(tab[i+1], ">") || ft_strequ(tab[i+1], ">>"))
 		{
-			//TODO: other descriptor ...
+			//TODO: other descriptor on the left
 			if (ft_strequ(tab[i], "1") || ft_strequ(tab[i], "2") || ft_strequ(tab[i], "&"))
 				argc = i;
 			else
@@ -56,6 +45,18 @@ char **get_argv_redir(char *cmd)
 		i++;
 		argc++;
 	}
+	return (argc);
+}
+
+char **get_argv_redir(char *cmd)
+{
+	char			**tab;
+	char			**argv;
+	int	argc;
+	int	i;
+
+	tab = creat_list_arg(cmd);
+	argc = get_argc_redir(tab);
 	argv = (char **)malloc(sizeof(char *) * (argc + 1));
 	argv[argc] = NULL;
 	i = 0;
@@ -86,6 +87,28 @@ char **get_env_tab(t_list *env)
 	return (ret);
 }
 
+int handle_redir_in(int *fd, char **tab, int i)
+{
+	if (*fd > 0)
+		close(*fd);
+	*fd = open(tab[i + 1], O_RDONLY);
+	if (*fd < 0)
+	{
+		error_out2(NULL, tab[i + 1], "No such file or directory");
+		free_split(tab);
+		g_ms->ret_errno = 1;
+		return (-1);
+	}
+	//printf("redir < :fd: %d\n", fd);
+	return (0);
+}
+/*
+int handle_redir_in_in(int *fd, char **tab, int i)
+{
+
+
+}
+*/
 int get_redir_in_file(char *cmd)
 {
 	char  **tab;
@@ -93,31 +116,16 @@ int get_redir_in_file(char *cmd)
 	int fd;
 
 	fd = 0;
-	
-	//free(cmd);
-	//cmd = ft_strdup("cat << d > file_out");
-	//printf("what cmd: %s\n", cmd);
-	
 	tab = creat_list_arg(cmd);
-	//print_2Dtab(tab, "cmd tab");
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
-        if (ft_strequ(tab[i], "<") && !ft_strequ(tab[i+1], "<"))
+        	if (ft_strequ(tab[i], "<") && !ft_strequ(tab[i+1], "<"))
 		{
-			if (fd > 0)
-				close(fd);
-			fd = open(tab[i + 1], O_RDONLY);
-			if (fd < 0)
-			{
-				error_out2(NULL, tab[i + 1], "No such file or directory");
-				free_split(tab);
-				g_ms->ret_errno = 1;
+			if (handle_redir_in(&fd, tab, i) == -1)
 				return (-1);
-			}
-			//printf("redir < :fd: %d\n", fd);
 		}
-        	else if (ft_strequ(tab[i], "<") && ft_strequ(tab[i+1], "<") && tab[i + 2]) // "<<"
+        	else if (ft_strequ(tab[i], "<") && ft_strequ(tab[i+1], "<") && tab[i + 2])
 		{
 			if (fd > 0)
 				close(fd);
