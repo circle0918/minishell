@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 23:56:05 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 17:59:40 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ typedef struct 	s_ms
 
 t_ms			*g_ms;
 
-void		ft_exit_plus(char **cmd);
+void	ft_exit_plus(char **cmd);
+int		checkvar(char *str, int i);
 
 //echo $
 char	*check_var_cmd(t_ms *g, char *cmd);
@@ -59,11 +60,17 @@ char	*check_var_cmd(t_ms *g, char *cmd);
 
 //doucle char
 char	**creat_list_arg(char *line);
-void print_split(char **cmd);//tmp
+void 	print_split(char **cmd);//tmp
+char	**cmd_creatnull(char **cmd, int j, int k);
+int		ft_passpace(char *line, int idx);
+void	print_split(char **cmd);
+int		count_word(char *line);
 
 //pipe
 void    pipe_command(t_ms *g, int pipe);
 void	init_pipe(t_ms *g);
+void	my_pipe(char **cmd, t_ms *g);
+void	preexecution(char **cmd, int fd_in[2], int fd_out[2], t_ms *g);
 
 //utils pipe
 int		move_space_after(char *str, int i);
