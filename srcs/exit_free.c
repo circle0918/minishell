@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 10:33:33 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 04:32:21 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 22:32:29 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,16 @@
 
 void	free_split(char **split)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	if (split)
 	{
 		while (split[++i])
-				free(split[i]);
+			free(split[i]);
 		free(split);
+		split = NULL;
 	}
-	split = NULL;
 }
 
 void	ft_exit(int nb, t_ms *g, int ret, char *line)
@@ -33,7 +33,7 @@ void	ft_exit(int nb, t_ms *g, int ret, char *line)
 		if (nb == 2)
 			ft_putstr("exit\n");
 		rl_clear_history();
-		ft_del_line(g->line); //--> re check si a enlever !
+		// ft_del_line(g->line);
 		ft_del_line(g->ret_dir);
 		ft_lstclear(&g->env, &ft_del_list);
 		ft_lstclear(&g->cmd, &ft_del_list);
@@ -43,14 +43,10 @@ void	ft_exit(int nb, t_ms *g, int ret, char *line)
 		exit(g->ret_errno);
 	}
 	if ((!ret && line[0] != '\0'))
-	{
 		ft_putstr("  \b\b \b");
-		// write(0, "\n", 1);
-	}
-
 }
 
-int		ft_strisdigit(char *str)
+int	ft_strisdigit(char *str)
 {
 	int	i;
 
@@ -66,9 +62,17 @@ int		ft_strisdigit(char *str)
 	return (1);
 }
 
-void		ft_exit_plus(char **cmd)
+static void	print_utils_norm(char *cmd)
 {
-	unsigned long long res;
+	ft_putstr_fd("bash: exit: ", 2);
+	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
+	g_ms->ret_errno = 2;
+}
+
+void	ft_exit_plus(char **cmd)
+{
+	unsigned long long	res;
 
 	res = 0;
 	if (cmd != NULL)
@@ -86,13 +90,6 @@ void		ft_exit_plus(char **cmd)
 			return ;
 		}
 		else if (cmd[1] != NULL)
-		{
-			ft_putstr_fd("bash: exit: ", 2);
-			ft_putstr_fd(cmd[1], 2);
-			ft_putstr_fd(": numeric argument required\n", 2);
-			g_ms->ret_errno = 2;
-			return ;
-		}
-		// g_ms->ret_errno = 0;
+			print_utils_norm(cmd[1]);
 	}
 }

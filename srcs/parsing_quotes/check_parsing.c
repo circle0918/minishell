@@ -6,13 +6,13 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 10:07:49 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/17 01:58:19 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 16:58:31 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int		parse_error(int res, char *erreur, t_ms *g)
+int	parse_error(int res, char *erreur, t_ms *g)
 {
 	char	*line_1;
 	char	*dest;
@@ -21,7 +21,8 @@ int		parse_error(int res, char *erreur, t_ms *g)
 	dest = NULL;
 	if (res == 1)
 	{
-		line_1 = ft_strjoin("bash: syntax error near unexpected token `", erreur);
+		line_1 = ft_strjoin("bash: syntax error near unexpected token `",
+				erreur);
 		dest = ft_strjoin(line_1, "'");
 		ft_del_line(line_1);
 		record_list(&g->error, dest);
@@ -37,7 +38,7 @@ int		parse_error(int res, char *erreur, t_ms *g)
 	return (res);
 }
 
-int		parseur_quotes(t_ms *g, int i, int c)
+int	parseur_quotes(t_ms *g, int i, int c)
 {
 	while (g->line[i] != c && g->line[i])
 	{
@@ -50,7 +51,7 @@ int		parseur_quotes(t_ms *g, int i, int c)
 	return (i);
 }
 
-int		parseur_quotes_str(char *str, int i, int c)
+int	parseur_quotes_str(char *str, int i, int c)
 {
 	while (str[i] != c && str[i])
 	{

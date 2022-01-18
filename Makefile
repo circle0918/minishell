@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2022/01/18 15:59:00 by thhusser         ###   ########.fr        #
+#    Updated: 2022/01/18 17:59:58 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,12 +44,14 @@ SRCS_FILES	= \
 				new_double_cmd.c \
 				redir/plus.c \
 				variables_1.c \
+				utils_clean_redir.c \
+				utils_double_cmd.c \
+				utils_variable.c \
 
 
 CC			=	clang
 
 FLAGS		= 	-Werror -Wextra -Wall -g -fcommon
-#FLAGS		= 	-g
 
 LFLAGS		= 	-lreadline
 

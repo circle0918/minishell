@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 11:00:33 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/12 16:05:56 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 16:57:34 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static int	norm_2(int res, t_ms *g)
 {
 	if (g->line[res] == '\0')
 		return (parse_error(2, "multi", g));
-	if (g->line[res] == '|') // pas tres juste tout ca ! A verifier en temps voulus
+	if (g->line[res] == '|')
 		return (norm_1(res, g, 0));
 	if (g->line[res] == '!')
 		return (parse_error(1, "!", g));
@@ -57,7 +57,7 @@ static int	norm_2(int res, t_ms *g)
 	return (0);
 }
 
-int		parsing_pipe(int i, int res, t_ms *g)
+int	parsing_pipe(int i, int res, t_ms *g)
 {
 	if (g->line[i + 1] == '\0')
 		return (parse_error(2, "multi", g));
@@ -73,7 +73,7 @@ int		parsing_pipe(int i, int res, t_ms *g)
 		return (parse_error(2, "multi", g));
 	if (i == 0 && g->line[i + 1] == '|')
 		return (parse_error(1, "||", g));
-	if (i == 0)     //check si rencontree pre miere position alors erreur 
+	if (i == 0)
 		return (parse_error(1, "|", g));
 	res = i - 1;
 	while (g->line[res] == ' ' && res > 0)

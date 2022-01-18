@@ -72,6 +72,7 @@ char	*get_cmd_in_line(char *line)
 		i++;
 	}
 	cmd = ft_substr(line, pos, i-pos);
+	// free(line);
 	return (cmd);
 }
 
@@ -178,7 +179,7 @@ int get_cmd_size(char *cmd)
 char **get_argv(t_ms *g, char *cmd)
 {
 	char **argv;
-	
+
 	argv = init_argv(cmd);
 	if (g->ret_dir)
 	{
@@ -213,7 +214,7 @@ int do_redir(t_ms *g, char *cmd)
 	}
 	return (0);
 }
-	
+
 int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 {
 	char **argv;
@@ -227,7 +228,7 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	env = NULL;
 	//printf("before exec: abs_comd: %s\n", abs_comd);
 	//print_2Dtab(argv, "before exec: argv");
-	
+
 	int ret = is_buildin(comd, cmd, g);
 	if (ret == -1)
 	{
@@ -261,13 +262,13 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	if (g_ms->pid[0] == 0)
 	{
 		if (launch(cmd, comd, g, path_i, abs_path_test) == -1)
-		{ 
-			ft_exit(0, g, 0, NULL);
 	 		perror("Error fork launch");
-			exit(EXIT_FAILURE);
-		}
-		ft_exit(0, g, 0, NULL);
-		exit(0);
+		// {
+			// ft_exit(0, g, 0, NULL);
+		exit(EXIT_FAILURE);
+		// }
+		// ft_exit(0, g, 0, NULL);
+		// exit(0);
 	}
 	else if (g_ms->pid[0] < 0)
 		perror("Error forking");
@@ -283,7 +284,7 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	    		if (WIFEXITED(status)) {
                 	//	printf("terminé, code=%d\n", WEXITSTATUS(status));
 				g->ret_errno = WEXITSTATUS(status);
-            		} 
+            		}
 		/*	else if (WIFSIGNALED(status)) {
                 		printf("tué par le signal %d\n", WTERMSIG(status));
             		} else if (WIFSTOPPED(status)) {
@@ -383,7 +384,7 @@ char *find_cmd_in_path_i(char *cmd, char *path_i)
 	DIR	*dir;
 	struct dirent	*dirp;
 	char	*ret;
-	
+
 	dir = opendir(path_i);
 	if (dir)
 	{
@@ -447,7 +448,6 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		if (!cmd || ft_strequ(cmd, "\0"))
 			return (1);
 	}
-	g->ret_errno = 0;
 	g->cmd_tab = creat_list_arg(cmd);
 	g->cmd_ac = count_tab(g->cmd_tab);
 	test_redir_flag(cmd, g);
@@ -456,9 +456,9 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		return (1);
 	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g, g->path[0]) == 1)
 		return (1);
-	
+
 	char *path_i;
-	path_i = find_cmd_in_path_tab(g); 
+	path_i = find_cmd_in_path_tab(g);
 	if (path_i)
 	{
 		launcher(cmd, g->cmd_tab[0], g, path_i, NULL);
@@ -466,4 +466,3 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	return (0);
 }
-

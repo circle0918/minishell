@@ -6,63 +6,15 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 22:21:29 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/17 23:52:00 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 22:32:55 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-
-void print_split(char **cmd)
-{
-	int i = -1;
-	while (cmd[++i])
-		printf("->%s-<\n", cmd[i]);
-}
-
-int		count_word(char *line)
-{
-	int		i;
-	int		nb;
-
-	i = 0;
-	nb = 1;
-	while (line[i])
-	{
-		if (line[i] == '\'' || line[i] == '"')
-			i = parseur_quotes_str(line, i, line[i]);
-		if (line[i] == ' ')
-		{
-			while (line[i + 1] == ' ')
-				i++;
-			nb++;
-		}
-		i++;
-	}
-	return (nb);
-}
-
-char	**cmd_creatnull(char **cmd, int j, int k)
-{
-	if (cmd[j] != NULL)
-	{
-		cmd[j][k] = '\0';
-		cmd[j + 1] = NULL;
-	}
-	return (cmd);
-}
-
-int		ft_passpace(char *line, int idx)
-{
-	while (line[idx] == ' ')
-		idx++;
-	if (line[idx] == '\0')
-		return (0);
-	return (1);
-}
+#include "../includes/minishell.h"
 
 char	*get_cmd_quote(char *cmd, char *line, int **i, int **k)
 {
-	int c;
+	int	c;
 
 	c = line[**i];
 	**i += 1;
@@ -70,8 +22,8 @@ char	*get_cmd_quote(char *cmd, char *line, int **i, int **k)
 	{
 		if (line[**i] == '$' && ft_isdigit(line[**i + 1]))
 			**i += 2;
-		if ((line[**i] == '\\' && c == '"') && (line[**i + 1] == '\\' ||
-					line[**i + 1] == '"' || line[**i + 1] == '$'))
+		if ((line[**i] == '\\' && c == '"') && (line[**i + 1] == '\\'
+				|| line[**i + 1] == '"' || line[**i + 1] == '$'))
 			**i += 1;
 		cmd[**k] = line[**i];
 		**i += 1;
@@ -126,7 +78,7 @@ char	**creat_list_arg2(char *line, char **cmd, int i, int j)
 		cmd[j] = get_cmd_creat(cmd[j], line, &i, &k);
 		i++;
 	}
-	cmd = cmd_creatnull(cmd, j, k); //--> path de merde mais efficasse
+	cmd = cmd_creatnull(cmd, j, k);
 	return (cmd);
 }
 

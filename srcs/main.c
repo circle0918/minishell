@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:25:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 16:25:19 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 22:58:12 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ char *ft_checkbackredir(t_ms *g, int i, int nb)
 			if (!(tmp = (char *)malloc(sizeof(char) * (ft_strlen(g->line) + 3))))
 				return (NULL);
 			g->line = ft_spaceredir(g->line, tmp, i, 0);
+			free(tmp);
 			i += 1;
 		}
 		else
@@ -221,7 +222,8 @@ void clean_line_cmd(t_ms *g)
 	}
 	free_split(dest);
 	ft_del_line(g->line);
-	g->line = str;
+	g->line = ft_strdup(str);
+	free(str);
 }
 
 int clean_command(t_ms *g)
@@ -251,8 +253,8 @@ int clean_command(t_ms *g)
 			if (g->ret_errno == 0)
 				g->ret_errno = 127;
 		}
+		ft_del_line(command);
 	}
-	// free(command);
 	return (0);
 }
 
@@ -363,6 +365,7 @@ int main(int argc, char **argv, char **env)
 			ft_lstclear(&g.error, &ft_del_list);
 		}
 		// ft_del_line(g.line);
+		free_split(g.cmd_tab);
 	}
 	return (0);
 }

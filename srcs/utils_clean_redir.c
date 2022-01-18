@@ -1,27 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   utils_clean_redir.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/10 12:56:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 21:52:39 by thhusser         ###   ########.fr       */
+/*   Created: 2022/01/18 17:05:55 by thhusser          #+#    #+#             */
+/*   Updated: 2022/01/18 17:07:54 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "minishell.h"
 
-void	init_global_struct(t_ms *g)
+char	*get_tmp_che(char *tmp, char *str, int *i, int *j)
 {
-	g->ret_errno = 0;
-	g->cmd_tab = NULL;
-	g->exit = 0;
-	g->line = NULL;
-	g->env = NULL;
-	g->path = NULL;
-	g->cmd = NULL;
-	g->cmd_tmp = NULL;
-	g->error = NULL;
-	g->unset_path = 0;
+	int		c;
+
+	c = str[*i - 1];
+	while (str[*i] != c)
+	{
+		if ((str[*i] == '>' || str[*i] == '<'))
+		{
+			if (c == '"')
+			{
+				tmp[*j] = '\\';
+				*j += 1;
+			}
+			tmp[*j] = '\\';
+			*j += 1;
+		}
+		tmp[*j] = str[*i];
+		*j += 1;
+		*i += 1;
+	}
+	return (tmp);
 }

@@ -1,27 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   utils_variable.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/10 12:56:01 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 21:52:39 by thhusser         ###   ########.fr       */
+/*   Created: 2022/01/18 17:58:59 by thhusser          #+#    #+#             */
+/*   Updated: 2022/01/18 17:59:25 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	init_global_struct(t_ms *g)
+int	checkvar(char *str, int i)
 {
-	g->ret_errno = 0;
-	g->cmd_tab = NULL;
-	g->exit = 0;
-	g->line = NULL;
-	g->env = NULL;
-	g->path = NULL;
-	g->cmd = NULL;
-	g->cmd_tmp = NULL;
-	g->error = NULL;
-	g->unset_path = 0;
+	if (str[i] == '$' && (ft_isalpha(str[i + 1]) || str[i + 1] == '?')
+		&& !ft_isdigit(str[i + 1]) && ft_strlen(str) != 1 && str[i + 1] != '\0'
+		&& str[i + 1] != ' ')
+		return (1);
+	return (0);
 }
