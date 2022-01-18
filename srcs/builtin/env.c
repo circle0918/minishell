@@ -116,24 +116,10 @@ void	get_path(t_ms *g)
 	g->path = ft_split(path, ':');
 	free(path);
 }
-int		is_buildin(char *comd, char *cmd, t_ms *g)
+
+int		is_buildin_2(char *comd, char *cmd, t_ms *g)
 {
-	if (ft_strcmp(comd, "pwd") == 0)
-	{
-		ft_pwd(g);
-		return (1);
-	}
-	else if (ft_strcmp(g->cmd_tab[0], "echo") == 0)
-	{
-		ft_echo(g);
-		return (1);
-	}
-	else if (ft_strcmp(g->cmd_tab[0], "cd") == 0)
-	{
-		ft_cd(g);
-		return (1);
-	}
-	else if (ft_strcmp(comd, "export") == 0)
+	if (ft_strcmp(comd, "export") == 0)
 	{
 		ft_export(cmd, g);
 		return (1);
@@ -151,6 +137,27 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 	else
 		return (0);
 }
+
+int		is_buildin(char *comd, char *cmd, t_ms *g)
+{
+	if (ft_strcmp(comd, "pwd") == 0)
+	{
+		ft_pwd(g);
+		return (1);
+	}
+	else if (ft_strcmp(g->cmd_tab[0], "echo") == 0)
+	{
+		ft_echo(g);
+		return (1);
+	}
+	else if (ft_strcmp(g->cmd_tab[0], "cd") == 0)
+	{
+		ft_cd(g);
+		return (1);
+	}
+	else
+		return (is_buildin_2(comd, cmd, g));
+}
 char **init_argv(char *cmd)
 {
 	int	j;
@@ -164,7 +171,6 @@ char **init_argv(char *cmd)
 	{
 		argv[j] = ft_strdup(split_cmd[j]);
 		free(split_cmd[j]);
-		//printf("in argv[%d]: %s\n", j, argv[j]);
 		j++;
 	}
 	argv[j] = NULL;
@@ -194,10 +200,7 @@ int get_cmd_size(char *cmd)
 	j = 0;
 	split_cmd = ft_split(cmd, ' ');
 	while(split_cmd[j])
-	{
 		j++;
-		// free(split_cmd[j]);
-	}
 	free_split(split_cmd);
 	return (j);
 }
@@ -214,28 +217,18 @@ char **get_argv(t_ms *g, char *cmd)
 	}
 	return argv;
 }
-int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
+
+int do_redir(t_ms *g, char *cmd)
 {
-	char **argv;
-	char *abs_comd;
+	int	redir_out_fd;
+	int	redir_in_fd;
 
-	argv = get_argv(g, cmd);
-	abs_comd = init_abs_comd(comd, path_i, abs_path_test);
-
-	int redir_out_fd;
-	int redir_in_fd;
-
-	redir_out_fd = 0;
-	redir_in_fd = 0;
-	if (g->ret_dir)// > <
+	if (g->ret_dir)
 	{
-
 		redir_in_fd = get_redir_in_file(cmd);
 		if (redir_in_fd == -1)
-	      		return (1);
-		printf("get_redir_in fd: %d\n", redir_in_fd);
+	      		return (-1);
 		redir_out_fd = get_redir_out_file(cmd);
-		printf("get_redir_out fd: %d\n", redir_out_fd);
         	if (redir_out_fd > 0)
 		{
 	    		if (dup2(redir_out_fd, STDOUT_FILENO) == -1)
@@ -246,9 +239,20 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	    		if (dup2(redir_in_fd, STDIN_FILENO) == -1)
 				perror("Error redir in");
 			close(redir_in_fd);
-			printf("get_redir_in fd after dup2: %d\n", redir_in_fd);
 		}
 	}
+	return (0);
+}
+	
+int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
+{
+	char **argv;
+	char *abs_comd;
+
+	argv = get_argv(g, cmd);
+	abs_comd = init_abs_comd(comd, path_i, abs_path_test);
+	if (do_redir(g, cmd) == -1)
+		return (-1);
 	char **env;
 	env = NULL;
 	printf("before exec: abs_comd: %s\n", abs_comd);
@@ -263,32 +267,29 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 			exit_free(env);
 			return (-1);
 		}
-		printf("e exec==============\n");
 	}
 	free(abs_comd);
 	free_split(argv);
 	free_split(env);
-
-/*	if (redir_out_fd)
-		close(redir_out_fd);
-	if (redir_in_fd)
-		close(redir_in_fd);
-*/	return (0);
+	return (0);
 }
 
 
 int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 {
-	// pid_t pid;
-	pid_t wpid;
-	int status;
+	int	status;
 
 	g_ms->pid[0] = fork();
 	if (g_ms->pid[0] == 0)
 	{
 		if (launch(cmd, comd, g, path_i, abs_path_test) == -1)
-	  		perror("Error fork launch");
-		exit(EXIT_FAILURE);
+		{ 
+			ft_exit(0, g, 0, NULL);
+	 		perror("Error fork launch");
+			exit(EXIT_FAILURE);
+		}
+		ft_exit(0, g, 0, NULL);
+		exit(0);
 	}
 	else if (g_ms->pid[0] < 0)
 		perror("Error forking");
@@ -296,10 +297,8 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	{
 		while (1)
 		{
-			if (ft_strequ(comd, "minishell"))
-				signal(SIGINT, SIG_IGN);
-			wpid = waitpid(g_ms->pid[0], &status, WUNTRACED);
-		      	if (wpid == -1) {
+			if(waitpid(g_ms->pid[0], &status, WUNTRACED) == -1)
+		      	{
                 		perror("ERROR waitpid");
                 		exit(EXIT_FAILURE);
             		}
@@ -316,7 +315,7 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 				break;
 		}
 	}
-	return 1;
+	return (1);
 }
 
 char *get_abs_path(int pos, char *comd)
@@ -390,7 +389,7 @@ int		count_tab(char **tab)
 	return (i);
 }
 
-void do_redir(t_ms *g, char *cmd)
+void init_redir(t_ms *g, char *cmd)
 {
 	if (g->ret_dir)
 	{
@@ -473,7 +472,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	g->cmd_tab = creat_list_arg(cmd);
 	g->cmd_ac = count_tab(g->cmd_tab);
 	test_redir_flag(cmd, g);
-	do_redir(g, cmd);
+	init_redir(g, cmd);
 	if (handle_cmd_noneed_fork(g, cmd) == 1)
 		return (1);
 	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g, g->path[0]) == 1)
