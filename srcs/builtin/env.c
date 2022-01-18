@@ -283,7 +283,7 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	{
 		if (launch(cmd, comd, g, i, abs_path_test) == -1)
 	  		perror("Error fork launch");
-		//exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 	else if (g_ms->pid[0] < 0)
 		perror("Error forking");
@@ -291,8 +291,8 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	{
 		while (1)
 		{
-			if (ft_strequ(comd, "minishell"))
-				signal(SIGINT, SIG_IGN);
+	//		if (ft_strequ(comd, "minishell"))
+	//			signal(SIGINT, SIG_IGN);
 			wpid = waitpid(g_ms->pid[0], &status, WUNTRACED);
 		      	if (wpid == -1) {
                 		perror("ERROR waitpid");
