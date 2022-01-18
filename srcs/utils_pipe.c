@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/12 14:35:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 17:49:43 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 17:57:49 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,14 @@ void	init_pipe(t_ms *g)
 	g->ret_dir = NULL;
 }
 
-int		move_space_after(char *str, int i)
+int	move_space_after(char *str, int i)
 {
 	while (str[i + 1] == ' ')
 		i++;
 	return (i);
 }
 
-int		move_space_before(char *str, int c)
+int	move_space_before(char *str, int c)
 {
 	while (str[c - 1] == ' ')
 		c--;

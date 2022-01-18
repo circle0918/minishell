@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 20:29:50 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/16 19:28:02 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/18 18:02:30 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ char	*my_getenv(t_ms *g, char *path)
 		if (!ft_strncmp(list->content, path, ft_strlen(path)))
 		{
 			usable = &list->content[ft_strlen(path)];
-			// usable[ft_strlen(g->env->content) - ft_strlen(path) + 1] = 0;
 			break ;
 		}
 		list = list->next;
@@ -34,19 +33,18 @@ char	*my_getenv(t_ms *g, char *path)
 	return (usable);
 }
 
-int		takepath(char *str, int idx, char *tmp, t_ms *g)
+int	takepath(char *str, int idx, char *tmp, t_ms *g)
 {
 	int		i;
 	char	*str_tmp;
 	char	*tenv;
-	// (void)tmp;
 
 	i = 0;
 	str_tmp = (char *)ft_calloc(sizeof(char), (ft_strlen(str) + 1));
 	if (!str_tmp)
 		return (-1);
-	while (str[idx] && str[idx] != '$' && str[idx] != ' ' &&
-	(ft_isalnum(str[idx]) || str[idx] == '_'))
+	while (str[idx] && str[idx] != '$' && str[idx] != ' '
+		&& (ft_isalnum(str[idx]) || str[idx] == '_'))
 	{
 		str_tmp[i] = str[idx];
 		idx++;
@@ -54,7 +52,8 @@ int		takepath(char *str, int idx, char *tmp, t_ms *g)
 	}
 	str_tmp[i] = '=';
 	str_tmp[i + 1] = '\0';
-	if ((tenv = my_getenv(g, str_tmp)) != NULL)
+	tenv = my_getenv(g, str_tmp);
+	if (tenv != NULL)
 		ft_strcat(tmp, tenv);
 	tenv = NULL;
 	free(str_tmp);
@@ -82,7 +81,8 @@ char	*variables_in_cmd(t_ms *g, char *cmd, int idx)
 	char	*cmd_tmp;
 	char	*tenv;
 
-	cmd_tmp = (char *)ft_calloc(sizeof(char), (ft_strlen(cmd) + PATH_MAX_ENV + 1));
+	cmd_tmp = (char *)ft_calloc(sizeof(char),
+			(ft_strlen(cmd) + PATH_MAX_ENV + 1));
 	if (!cmd_tmp)
 		return (NULL);
 	if (idx != 0)
@@ -97,30 +97,22 @@ char	*variables_in_cmd(t_ms *g, char *cmd, int idx)
 		free(tenv);
 		idx++;
 	}
-	if ((cmd = get_str_var(cmd, cmd_tmp, idx, idx)) == NULL)
+	cmd = get_str_var(cmd, cmd_tmp, idx, idx);
+	if (cmd == NULL)
 		return (NULL);
 	return (cmd);
 }
 
-int		checkvar(char *str, int i)
-{
-	if (str[i] == '$' && (ft_isalpha(str[i + 1]) || str[i + 1] == '?') &&
-		!ft_isdigit(str[i + 1]) && ft_strlen(str) != 1 && str[i + 1] != '\0' &&
-		str[i + 1] != ' ')
-		return (1);
-	return (0);
-}
-
 char	*check_var_cmd(t_ms *g, char *cmd)
 {
-	int i;
-	char *tmp;
-	int x;
+	int		i;
+	char	*tmp;
+	int		x;
 
 	x = 0;
-	i = 0;
+	i = -1;
 	tmp = NULL;
-	while (cmd[i])
+	while (cmd[++i])
 	{
 		if (cmd[i] == '"' && x)
 			x = 0;
@@ -136,7 +128,6 @@ char	*check_var_cmd(t_ms *g, char *cmd)
 			if (!cmd)
 				return (NULL);
 		}
-		i++;
 	}
 	return (cmd);
 }
