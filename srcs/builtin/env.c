@@ -1,4 +1,5 @@
 #include "../includes/minishell.h"
+char *find_cmd_in_path_i(char *cmd, char *path_i);
 int     count_space(char *tmp)
 {
     int i;
@@ -201,13 +202,13 @@ int get_cmd_size(char *cmd)
 	return (j);
 }
 
-int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
+int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 {
 	char **argv;
 	char *abs_comd;
 
 	argv = init_argv(cmd);
-	abs_comd = init_abs_comd(comd, g->path[i], abs_path_test);
+	abs_comd = init_abs_comd(comd, path_i, abs_path_test);
 
 	int redir_out_fd;
 	int redir_in_fd;
@@ -245,6 +246,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 		argv = get_argv_redir(cmd);
 	}
 	char **env;
+	env = NULL;
 	printf("before exec: abs_comd: %s\n", abs_comd);
 	print_2Dtab(argv, "before exec: argv");
 	if (is_buildin(comd, cmd, g) == 0)
@@ -271,7 +273,7 @@ int launch(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 }
 
 
-int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
+int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 {
 	// pid_t pid;
 	pid_t wpid;
@@ -280,9 +282,9 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	g_ms->pid[0] = fork();
 	if (g_ms->pid[0] == 0)
 	{
-		if (launch(cmd, comd, g, i, abs_path_test) == -1)
+		if (launch(cmd, comd, g, path_i, abs_path_test) == -1)
 	  		perror("Error fork launch");
-		//exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 	else if (g_ms->pid[0] < 0)
 		perror("Error forking");
@@ -312,13 +314,12 @@ int launcher(char *cmd, char *comd, t_ms *g, int i, char *abs_path_test)
 	}
 	return 1;
 }
-int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
+
+int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, char *dir)
 {
 	int	l;
 	char	*path;
 	char	*exec;
-	DIR	*dir;
-	struct dirent	*dirp;
 
 	l = ft_strlen(comd) - 1;
 	while(l >= 0)
@@ -343,26 +344,20 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, int i)
 	}
 	exec = ft_substr(comd, l + 1, ft_strlen(comd) - l);
 	printf("cutting exec: %s\n", exec);
-	dir = opendir(path);
-		if (dir)
-		{
-			while ((dirp = readdir(dir)) != NULL)
-			{
-				if (ft_strequ(dirp->d_name, exec))
-				{
-					launcher(cmd, exec, g, i, path);
-					free(comd);
-					free(path);
-					free(exec);
-					closedir(dir);
-					return (1);
-				}
-			}
-		}
-		closedir(dir);
+	
+	char *path_i = find_cmd_in_path_i(exec, path);
+	if (path_i)
+	{
+		launcher(cmd, exec, g, dir, path);
 		free(comd);
+		free(path);
+		free(exec);
+		return (1);
+	}
+	free(comd);
 	return (0);
 }
+
 int		count_tab(char **tab)
 {
 	int i;
@@ -375,31 +370,61 @@ int		count_tab(char **tab)
 	return (i);
 }
 
+char *find_cmd_in_path_i(char *cmd, char *path_i)
+{
+	DIR	*dir;
+	struct dirent	*dirp;
+	char	*ret;
+	
+	dir = opendir(path_i);
+	if (dir)
+	{
+		while ((dirp = readdir(dir)) != NULL)
+		{
+			if (ft_strequ(dirp->d_name, cmd))
+			{
+				ret = path_i;
+				closedir(dir);
+				return (ret);
+			}
+		}
+	}
+	closedir(dir);
+	return (NULL);
+}
 
+char *find_cmd_in_path_tab(t_ms *g)
+{
+	DIR	*dir;
+	struct dirent	*dirp;
+	int	i;
+	char	*path_i;
+
+	i = 0;
+	while (g->path[i])
+	{
+		path_i = find_cmd_in_path_i(g->cmd_tab[0], g->path[i]);
+		if (path_i)
+			return (path_i);
+		i++;
+	}
+	return (NULL);
+}
 
 int		find_cmd_path(char *cmd, t_ms *g)
 {
-	DIR				*dir;
-	struct dirent	*dirp;
-	int				i;
 	char			*comd;
 
-	i = 0;
 	if (ft_strchr(cmd, '$'))
 	{
 		cmd = check_var_cmd(g, cmd);
 		if (!cmd || ft_strequ(cmd, "\0"))
-		{
-			// free(cmd);
 			return (1);
-		}
 	}
 	g->ret_errno = 0;
 	g->cmd_tab = creat_list_arg(cmd);
 
 	test_redir_flag(cmd, g);
-	// comd = get_cmd_in_line(cmd);
-	// print_split(g->cmd_tab);
 	if (g->ret_dir)
 	{
 		free_split(g->cmd_tab);
@@ -410,7 +435,6 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	//printf("cd_ac ; %d\n", g->cmd_ac);
 	//print_2Dtab(g->cmd_tab, "www");
 
-	perror("bol 00");
 	comd = get_cmd_in_line(cmd);
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
@@ -421,31 +445,28 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	}
 	if(ft_strcmp(g->cmd_tab[0], "export") == 0)
 	{
-		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, g->path[0], NULL) == -1)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
-		// free(cmd);
 		return (1);
 	}
 	if(ft_strcmp(g->cmd_tab[0], "unset") == 0)
 	{
-		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, g->path[0], NULL) == -1)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
-		// free(cmd);
 		return (1);
 	}
 	if(ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
-		if (launch(cmd, g->cmd_tab[0], g, i, NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, g->path[0], NULL) == -1)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
-		// free(cmd);
 		return (1);
 	}
-	if (exec_cmd_has_dir(cmd, comd, g, i) == 1)
+	if (exec_cmd_has_dir(cmd, comd, g, g->path[0]) == 1)
 		return (1);
-	char *path_from_env = get_env("PATH", g->env);
+/*	char *path_from_env = get_env("PATH", g->env);
 	printf("path: %s\n", path_from_env);
 	if (path_from_env == NULL)
 	{
@@ -453,30 +474,14 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		g->ret_errno = 127;
 		return (1);
 	}
-	while (g->path[i])
+*/	
+	char *path_i;
+	path_i = find_cmd_in_path_tab(g); 
+	if (path_i)
 	{
-		dir = opendir(g->path[i]);
-		if (dir)
-		{
-			while ((dirp = readdir(dir)) != NULL)
-			{
-				if (ft_strequ(dirp->d_name, g->cmd_tab[0]))
-				{
-					launcher(cmd, g->cmd_tab[0], g, i, NULL);
-					// free(comd);
-					closedir(dir);
-					free_split(g->cmd_tab);
-					// free(cmd);
-					return (1);
-				}
-			}
-		}
-		closedir(dir);
-		i++;
+		launcher(cmd, g->cmd_tab[0], g, path_i, NULL);
+		return (1);
 	}
-	// free(comd);
-	// free(cmd);
-	// free_split(g->cmd_tab);
 	return (0);
 }
 
