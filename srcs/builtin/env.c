@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 22:49:56 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 00:37:43 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,7 +234,7 @@ void	clean_redir(int *out, int *in)
 }
 
 int	launch_exec(char *cmd, char *comd, t_ms *g, char *path_i)
-{	
+{
 	char	**argv;
 	char	*abs_comd;
 	char	**env;
@@ -297,7 +297,7 @@ int	launcher(char *cmd, char *comd, t_ms *g, char *path_i)
 				perror ("ERROR waitpid");
 				exit (EXIT_FAILURE);
 			}
-			if (WIFEXITED(status)) 
+			if (WIFEXITED(status))
 			{
 			// g->ret_errno = WEXITSTATUS(status);
 			}
@@ -463,7 +463,12 @@ int	reset_cmd_variable(char *cmd)
 int	find_cmd_path(char *cmd, t_ms *g)
 {
 	char	*path_i;
+	char	*str;
+	char	*tmp;
+	int		count;
 
+	tmp = NULL;
+	str = NULL;
 	if (reset_cmd_variable(cmd) == 0)
 		cmd = check_var_cmd(g, cmd);
 	g->cmd_tab = creat_list_arg(cmd);
@@ -478,9 +483,11 @@ int	find_cmd_path(char *cmd, t_ms *g)
 		return (1);
 	}
 	path_i = find_cmd_in_path_tab(g);
+	count = count_split(g->cmd_tab);
+	str = norm_clean_line_cmd(g->cmd_tab, count, str, tmp);
 	if (path_i)
 	{
-		launcher(cmd, g->cmd_tab[0], g, path_i);
+		launcher(str, g->cmd_tab[0], g, path_i);
 		free_split(g->cmd_tab);
 		return (1);
 	}

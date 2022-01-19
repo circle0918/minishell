@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 22:49:47 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 00:33:00 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ typedef struct s_ms
 }			t_ms;
 
 t_ms		*g_ms;
+
+char	*norm_clean_line_cmd(char **dest, int count, char *str, char *tmp);
 
 void	ft_exit_plus(char **cmd);
 int		checkvar(char *str, int i);
@@ -150,7 +152,7 @@ int		parseur(t_ms *g, int i, int res);
 void	lauch_all(t_ms *g);
 void	print_error_main(t_ms *g);
 
-//->check redir 
+//->check redir
 char	*ft_spaceredir(char *str, char *tmp, int idx, int i);
 char	*ft_checkbackredir(t_ms *g, int i, int nb);
 char	*check_in_out(t_ms *g, char *str);
