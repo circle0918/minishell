@@ -110,7 +110,7 @@ void	init_global_struct(t_ms *g);
 void	record_list(t_list **list, char *str);
 void	print_list(t_list *error);
 void ft_echo(t_ms *g);
-void ft_export(char *cmd, t_ms *g);
+void ft_export(t_ms *g);
 void ft_cd(t_ms *g);
 void ft_pwd(t_ms *g);
 void ft_unset(t_ms *g);

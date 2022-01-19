@@ -86,11 +86,11 @@ void	get_path(t_ms *g)
 	free(path);
 }
 
-int		is_buildin_2(char *comd, char *cmd, t_ms *g)
+int		is_buildin_2(char *comd, t_ms *g)
 {
 	if (ft_strcmp(comd, "export") == 0)
 	{
-		ft_export(cmd, g);
+		ft_export(g);
 		return (1);
 	}
 	else if (ft_strcmp(g->cmd_tab[0], "unset") == 0)
@@ -109,7 +109,7 @@ int		is_buildin_2(char *comd, char *cmd, t_ms *g)
 		return (0);
 }
 
-int		is_buildin(char *comd, char *cmd, t_ms *g)
+int		is_buildin(char *comd, t_ms *g)
 {
 	if (ft_strcmp(comd, "pwd") == 0)
 	{
@@ -127,7 +127,7 @@ int		is_buildin(char *comd, char *cmd, t_ms *g)
 		return (1);
 	}
 	else
-		return (is_buildin_2(comd, cmd, g));
+		return (is_buildin_2(comd, g));
 }
 char **init_argv(char *cmd)
 {
@@ -248,7 +248,7 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 
 	if (do_redir(g, cmd, &g->redir_out_fd, &g->redir_in_fd) == -1)
 		return (-1);
-	try_buildin = is_buildin(comd, cmd, g);
+	try_buildin = is_buildin(comd, g);
 	if (try_buildin == -1)
 	{
 		error_out2(comd, NULL, "No such file or directory");
