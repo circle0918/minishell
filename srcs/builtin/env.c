@@ -427,7 +427,7 @@ int handle_cmd_noneed_fork(t_ms *g, char *cmd)
 		ft_exit_plus(g->cmd_tab);
 		free_split(g->cmd_tab);
 		g->exit = 1;
-		ft_exit(2, g, g->ret, g->line);
+		ft_exit(2, g, g->ret, cmd);
 	}
 	g->ret_errno = 0;
 	if(ft_strcmp(g->cmd_tab[0], "export") == 0
