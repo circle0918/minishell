@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2022/01/18 17:59:58 by thhusser         ###   ########.fr        #
+#    Updated: 2022/01/19 19:01:52 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,6 +47,13 @@ SRCS_FILES	= \
 				utils_clean_redir.c \
 				utils_double_cmd.c \
 				utils_variable.c \
+				main_folder/signal.c \
+				main_folder/utils.c \
+				main_folder/parseur_main.c \
+				main_folder/utils_main.c \
+				main_folder/check_redir_main.c \
+				main_folder/clean.c \
+
 
 
 CC			=	clang

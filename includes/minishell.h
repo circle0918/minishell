@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 18:34:14 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 19:04:36 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,4 +127,34 @@ void	print_2Dtab(char **tab, char *str);
 int		get_redir_in_file(char *cmd);
 void	error_out2(char *comd, char *opt, char *msg);
 char	**get_env_tab(t_list *env);
+
+//main folder
+//->utils
+void	begin(char **env, t_ms *g);
+int		count_split(char **split);
+void	norm_clean_cmd(t_ms *g, char *command);
+char	*extract_string(char *str, int len);
+int		contains_only_whitespaces(char *line);
+
+//->signals
+void	end(int sig);
+void	recovery(int sig);
+
+//->parseur main / ->utils_main
+int		parseur(t_ms *g, int i, int res);
+void	lauch_all(t_ms *g);
+void	print_error_main(t_ms *g);
+
+//->check redir 
+char	*ft_spaceredir(char *str, char *tmp, int idx, int i);
+char	*ft_checkbackredir(t_ms *g, int i, int nb);
+char	*check_in_out(t_ms *g, char *str);
+
+//->clean
+char	*norm_clean_line_cmd(char **dest, int count, char *str, char *tmp);
+void	clean_line_cmd(t_ms *g);
+int		check_nb_pipe(const char *str, t_ms *g);
+int		clean_command(t_ms *g);
+
+
 #endif
