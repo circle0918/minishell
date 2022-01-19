@@ -4,7 +4,7 @@ void	error_out2(char *comd, char *opt, char *msg)
 {
 	char	str[1024];
 
-	str[0] = '\0';
+	ft_memset(str, 0, 1024);
 	ft_strcat(str, "minishell : ");
 	if (comd)
 	{
@@ -65,7 +65,7 @@ void	set_env(char *key, char *val, t_list *env)
 	char	s[1024];
 	t_list	*last;
 
-	s[0] = '\0';
+	ft_memset(s, 0, 1024);
 	ft_strcat(s, key);
 	ft_strcat(s, "=");
 	ft_strcat(s, val);
@@ -76,9 +76,10 @@ void	set_env(char *key, char *val, t_list *env)
 	ft_lstadd_back(&env, last);
 }
 
-void	change_path(char *path, t_ms *g, int change_back)
+void	change_path(t_ms *g, int change_back)
 {
 	char	*pwd;
+	char	*path;
 
 	path = get_pwd();
 	if (change_back)
@@ -111,7 +112,7 @@ int ft_cd_0(t_ms *g, char **path)
 	{
 		if (g->cmd_ac == 2)
 			free(*path);
-		*path = get_env("HOME", g->env);
+		*path = ft_strdup(get_env("HOME", g->env));
 	}
 	return (0);
 }
@@ -124,7 +125,7 @@ int ft_cd_1(t_ms *g, char **path)
 		free(*path);
 		*path = get_env("OLDPWD", g->env);
 		if (chdir(*path) == 0)
-			change_path(*path, g, 1);
+			change_path(g, 1);
 		else
 		{
 			g->ret_errno = 1;
@@ -144,17 +145,17 @@ int ft_cd_1(t_ms *g, char **path)
 void ft_cd_2(t_ms *g, char **path)
 {
 	char	cwd[1024];
-	
+
+	ft_memset(cwd, 0, 1024);
 	getcwd(cwd, sizeof (cwd));
 	ft_strcat(cwd, "/");
 	ft_strcat(cwd, *path);
 	if (chdir(cwd) == 0)
-		change_path(cwd, g, 0);
+		change_path(g, 0);
 	else
 	{
 		g->ret_errno = 1;
 		error_out2("cd", *path, "No such file or directory");
-		g->ret_errno = 1;
 	}
 }
 
@@ -172,12 +173,13 @@ void	ft_cd(t_ms *g)
 	else
 	{
 		if (chdir(path) == 0)
-			change_path(path, g, 0);
+			change_path(g, 0);
 		else
 		{
 			g->ret_errno = 1;
 			error_out2("cd", path, "No such file or directory");
-			g->ret_errno = 1;
 		}
 	}
+	if (path)
+		free(path);
 }
