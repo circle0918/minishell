@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 10:33:33 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 22:32:29 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 16:39:00 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void	ft_exit(int nb, t_ms *g, int ret, char *line)
 		if (nb == 2)
 			ft_putstr("exit\n");
 		rl_clear_history();
-		// ft_del_line(g->line);
 		ft_del_line(g->ret_dir);
 		ft_lstclear(&g->env, &ft_del_list);
 		ft_lstclear(&g->cmd, &ft_del_list);
