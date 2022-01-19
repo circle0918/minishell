@@ -12,16 +12,6 @@
 
 #include "../includes/minishell.h"
 
-char	*get_pwd(void)
-{
-	char	buf[1024];
-	char	*cwd;
-
-	ft_memset(buf, 0, 1024);
-	cwd = getcwd(buf, sizeof(buf));
-	return (cwd);
-}
-
 int	get_argc_redir(char **tab)
 {
 	int	i;

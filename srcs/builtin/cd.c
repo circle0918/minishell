@@ -91,9 +91,10 @@ void	set_env(char *key, char *val, t_list *env)
 void	change_path(t_ms *g, int change_back)
 {
 	char	*pwd;
-	char	*path;
-
-	path = get_pwd();
+	char	path[1024];
+	
+	ft_memset(path, 0, 1024);
+	getcwd(path, sizeof(path));
 	if (change_back)
 	{
 		pwd = ft_strdup(get_env("PWD", g->env));
