@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/14 20:29:50 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 00:53:00 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 02:07:31 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ char	*get_str_var(char *str, char *tmp, int idx, int sp)
 		sp++;
 	if (str[sp] != '\0')
 		ft_strcat(tmp, &str[idx]);
-	free(str);
+	ft_del_line(str);
 	str = (char *)ft_calloc(sizeof(char), (ft_strlen(tmp) + 1));
 	if (!str)
 		return (NULL);
