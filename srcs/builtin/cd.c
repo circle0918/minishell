@@ -40,19 +40,13 @@ char	*get_env(char *str, t_list *env)
 	return (NULL);
 }
 
-void	set_env(char *key, char *val, t_list *env)
+int set_env_replace(char *key, t_list *env, char* s)
 {
 	t_list	*tmp;
 	char	*pos;
-	char	s[1024];
-	t_list	*last;
-
-	s[0] = '\0';
-	ft_strcat(s, key);
-	ft_strcat(s, "=");
-	ft_strcat(s, val);
-	tmp = env;
+	
 	pos = NULL;
+	tmp = env;
 	while (tmp)
 	{
 		pos = ft_strstr(tmp->content, key);
@@ -60,10 +54,23 @@ void	set_env(char *key, char *val, t_list *env)
 		{
 			free(tmp->content);
 			tmp->content = ft_strdup(s);
-			return ;
+			return (1);
 		}
 		tmp = tmp->next;
 	}
+	return (0);
+}
+void	set_env(char *key, char *val, t_list *env)
+{
+	char	s[1024];
+	t_list	*last;
+
+	s[0] = '\0';
+	ft_strcat(s, key);
+	ft_strcat(s, "=");
+	ft_strcat(s, val);
+	if (set_env_replace(key, env, s) == 1)
+		return ;
 	last = ft_lst_pop_last(&env);
 	record_list(&env, s);
 	ft_lstadd_back(&env, last);
@@ -89,61 +96,79 @@ void	change_path(char *path, t_ms *g, int change_back)
 	}
 }
 
-void	ft_cd(t_ms *g)
+int ft_cd_0(t_ms *g, char **path)
 {
-	char	*path;
-	char	cwd[1024];
-	char	*tmp_path;
-
 	if (g->cmd_ac == 2)
-		path = ft_strdup(g->cmd_tab[1]);
+		*path = ft_strdup(g->cmd_tab[1]);
 	g->ret_errno = 0;
 	if (g->cmd_ac > 2)
 	{
 		g->ret_errno = 1;
-		error_out2("cd", path, "Too many arguements");
+		error_out2("cd", *path, "Too many arguements");
+		return (1);	
 	}
-	if (g->cmd_ac == 1 || ft_strequ(path, "~") || ft_strequ(path, "--"))
+	if (g->cmd_ac == 1 || ft_strequ(*path, "~") || ft_strequ(*path, "--"))
 	{
 		if (g->cmd_ac == 2)
-			free(path);
-		path = get_env("HOME", g->env);
+			free(*path);
+		*path = get_env("HOME", g->env);
 	}
-	if (ft_strequ(path, "-"))
+	return (0);
+}
+int ft_cd_1(t_ms *g, char **path)
+{
+	char	*tmp_path;
+	
+	if (ft_strequ(*path, "-"))
 	{
-		free(path);
-		path = get_env("OLDPWD", g->env);
-		printf("cd - :%s\n", path);
-		if (chdir(path) == 0)
-			change_path(path, g, 1);
+		free(*path);
+		*path = get_env("OLDPWD", g->env);
+		if (chdir(*path) == 0)
+			change_path(*path, g, 1);
 		else
 		{
 			g->ret_errno = 1;
-			error_out2("cd", path, "No such file or directory");
-			g->ret_errno = 1;
+			error_out2("cd", *path, "No such file or directory");
 		}
-		return ;
+		return (1);
 	}
-	if (path[0] == '~')
+	if ((*path)[0] == '~')
 	{
-		tmp_path = path;
-		path = ft_strjoin(get_env("HOME", g->env), (tmp_path + 1));
+		tmp_path = *path;
+		*path = ft_strjoin(get_env("HOME", g->env), (tmp_path + 1));
 		free(tmp_path);
 	}
-	if (path[0] != '/')
+	return (0);
+}
+
+void ft_cd_2(t_ms *g, char **path)
+{
+	char	cwd[1024];
+	
+	getcwd(cwd, sizeof (cwd));
+	ft_strcat(cwd, "/");
+	ft_strcat(cwd, *path);
+	if (chdir(cwd) == 0)
+		change_path(cwd, g, 0);
+	else
 	{
-		getcwd(cwd, sizeof (cwd));
-		ft_strcat(cwd, "/");
-		ft_strcat(cwd, path);
-		if (chdir(cwd) == 0)
-			change_path(cwd, g, 0);
-		else
-		{
-			g->ret_errno = 1;
-			error_out2("cd", path, "No such file or directory");
-			g->ret_errno = 1;
-		}
+		g->ret_errno = 1;
+		error_out2("cd", *path, "No such file or directory");
+		g->ret_errno = 1;
 	}
+}
+
+void	ft_cd(t_ms *g)
+{
+	char	*path;
+
+	path = NULL;
+	if (ft_cd_0(g, &path) == 1)
+		return ;
+	if (ft_cd_1(g, &path) == 1)
+		return ;
+	if (path[0] != '/')
+		ft_cd_2(g, &path);
 	else
 	{
 		if (chdir(path) == 0)
