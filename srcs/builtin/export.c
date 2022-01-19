@@ -186,12 +186,20 @@ void ft_export(char *cmd, t_ms *g)
 {
 	int i;
 	(void)cmd;
+	char *strsub;
+
 	g->ret_errno = 0;
 	if (g->cmd_ac == 1) //if only export == export p : declare -x all env=
 	{
 		export_no_arg(g);
 		return ;
 	}
+	strsub = ft_substr(g->cmd_tab[1], 0, 4);
+	if (ft_strequ("PATH", strsub))
+	{
+		g->unset_path = 0;
+	}
+	free(strsub);
 	i = 0;
 	while(g->cmd_tab[++i])
 	{

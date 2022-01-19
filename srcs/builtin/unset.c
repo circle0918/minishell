@@ -1,21 +1,19 @@
 #include "../includes/minishell.h"
-int		check_unset_error(char *str)
+
+int	check_unset_error(char *str)
 {
-	int i;
+	int	i;
 
 	i = 1;
-	if (!(ft_isalpha(str[0]) || str[0] == '_'))//first char can't be 0-9, but can be '_'
-		{
-			printf("minishell: uset: '%s': not a valid identifier\n", str);
-			return (1);
-		}
-	while(str[i])
+	if (!(ft_isalpha(str[0]) || str[0] == '_'))
 	{
-//		printf("out str[i]%c\n",str[i]);
-		if (!(ft_isalnum(str[i] )|| str[i] == '_'))
+		printf("minishell: uset: '%s': not a valid identifier\n", str);
+		return (1);
+	}
+	while (str[i])
+	{
+		if (!(ft_isalnum(str[i]) || str[i] == '_'))
 		{
-			
-//		printf("int str[i]%c\n",str[i]);
 			printf("minishell: unset: '%s': not a valid identifier\n", str);
 			return (1);
 		}
@@ -24,26 +22,25 @@ int		check_unset_error(char *str)
 	return (0);
 }
 
-void ft_unset(t_ms *g)
+void	ft_unset(t_ms *g)
 {
-	t_list *tmp;
-	char *pos;
-	t_list *pre;
+	t_list	*tmp;
+	char	*pos;
+	t_list	*pre;
 	int		i;
-	i  = 1;
-	tmp = g->env;
 
+	i = 1;
+	tmp = g->env;
 	g->ret_errno = 0;
 	g->unset_path = 0;
 	if (!g->cmd_tab[1])
-		return;
-	
-	if(check_unset_error(g->cmd_tab[1]))
+		return ;
+	if (check_unset_error(g->cmd_tab[1]))
 	{
 		g->ret_errno = 1;
-		return;
+		return ;
 	}
-	if(ft_strequ("PATH", g->cmd_tab[1]))
+	if (ft_strequ("PATH", g->cmd_tab[1]))
 	{
 		g->unset_path = 1;
 	}
@@ -52,7 +49,7 @@ void ft_unset(t_ms *g)
 		while (tmp)
 		{
 			pos = ft_strstr(tmp->content, g->cmd_tab[i]);
-			if (pos && pos - (char *)tmp->content == 0) //first sub string and ABCD=123 ABC=123 find ABC= 
+			if (pos && pos - (char *)tmp->content == 0)
 			{
 				if (((char *)tmp->content)[ft_strlen(g->cmd_tab[i])] == '=')
 				{
@@ -64,7 +61,7 @@ void ft_unset(t_ms *g)
 					}
 					free(tmp->content);
 					free(tmp);
-					break;
+					break ;
 				}
 			}
 			pre = tmp;

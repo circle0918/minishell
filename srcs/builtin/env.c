@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 char *find_cmd_in_path_i(char *cmd, char *path_i);
-int     count_space(char *tmp)
+int	count_space(char *tmp)
 {
     int i;
     int x;
@@ -286,8 +286,8 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
                 		exit(EXIT_FAILURE);
             		}
 	    		if (WIFEXITED(status)) {
-                //		printf("terminé, code=%d\n", WEXITSTATUS(status));
-				g->ret_errno = WEXITSTATUS(status);
+                	//	printf("terminé, code=%d\n", WEXITSTATUS(status));
+				// g->ret_errno = WEXITSTATUS(status);
             		}
 		/*	else if (WIFSIGNALED(status)) {
                 		printf("tué par le signal %d\n", WTERMSIG(status));
@@ -427,17 +427,19 @@ int handle_cmd_noneed_fork(t_ms *g, char *cmd)
 {
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
+		ft_exit_plus(g->cmd_tab);
 		free_split(g->cmd_tab);
 		g->exit = 1;
 		ft_exit(2, g, g->ret, g->line);
 	}
+	g->ret_errno = 0;
 	if(ft_strcmp(g->cmd_tab[0], "export") == 0
 		|| ft_strcmp(g->cmd_tab[0], "unset") == 0
 		|| ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
-		g->ret_errno = 0;
 		if (launch(cmd, g->cmd_tab[0], g, g->path[0], NULL) == -1)
 	  		perror("launch error");
+		free_split(g->cmd_tab);
 		return (1);
 	}
 	return (0);
@@ -458,13 +460,17 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	if (handle_cmd_noneed_fork(g, cmd) == 1)
 		return (1);
 	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g, g->path[0]) == 1)
+	{
+		free_split(g->cmd_tab);
 		return (1);
+	}
 
 	char *path_i;
 	path_i = find_cmd_in_path_tab(g);
 	if (path_i)
 	{
 		launcher(cmd, g->cmd_tab[0], g, path_i, NULL);
+		free_split(g->cmd_tab);
 		return (1);
 	}
 	return (0);
