@@ -442,14 +442,17 @@ int handle_cmd_noneed_fork(t_ms *g, char *cmd)
 
 int		find_cmd_path(char *cmd, t_ms *g)
 {
+	char *tmp;
+
+	tmp = NULL;
 	if (ft_strchr(cmd, '$'))
 	{
-		cmd = check_var_cmd(g, cmd);
+		tmp = check_var_cmd(g, cmd);
+		free(cmd);
+		cmd = tmp;
+		free(tmp);
 		if (!cmd || ft_strequ(cmd, "\0"))
-		{
-			free_split(g->cmd_tab);
 			return (1);
-		}
 	}
 	g->cmd_tab = creat_list_arg(cmd);
 	g->cmd_ac = count_tab(g->cmd_tab);
