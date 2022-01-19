@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 22:32:34 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 22:49:56 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ int	is_buildin_2(char *comd, t_ms *g)
 	}
 	else if (ft_strcmp(g->cmd_tab[0], "unset") == 0)
 	{
-		ft_unset(g, 0);
+		ft_unset(g);
 		return (1);
 	}
 	if (g->unset_path == 1)

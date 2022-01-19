@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 22:30:16 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 22:49:47 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	ft_echo(t_ms *g);
 void	ft_export(t_ms *g);
 void	ft_cd(t_ms *g);
 void	ft_pwd(t_ms *g);
-void	ft_unset(t_ms *g, int i);
+void	ft_unset(t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
 char	*get_env(char *str, t_list *env);
