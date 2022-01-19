@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 17:59:40 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 16:34:01 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define MINISHELL_H
 
 # include "../libft/libft.h"
-// # include "signal.h"
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdio.h>
@@ -25,34 +24,32 @@
 # include <string.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-
-
 # define PATH_MAX_ENV 4096
 # define DEBUG 0
 
-typedef struct 	s_ms
+typedef struct s_ms
 {
-				int 	ret;
-				char 	*ret_dir;
-				pid_t		pid[2];
-				int			last_cmd;
-				int 		nb_cmd_pipe;
-				char 	*line;
-				t_list	*env;
-				char	**path;
-				char 	**cmd_tab;
-				int 	cmd_ac;
-				t_list	*cmd;
-				t_list	*cmd_tmp;
-				t_list	*error;
-				int	ret_errno;
-				int exit;
-				int unset_path;
-				int redir_out_fd;
-				int redir_in_fd;
-}				t_ms;
+	int		ret;
+	char	*ret_dir;
+	pid_t	pid[2];
+	int		last_cmd;
+	int		nb_cmd_pipe;
+	char	*line;
+	t_list	*env;
+	char	**path;
+	char	**cmd_tab;
+	int		cmd_ac;
+	t_list	*cmd;
+	t_list	*cmd_tmp;
+	t_list	*error;
+	int		ret_errno;
+	int		exit;
+	int		unset_path;
+	int		redir_out_fd;
+	int		redir_in_fd;
+}			t_ms;
 
-t_ms			*g_ms;
+t_ms		*g_ms;
 
 void	ft_exit_plus(char **cmd);
 int		checkvar(char *str, int i);
@@ -63,14 +60,14 @@ char	*check_var_cmd(t_ms *g, char *cmd);
 
 //doucle char
 char	**creat_list_arg(char *line);
-void 	print_split(char **cmd);//tmp
+void	print_split(char **cmd);//tmp
 char	**cmd_creatnull(char **cmd, int j, int k);
 int		ft_passpace(char *line, int idx);
 void	print_split(char **cmd);
 int		count_word(char *line);
 
 //pipe
-void    pipe_command(t_ms *g, int pipe);
+void	pipe_command(t_ms *g, int pipe);
 void	init_pipe(t_ms *g);
 void	my_pipe(char **cmd, t_ms *g);
 void	preexecution(char **cmd, int fd_in[2], int fd_out[2], t_ms *g);
@@ -109,25 +106,25 @@ int		find_cmd_path(char *cmd, t_ms *g);
 void	init_global_struct(t_ms *g);
 void	record_list(t_list **list, char *str);
 void	print_list(t_list *error);
-void ft_echo(t_ms *g);
-void ft_export(t_ms *g);
-void ft_cd(t_ms *g);
-void ft_pwd(t_ms *g);
-void ft_unset(t_ms *g);
+void	ft_echo(t_ms *g);
+void	ft_export(t_ms *g);
+void	ft_cd(t_ms *g);
+void	ft_pwd(t_ms *g);
+void	ft_unset(t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
-char* get_env(char *str, t_list *env);
-int get_cmd_size(char *cmd);
+char	*get_env(char *str, t_list *env);
+int		get_cmd_size(char *cmd);
 int		check_uset_error(char *str);
-char *get_pwd();
+char	*get_pwd(void);
 
 //redir fonctions
-int ft_output(char *comd, char *direct, t_ms *g);
-char **get_file(char *str);
-int get_redir_out_file(char *cmd);
-char **get_argv_redir(char *cmd);
-void print_2Dtab(char** tab, char *str);
-int get_redir_in_file(char *cmd);
-void error_out2(char *comd, char *opt, char *msg);
-char **get_env_tab(t_list *env);
+int		ft_output(char *comd, char *direct, t_ms *g);
+char	**get_file(char *str);
+int		get_redir_out_file(char *cmd);
+char	**get_argv_redir(char *cmd);
+void	print_2Dtab(char **tab, char *str);
+int		get_redir_in_file(char *cmd);
+void	error_out2(char *comd, char *opt, char *msg);
+char	**get_env_tab(t_list *env);
 #endif
