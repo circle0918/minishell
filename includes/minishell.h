@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 22:30:16 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 22:49:47 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	ft_echo(t_ms *g);
 void	ft_export(t_ms *g);
 void	ft_cd(t_ms *g);
 void	ft_pwd(t_ms *g);
-void	ft_unset(t_ms *g, int i);
+void	ft_unset(t_ms *g);
 void	exit_free(char **str);
 t_list	*ft_lst_pop_last(t_list **lst);
 char	*get_env(char *str, t_list *env);
@@ -138,6 +138,21 @@ char	*get_cmd_in_line(char *line);
 void	get_path(t_ms *g);
 char	*init_abs_comd(char *comd, char *path_i);
 char	*find_cmd_in_path_i(char *cmd, char *path_i);
+void	ft_print_export(t_list *export_lst);
+void	export_no_arg_0(t_list **expl, t_list **i,
+			t_list **node, t_list **last);
+void	export_no_arg(t_ms *g);
+int		export_checker(char **tab, int i, t_ms *g);
+int		export_replaced(char *ptr, char **tab, int i, t_ms *g);
+t_list	*ft_lst_pop_last(t_list **lst);
+void	export_append(char **tab, int i, t_ms *g);
+int		ft_export_path_flag(t_ms *g);
+void	ft_export(t_ms *g);
+void	error_out2(char *comd, char *opt, char *msg);
+char	*get_env(char *str, t_list *env);
+int		set_env_replace(char *key, t_list *env, char (*s)[]);
+void	set_env(char *key, char *val, t_list *env);
+void	change_path(t_ms *g, int change_back);
 
 //redir fonctions
 int		ft_output(char *comd, char *direct, t_ms *g);

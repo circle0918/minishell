@@ -21,7 +21,7 @@ int	is_buildin_2(char *comd, t_ms *g)
 	}
 	else if (ft_strcmp(g->cmd_tab[0], "unset") == 0)
 	{
-		ft_unset(g, 0);
+		ft_unset(g);
 		return (1);
 	}
 	if (g->unset_path == 1)

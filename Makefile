@@ -34,7 +34,9 @@ SRCS_FILES	= \
 				builtin/env_5.c \
 				builtin/echo.c \
 				builtin/export.c \
+				builtin/export_1.c \
 				builtin/cd.c \
+				builtin/cd_1.c \
 				builtin/pwd.c \
 				builtin/unset.c \
 				exit_free.c \

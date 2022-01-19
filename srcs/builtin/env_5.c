@@ -12,7 +12,6 @@
 
 #include "../includes/minishell.h"
 
-
 int	count_tab(char **tab)
 {
 	int	i;
