@@ -25,9 +25,13 @@ void	handle_redir_in_in(int *fd, char **tab, int i)
 	{
 		s = readline("> ");
 		if (ft_strequ(s, delimitor))
+		{
+			free(s);
 			break ;
+		}
 		ft_putstr_fd(s, *fd);
 		ft_putstr_fd("\n",*fd);
+		free(s);
 	}
 	close(*fd);
 	*fd = open("redir_lessless", O_RDONLY);
