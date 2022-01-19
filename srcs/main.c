@@ -247,7 +247,7 @@ int clean_command(t_ms *g)
 			pipe_command(g, pipe);
 		else if (!find_cmd_path(command, g)) // --> lancement partie yyuan
 		{
-			ft_lstclear(&g->env, &ft_del_list);
+			//ft_lstclear(&g->env, &ft_del_list);
 			ft_putstr(command);
 			ft_putstr(": command not found\n");
 			if (g->ret_errno == 0)
