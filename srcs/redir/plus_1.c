@@ -17,6 +17,7 @@ char	*get_pwd(void)
 	char	buf[1024];
 	char	*cwd;
 
+	ft_memset(buf, 0, 1024);
 	cwd = getcwd(buf, sizeof(buf));
 	return (cwd);
 }
