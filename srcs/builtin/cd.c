@@ -40,7 +40,7 @@ char	*get_env(char *str, t_list *env)
 	return (NULL);
 }
 
-int set_env_replace(char *key, t_list *env, char* s)
+int set_env_replace(char *key, t_list *env, char (*s)[])
 {
 	t_list	*tmp;
 	char	*pos;
@@ -53,7 +53,7 @@ int set_env_replace(char *key, t_list *env, char* s)
 		if (pos && pos - (char *)tmp->content == 0)
 		{
 			free(tmp->content);
-			tmp->content = ft_strdup(s);
+			tmp->content = ft_strdup(*s);
 			return (1);
 		}
 		tmp = tmp->next;
@@ -69,7 +69,7 @@ void	set_env(char *key, char *val, t_list *env)
 	ft_strcat(s, key);
 	ft_strcat(s, "=");
 	ft_strcat(s, val);
-	if (set_env_replace(key, env, s) == 1)
+	if (set_env_replace(key, env, &s) == 1)
 		return ;
 	last = ft_lst_pop_last(&env);
 	record_list(&env, s);
