@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
+/*   Updated: 2022/01/19 19:04:36 by thhusser         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 void	ft_print_export(t_list *export_lst)
 {
 	t_list	*tmp;
-	int	i;
-	int	is_first_equal;
+	int		i;
+	int		is_first_equal;
 
 	tmp = export_lst;
 	while (tmp)
@@ -181,7 +193,7 @@ int	ft_export_path_flag(t_ms *g)
 
 void	ft_export(t_ms *g)
 {
-	int	i;
+	int		i;
 	char	*ptr;
 
 	if (ft_export_path_flag(g) == 1)

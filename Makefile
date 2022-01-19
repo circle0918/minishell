@@ -43,6 +43,7 @@ SRCS_FILES	= \
 				utils_pipe.c \
 				new_double_cmd.c \
 				redir/plus.c \
+				redir/plus_1.c \
 				variables_1.c \
 				utils_clean_redir.c \
 				utils_double_cmd.c \

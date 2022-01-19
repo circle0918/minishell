@@ -127,6 +127,11 @@ void	print_2Dtab(char **tab, char *str);
 int		get_redir_in_file(char *cmd);
 void	error_out2(char *comd, char *opt, char *msg);
 char	**get_env_tab(t_list *env);
+char	*get_pwd(void);
+int		get_argc_redir(char **tab);
+char	**get_argv_redir(char *cmd);
+char	**get_env_tab(t_list *env);
+int		handle_redir_in(int *fd, char **tab, int i);
 
 //main folder
 //->utils

@@ -1,44 +1,58 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
+/*   Updated: 2022/01/19 19:04:36 by thhusser         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
-char *find_cmd_in_path_i(char *cmd, char *path_i);
+
+char	*find_cmd_in_path_i(char *cmd, char *path_i);
+
 int	count_space(char *tmp)
 {
-    int i;
-    int x;
+	int	i;
+	int	x;
 
-    i = -1;
-    x = 0;
-    while (tmp[++i])
-    {
-        if (tmp[i] == ' ')
-            x++;
-    }
-    return (x);
+	i = -1;
+	x = 0;
+	while (tmp[++i])
+	{
+		if (tmp[i] == ' ')
+		x++;
+	}
+	return (x);
 }
 
-void    strcpy_del_c(char *tmp, t_ms *g)
+void	strcpy_del_c(char *tmp, t_ms *g)
 {
-    int x;
-    int i;
+	int	x;
+	int	i;
 
-    x = 0;
-    i = 0;
-    g->ret_dir = malloc(sizeof(char) * (ft_strlen(tmp) - count_space(tmp) + 1));
-    if (!g->ret_dir)
-        return ;
-    while (tmp[i])
-    {
-        if (tmp[i] != ' ')
-            g->ret_dir[x++] = tmp[i++];
-        else
-            i++;
-    }
-    g->ret_dir[x] = 0;
+	x = 0;
+	i = 0;
+	g->ret_dir = malloc(sizeof(char) * (ft_strlen(tmp) - count_space(tmp) + 1));
+	if (!g->ret_dir)
+		return ;
+	while (tmp[i])
+	{
+		if (tmp[i] != ' ')
+			g->ret_dir[x++] = tmp[i++];
+		else
+			i++;
+	}
+	g->ret_dir[x] = 0;
 }
 
 void	test_redir_flag(char *cmd, t_ms *g)
 {
-	int i;
-	char *tmp;
+	int		i;
+	char	*tmp;
 
 	i = 0;
 	tmp = NULL;
@@ -54,9 +68,10 @@ void	test_redir_flag(char *cmd, t_ms *g)
 
 char	*get_cmd_in_line(char *line)
 {
-	char *cmd;
-	int i;
-	int pos;
+	char	*cmd;
+	int		i;
+	int		pos;
+
 	i = 0;
 	pos = 0;
 	cmd = 0;
@@ -67,18 +82,17 @@ char	*get_cmd_in_line(char *line)
 	}
 	if (i != 0)
 		pos++;
-	while(line[i] && ft_isspace(line[i]) == 0)
+	while (line[i] && ft_isspace(line[i]) == 0)
 	{
 		i++;
 	}
-	cmd = ft_substr(line, pos, i-pos);
-	// free(line);
+	cmd = ft_substr(line, pos, i - pos);
 	return (cmd);
 }
 
 void	get_path(t_ms *g)
 {
-	char *path;
+	char	*path;
 
 	path = NULL;
 	path = ft_strdup(get_env("PATH", g->env));
@@ -86,7 +100,7 @@ void	get_path(t_ms *g)
 	free(path);
 }
 
-int		is_buildin_2(char *comd, t_ms *g)
+int	is_buildin_2(char *comd, t_ms *g)
 {
 	if (ft_strcmp(comd, "export") == 0)
 	{
@@ -99,7 +113,7 @@ int		is_buildin_2(char *comd, t_ms *g)
 		return (1);
 	}
 	if (g->unset_path == 1)
-		return -1;
+		return (-1);
 	if (ft_strcmp(comd, "env") == 0)
 	{
 		print_list(g->env);
@@ -109,7 +123,7 @@ int		is_buildin_2(char *comd, t_ms *g)
 		return (0);
 }
 
-int		is_buildin(char *comd, t_ms *g)
+int	is_buildin(char *comd, t_ms *g)
 {
 	if (ft_strcmp(comd, "pwd") == 0)
 	{
@@ -129,30 +143,31 @@ int		is_buildin(char *comd, t_ms *g)
 	else
 		return (is_buildin_2(comd, g));
 }
-char **init_argv(char *cmd)
+
+char	**init_argv(char *cmd)
 {
-	int	j;
-	char **split_cmd;
-	char **argv;
+	int		j;
+	char	**split_cmd;
+	char	**argv;
 
 	argv = (char **)malloc(sizeof(char *) * (get_cmd_size(cmd) + 1));
 	split_cmd = ft_split(cmd, ' ');
 	j = 0;
-	while(split_cmd[j])
+	while (split_cmd[j])
 	{
 		argv[j] = ft_strdup(split_cmd[j]);
 		free(split_cmd[j]);
 		j++;
 	}
 	argv[j] = NULL;
-	free(split_cmd);
+	free (split_cmd);
 	return (argv);
 }
 
-char *init_abs_comd(char *comd, char *path_i)
+char	*init_abs_comd(char *comd, char *path_i)
 {
-	char *dir_cmd;
-	char *abs;
+	char	*dir_cmd;
+	char	*abs;
 
 	dir_cmd = ft_strjoin(path_i, "/");
 	abs = ft_strjoin(dir_cmd, comd);
@@ -160,22 +175,22 @@ char *init_abs_comd(char *comd, char *path_i)
 	return (abs);
 }
 
-int get_cmd_size(char *cmd)
+int	get_cmd_size(char *cmd)
 {
-	int j;
-	char **split_cmd;
+	int		j;
+	char	**split_cmd;
 
 	j = 0;
 	split_cmd = ft_split(cmd, ' ');
-	while(split_cmd[j])
+	while (split_cmd[j])
 		j++;
 	free_split(split_cmd);
 	return (j);
 }
 
-char **get_argv(t_ms *g, char *cmd)
+char	**get_argv(t_ms *g, char *cmd)
 {
-	char **argv;
+	char	**argv;
 
 	argv = init_argv(cmd);
 	if (g->ret_dir)
@@ -183,25 +198,25 @@ char **get_argv(t_ms *g, char *cmd)
 		free_split(argv);
 		argv = get_argv_redir(cmd);
 	}
-	return argv;
+	return (argv);
 }
 
-int do_redir(t_ms *g, char *cmd, int *out, int *in)
+int	do_redir(t_ms *g, char *cmd, int *out, int *in)
 {
 	if (g->ret_dir)
 	{
 		*in = get_redir_in_file(cmd);
 		if (*in == -1)
-	      		return (-1);
+			return (-1);
 		*out = get_redir_out_file(cmd);
-        	if (*out > 0)
+		if (*out > 0)
 		{
-	    		if (dup2(*out, STDOUT_FILENO) == -1)
+			if (dup2(*out, STDOUT_FILENO) == -1)
 				perror("Error redir out");
 		}
 		if (*in > 0)
 		{
-	    		if (dup2(*in, STDIN_FILENO) == -1)
+			if (dup2(*in, STDIN_FILENO) == -1)
 				perror("Error redir in");
 			close(*in);
 		}
@@ -209,7 +224,7 @@ int do_redir(t_ms *g, char *cmd, int *out, int *in)
 	return (0);
 }
 
-void clean_redir(int *out, int *in)
+void	clean_redir(int *out, int *in)
 {
 	if (*out > 0)
 		close(*out);
@@ -217,11 +232,12 @@ void clean_redir(int *out, int *in)
 		close(*in);
 	unlink("redir_lessless");
 }
-int launch_exec(char *cmd, char *comd, t_ms *g, char *path_i)
+
+int	launch_exec(char *cmd, char *comd, t_ms *g, char *path_i)
 {	
-	char **argv;
-	char *abs_comd;
-	char **env;
+	char	**argv;
+	char	*abs_comd;
+	char	**env;
 
 	argv = get_argv(g, cmd);
 	abs_comd = init_abs_comd(comd, path_i);
@@ -239,9 +255,9 @@ int launch_exec(char *cmd, char *comd, t_ms *g, char *path_i)
 	return (0);
 }
 
-int launch(char *cmd, char *comd, t_ms *g, char *path_i)
+int	launch(char *cmd, char *comd, t_ms *g, char *path_i)
 {
-	int try_buildin;
+	int	try_buildin;
 
 	if (do_redir(g, cmd, &g->redir_out_fd, &g->redir_in_fd) == -1)
 		return (-1);
@@ -259,8 +275,7 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i)
 	return (0);
 }
 
-
-int launcher(char *cmd, char *comd, t_ms *g, char *path_i)
+int	launcher(char *cmd, char *comd, t_ms *g, char *path_i)
 {
 	int	status;
 
@@ -268,7 +283,7 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i)
 	if (g_ms->pid[0] == 0)
 	{
 		if (launch(cmd, comd, g, path_i) == -1)
-	 		perror("Error fork launch");
+			perror("Error fork launch");
 		exit(EXIT_FAILURE);
 	}
 	else if (g_ms->pid[0] < 0)
@@ -277,59 +292,50 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i)
 	{
 		while (1)
 		{
-			if(waitpid(g_ms->pid[0], &status, WUNTRACED) == -1)
-		      	{
-                		perror("ERROR waitpid");
-                		exit(EXIT_FAILURE);
-            		}
-	    		if (WIFEXITED(status)) {
-                	//	printf("terminé, code=%d\n", WEXITSTATUS(status));
-				// g->ret_errno = WEXITSTATUS(status);
-            		}
-		/*	else if (WIFSIGNALED(status)) {
-                		printf("tué par le signal %d\n", WTERMSIG(status));
-            		} else if (WIFSTOPPED(status)) {
-                		printf("arrêté par le signal %d\n", WSTOPSIG(status));
-            		} else if (WIFCONTINUED(status)) {
-                		printf("relancé\n");
-            		}
-		*/	if (WIFEXITED(status) || WIFSIGNALED(status))
-				break;
+			if (waitpid(g_ms->pid[0], &status, WUNTRACED) == -1)
+			{
+				perror ("ERROR waitpid");
+				exit (EXIT_FAILURE);
+			}
+			if (WIFEXITED(status)) 
+			{
+			// g->ret_errno = WEXITSTATUS(status);
+			}
+			if (WIFEXITED(status) || WIFSIGNALED(status))
+				break ;
 		}
 		clean_redir(&g->redir_out_fd, &g->redir_in_fd);
 	}
 	return (1);
 }
 
-char *get_abs_path(int pos, char *comd)
+char	*get_abs_path(int pos, char *comd)
 {
-	char *path;
-	char *tmp;
-	char *tmp2;
+	char	*path;
+	char	*tmp;
+	char	*tmp2;
 
 	path = ft_substr(comd, 0, pos);
-	//printf("cutting path: %s\n", path);
 	if (path[0] != '/')
 	{
 		tmp = path;
 		tmp2 = ft_strjoin(getenv("PWD"), "/");
 		path = ft_strjoin(tmp2, tmp);
-	//	printf("changing path: %s\n", path);
 		free(tmp);
 		free(tmp2);
 	}
 	return (path);
 }
 
-int get_last_char_pos(char *s, char c)
+int	get_last_char_pos(char *s, char c)
 {
 	int	l;
 
 	l = ft_strlen(s) - 1;
-	while(l >= 0)
+	while (l >= 0)
 	{
-		if(s[l] == c)
-			break;
+		if (s[l] == c)
+			break ;
 		l--;
 	}
 	if (l == -1)
@@ -337,19 +343,19 @@ int get_last_char_pos(char *s, char c)
 	return (l);
 }
 
-int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g)
+int	exec_cmd_has_dir(char *cmd, char *comd, t_ms *g)
 {
-	int	l;
+	int		l;
 	char	*path;
 	char	*exec;
+	char	*path_i;
 
 	l = get_last_char_pos(comd, '/');
 	if (l == -1)
-		return 0;
+		return (0);
 	path = get_abs_path(l, comd);
 	exec = ft_substr(comd, l + 1, ft_strlen(comd) - l);
-	//printf("cutting exec: %s\n", exec);
-	char *path_i = find_cmd_in_path_i(exec, path);
+	path_i = find_cmd_in_path_i(exec, path);
 	if (path_i)
 	{
 		launcher(cmd, exec, g, path);
@@ -360,19 +366,19 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g)
 	return (0);
 }
 
-int		count_tab(char **tab)
+int	count_tab(char **tab)
 {
-	int i;
+	int	i;
 
 	i = 0;
-	while(tab[i])
+	while (tab[i])
 	{
 		i++;
 	}
 	return (i);
 }
 
-void init_redir(t_ms *g, char *cmd)
+void	init_redir(t_ms *g, char *cmd)
 {
 	if (g->ret_dir)
 	{
@@ -381,16 +387,17 @@ void init_redir(t_ms *g, char *cmd)
 	}
 }
 
-char *find_cmd_in_path_i(char *cmd, char *path_i)
+char	*find_cmd_in_path_i(char *cmd, char *path_i)
 {
-	DIR	*dir;
+	DIR				*dir;
 	struct dirent	*dirp;
-	char	*ret;
+	char			*ret;
 
 	dir = opendir(path_i);
 	if (dir)
 	{
-		while ((dirp = readdir(dir)) != NULL)
+		dirp = readdir(dir);
+		while (dirp != NULL)
 		{
 			if (ft_strequ(dirp->d_name, cmd))
 			{
@@ -398,15 +405,16 @@ char *find_cmd_in_path_i(char *cmd, char *path_i)
 				closedir(dir);
 				return (ret);
 			}
+			dirp = readdir(dir);
 		}
 	}
 	closedir(dir);
 	return (NULL);
 }
 
-char *find_cmd_in_path_tab(t_ms *g)
+char	*find_cmd_in_path_tab(t_ms *g)
 {
-	int	i;
+	int		i;
 	char	*path_i;
 
 	i = 0;
@@ -420,7 +428,7 @@ char *find_cmd_in_path_tab(t_ms *g)
 	return (NULL);
 }
 
-int handle_cmd_noneed_fork(t_ms *g, char *cmd)
+int	handle_cmd_noneed_fork(t_ms *g, char *cmd)
 {
 	if (!ft_strcmp(g->cmd_tab[0], "exit"))
 	{
@@ -430,20 +438,22 @@ int handle_cmd_noneed_fork(t_ms *g, char *cmd)
 		ft_exit(2, g, g->ret, cmd);
 	}
 	g->ret_errno = 0;
-	if(ft_strcmp(g->cmd_tab[0], "export") == 0
+	if (ft_strcmp(g->cmd_tab[0], "export") == 0
 		|| ft_strcmp(g->cmd_tab[0], "unset") == 0
 		|| ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
 		if (launch(cmd, g->cmd_tab[0], g, g->path[0]) == -1)
-	  		perror("launch error");
+			perror("launch error");
 		free_split(g->cmd_tab);
 		return (1);
 	}
 	return (0);
 }
 
-int		find_cmd_path(char *cmd, t_ms *g)
+int	find_cmd_path(char *cmd, t_ms *g)
 {
+	char	*path_i;
+
 	if (ft_strchr(cmd, '$'))
 	{
 		cmd = check_var_cmd(g, cmd);
@@ -461,8 +471,6 @@ int		find_cmd_path(char *cmd, t_ms *g)
 		free_split(g->cmd_tab);
 		return (1);
 	}
-
-	char *path_i;
 	path_i = find_cmd_in_path_tab(g);
 	if (path_i)
 	{
