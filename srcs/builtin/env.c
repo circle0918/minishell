@@ -450,16 +450,22 @@ int	handle_cmd_noneed_fork(t_ms *g, char *cmd)
 	return (0);
 }
 
+int	reset_cmd_variable(char *cmd)
+{
+	if (ft_strchr(cmd, '$'))
+	{
+		if (!cmd || ft_strequ(cmd, "\0"))
+			return (1);
+	}
+	return (0);
+}
+
 int	find_cmd_path(char *cmd, t_ms *g)
 {
 	char	*path_i;
 
-	if (ft_strchr(cmd, '$'))
-	{
+	if (reset_cmd_variable(cmd) == 0)
 		cmd = check_var_cmd(g, cmd);
-		if (!cmd || ft_strequ(cmd, "\0"))
-			return (1);
-	}
 	g->cmd_tab = creat_list_arg(cmd);
 	g->cmd_ac = count_tab(g->cmd_tab);
 	test_redir_flag(cmd, g);
