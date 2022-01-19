@@ -48,6 +48,8 @@ typedef struct 	s_ms
 				int	ret_errno;
 				int exit;
 				int unset_path;
+				int redir_out_fd;
+				int redir_in_fd;
 }				t_ms;
 
 t_ms			*g_ms;

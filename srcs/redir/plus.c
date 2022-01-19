@@ -102,13 +102,50 @@ int handle_redir_in(int *fd, char **tab, int i)
 	//printf("redir < :fd: %d\n", fd);
 	return (0);
 }
-/*
-int handle_redir_in_in(int *fd, char **tab, int i)
+
+void handle_redir_in_in(int *fd, char **tab, int i)
 {
-
-
+	char *delimitor;
+	char *s;
+	
+	if (*fd > 0)
+		close(*fd);
+	delimitor = tab[i + 2];
+	*fd = open("redir_lessless", O_CREAT | O_WRONLY | O_APPEND | O_TRUNC, 0644);
+	while (1)
+	{
+		s = readline("> ");
+		if (ft_strequ(s, delimitor))
+			break;
+		ft_putstr_fd(s, *fd);
+		ft_putstr_fd("\n",*fd);
+	}
+	close(*fd);
+	*fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
+	//printf("redir << :fd: %d\n", fd);
 }
-*/
+
+void handle_redir_out(int *fd, char **tab, int i, int *is_double, char **redir_file)
+{
+	if (ft_strequ(tab[i], ">"))
+	{
+		*fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
+		close(*fd);
+		if (*redir_file)
+			free(*redir_file);
+		*redir_file = ft_strdup(tab[i + 1]);
+	}
+	else if (ft_strequ(tab[i], ">>"))
+	{
+		*fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
+		close(*fd);
+		if (*redir_file)
+			free(*redir_file);
+		*redir_file = ft_strdup(tab[i + 1]);
+		*is_double = 1;
+	}
+}
+
 int get_redir_in_file(char *cmd)
 {
 	char  **tab;
@@ -127,23 +164,7 @@ int get_redir_in_file(char *cmd)
 		}
         	else if (ft_strequ(tab[i], "<") && ft_strequ(tab[i+1], "<") && tab[i + 2])
 		{
-			if (fd > 0)
-				close(fd);
-			char *delimitor = tab[i + 2]; //TDDO: delimitor quote ?
-			//fd = open("redir_lessless", O_CREAT | O_EXCL | O_RDWR | O_APPEND, 0644);
-			fd = open("redir_lessless", O_CREAT | O_WRONLY | O_APPEND | O_TRUNC, 0644);
-			while (1)
-			{
-				char *s = readline("> ");
-				//printf("readline s: %s\n", s);
-				if (ft_strequ(s, delimitor))
-					break;
-				ft_putstr_fd(s, fd);
-				ft_putstr_fd("\n", fd);
-			}
-			close(fd);
-			fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
-			//printf("redir << :fd: %d\n", fd);
+			handle_redir_in_in(&fd, tab, i);
 			i++;
 		}
 		i++;
@@ -165,30 +186,10 @@ int get_redir_out_file(char *cmd)
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
-		//find file name after > >>
-        	if (ft_strequ(tab[i], ">"))
-		{
-			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
-			//printf("redir > :fd: %d\n", fd);
-			close(fd);
-			if (redir_file)
-				free(redir_file);
-			redir_file = ft_strdup(tab[i + 1]);
-		}
-        	else if (ft_strequ(tab[i], ">>"))
-		{
-			fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
-			//printf("redir >> :fd: %d\n", fd);
-			close(fd);
-			if (redir_file)
-				free(redir_file);
-			redir_file = ft_strdup(tab[i + 1]);
-			is_double = 1;
-		}
+		handle_redir_out(&fd, tab, i, &is_double, &redir_file);
 		i++;
 	}
 	free_split(tab);
-	//printf("redir out: %s\n", redir_file);
 	if (!redir_file)
 		return (0);
 	if (is_double == 0)

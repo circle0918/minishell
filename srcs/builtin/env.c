@@ -189,67 +189,76 @@ char **get_argv(t_ms *g, char *cmd)
 	return argv;
 }
 
-int do_redir(t_ms *g, char *cmd)
+int do_redir(t_ms *g, char *cmd, int *out, int *in)
 {
-	int	redir_out_fd;
-	int	redir_in_fd;
-
 	if (g->ret_dir)
 	{
-		redir_in_fd = get_redir_in_file(cmd);
-		if (redir_in_fd == -1)
+		*in = get_redir_in_file(cmd);
+		if (*in == -1)
 	      		return (-1);
-		redir_out_fd = get_redir_out_file(cmd);
-        	if (redir_out_fd > 0)
+		*out = get_redir_out_file(cmd);
+        	if (*out > 0)
 		{
-	    		if (dup2(redir_out_fd, STDOUT_FILENO) == -1)
+	    		if (dup2(*out, STDOUT_FILENO) == -1)
 				perror("Error redir out");
 		}
-		if (redir_in_fd > 0)
+		if (*in > 0)
 		{
-	    		if (dup2(redir_in_fd, STDIN_FILENO) == -1)
+	    		if (dup2(*in, STDIN_FILENO) == -1)
 				perror("Error redir in");
-			close(redir_in_fd);
+			close(*in);
 		}
 	}
 	return (0);
 }
 
-int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
+void clean_redir(int *out, int *in)
 {
+	if (*out > 0)
+		close(*out);
+	if (*in > 0)
+		close(*in);
+	unlink("redir_lessless");
+}
+int launch_exec(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
+{	
 	char **argv;
 	char *abs_comd;
+	char **env;
 
 	argv = get_argv(g, cmd);
 	abs_comd = init_abs_comd(comd, path_i, abs_path_test);
-	if (do_redir(g, cmd) == -1)
+	env = get_env_tab(g->env);
+	if (execve(abs_comd, argv, env) == -1)
+	{
+		free(abs_comd);
+		free_split(argv);
+		free_split(env);
 		return (-1);
-	char **env;
-	env = NULL;
-	//printf("before exec: abs_comd: %s\n", abs_comd);
-	//print_2Dtab(argv, "before exec: argv");
-
-	int ret = is_buildin(comd, cmd, g);
-	if (ret == -1)
-	{
-		error_out2(comd, NULL, "No such file or directory");
-		g->ret_errno = 127;
-//		return (1);
-	}
-	else if (ret == 0)
-	{
-		//printf("b exec==============\n");
-		env = get_env_tab(g->env);
-		if (execve(abs_comd, argv, env) == -1) {
-			free(abs_comd);
-			free_split(argv);
-			free_split(env);
-			return (-1);
-		}
 	}
 	free(abs_comd);
 	free_split(argv);
 	free_split(env);
+	return (0);
+}
+
+int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
+{
+	int try_buildin;
+
+	if (do_redir(g, cmd, &g->redir_out_fd, &g->redir_in_fd) == -1)
+		return (-1);
+	try_buildin = is_buildin(comd, cmd, g);
+	if (try_buildin == -1)
+	{
+		error_out2(comd, NULL, "No such file or directory");
+		g->ret_errno = 127;
+	}
+	else if (try_buildin == 0)
+	{
+		if (launch_exec(cmd, comd, g, path_i, abs_path_test) == -1)
+			return (-1);
+	}
 	return (0);
 }
 
@@ -263,12 +272,7 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	{
 		if (launch(cmd, comd, g, path_i, abs_path_test) == -1)
 	 		perror("Error fork launch");
-		// {
-			// ft_exit(0, g, 0, NULL);
 		exit(EXIT_FAILURE);
-		// }
-		// ft_exit(0, g, 0, NULL);
-		// exit(0);
 	}
 	else if (g_ms->pid[0] < 0)
 		perror("Error forking");
@@ -282,7 +286,7 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
                 		exit(EXIT_FAILURE);
             		}
 	    		if (WIFEXITED(status)) {
-                	//	printf("terminé, code=%d\n", WEXITSTATUS(status));
+                //		printf("terminé, code=%d\n", WEXITSTATUS(status));
 				g->ret_errno = WEXITSTATUS(status);
             		}
 		/*	else if (WIFSIGNALED(status)) {
@@ -295,6 +299,7 @@ int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 		*/	if (WIFEXITED(status) || WIFSIGNALED(status))
 				break;
 		}
+		clean_redir(&g->redir_out_fd, &g->redir_in_fd);
 	}
 	return (1);
 }

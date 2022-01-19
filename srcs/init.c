@@ -24,4 +24,6 @@ void	init_global_struct(t_ms *g)
 	g->cmd_tmp = NULL;
 	g->error = NULL;
 	g->unset_path = 0;
+	g->redir_out_fd = 0;
+	g->redir_in_fd = 0;
 }
