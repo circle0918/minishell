@@ -149,15 +149,12 @@ char **init_argv(char *cmd)
 	return (argv);
 }
 
-char *init_abs_comd(char *comd, char *path_i, char *abs_path_test)
+char *init_abs_comd(char *comd, char *path_i)
 {
 	char *dir_cmd;
 	char *abs;
 
-	if (abs_path_test == NULL)
-		dir_cmd = ft_strjoin(path_i, "/");
-	else
-		dir_cmd = ft_strjoin(abs_path_test, "/");
+	dir_cmd = ft_strjoin(path_i, "/");
 	abs = ft_strjoin(dir_cmd, comd);
 	free(dir_cmd);
 	return (abs);
@@ -220,14 +217,14 @@ void clean_redir(int *out, int *in)
 		close(*in);
 	unlink("redir_lessless");
 }
-int launch_exec(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
+int launch_exec(char *cmd, char *comd, t_ms *g, char *path_i)
 {	
 	char **argv;
 	char *abs_comd;
 	char **env;
 
 	argv = get_argv(g, cmd);
-	abs_comd = init_abs_comd(comd, path_i, abs_path_test);
+	abs_comd = init_abs_comd(comd, path_i);
 	env = get_env_tab(g->env);
 	if (execve(abs_comd, argv, env) == -1)
 	{
@@ -242,7 +239,7 @@ int launch_exec(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_tes
 	return (0);
 }
 
-int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
+int launch(char *cmd, char *comd, t_ms *g, char *path_i)
 {
 	int try_buildin;
 
@@ -256,21 +253,21 @@ int launch(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
 	}
 	else if (try_buildin == 0)
 	{
-		if (launch_exec(cmd, comd, g, path_i, abs_path_test) == -1)
+		if (launch_exec(cmd, comd, g, path_i) == -1)
 			return (-1);
 	}
 	return (0);
 }
 
 
-int launcher(char *cmd, char *comd, t_ms *g, char *path_i, char *abs_path_test)
+int launcher(char *cmd, char *comd, t_ms *g, char *path_i)
 {
 	int	status;
 
 	g_ms->pid[0] = fork();
 	if (g_ms->pid[0] == 0)
 	{
-		if (launch(cmd, comd, g, path_i, abs_path_test) == -1)
+		if (launch(cmd, comd, g, path_i) == -1)
 	 		perror("Error fork launch");
 		exit(EXIT_FAILURE);
 	}
@@ -340,7 +337,7 @@ int get_last_char_pos(char *s, char c)
 	return (l);
 }
 
-int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, char *dir)
+int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g)
 {
 	int	l;
 	char	*path;
@@ -355,7 +352,7 @@ int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g, char *dir)
 	char *path_i = find_cmd_in_path_i(exec, path);
 	if (path_i)
 	{
-		launcher(cmd, exec, g, dir, path);
+		launcher(cmd, exec, g, path);
 		free(path);
 		free(exec);
 		return (1);
@@ -437,7 +434,7 @@ int handle_cmd_noneed_fork(t_ms *g, char *cmd)
 		|| ft_strcmp(g->cmd_tab[0], "unset") == 0
 		|| ft_strcmp(g->cmd_tab[0], "cd") == 0)
 	{
-		if (launch(cmd, g->cmd_tab[0], g, g->path[0], NULL) == -1)
+		if (launch(cmd, g->cmd_tab[0], g, g->path[0]) == -1)
 	  		perror("launch error");
 		free_split(g->cmd_tab);
 		return (1);
@@ -459,7 +456,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	init_redir(g, cmd);
 	if (handle_cmd_noneed_fork(g, cmd) == 1)
 		return (1);
-	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g, g->path[0]) == 1)
+	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g) == 1)
 	{
 		free_split(g->cmd_tab);
 		return (1);
@@ -469,7 +466,7 @@ int		find_cmd_path(char *cmd, t_ms *g)
 	path_i = find_cmd_in_path_tab(g);
 	if (path_i)
 	{
-		launcher(cmd, g->cmd_tab[0], g, path_i, NULL);
+		launcher(cmd, g->cmd_tab[0], g, path_i);
 		free_split(g->cmd_tab);
 		return (1);
 	}

@@ -121,28 +121,23 @@ void handle_redir_in_in(int *fd, char **tab, int i)
 		ft_putstr_fd("\n",*fd);
 	}
 	close(*fd);
-	*fd = open("redir_lessless", O_RDONLY);//TODO:unlink file
+	*fd = open("redir_lessless", O_RDONLY);
 	//printf("redir << :fd: %d\n", fd);
 }
 
-void handle_redir_out(int *fd, char **tab, int i, int *is_double, char **redir_file)
+void handle_redir_out(int *fd, char **tab, int i)
 {
 	if (ft_strequ(tab[i], ">"))
 	{
+		if (*fd > 0)
+			close(*fd);
 		*fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0664);
-		close(*fd);
-		if (*redir_file)
-			free(*redir_file);
-		*redir_file = ft_strdup(tab[i + 1]);
 	}
 	else if (ft_strequ(tab[i], ">>"))
 	{
+		if (*fd > 0)
+			close(*fd);
 		*fd = open(tab[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0664);
-		close(*fd);
-		if (*redir_file)
-			free(*redir_file);
-		*redir_file = ft_strdup(tab[i + 1]);
-		*is_double = 1;
 	}
 }
 
@@ -177,26 +172,18 @@ int get_redir_out_file(char *cmd)
 	char  **tab;
 	int i;
 	int fd;
-	int is_double;
-	char *redir_file;
 
-	redir_file = NULL;
-	is_double = 0;
+	fd = 0;
 	tab = creat_list_arg(cmd);
 	i = 0;
 	while (tab[i] && tab[i + 1])
 	{
-		handle_redir_out(&fd, tab, i, &is_double, &redir_file);
+		handle_redir_out(&fd, tab, i);
 		i++;
 	}
 	free_split(tab);
-	if (!redir_file)
+	if (fd <= 0)
 		return (0);
-	if (is_double == 0)
-		fd = open(redir_file, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	else
-		fd = open(redir_file, O_WRONLY | O_CREAT | O_APPEND, 0664);
-	free(redir_file);
 	return (fd);
 }
 
