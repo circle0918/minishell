@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 19:01:28 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 19:04:42 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 22:37:34 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,8 @@ int	clean_command(t_ms *g)
 			norm_clean_cmd(g, command);
 			free_split(g->cmd_tab);
 		}
-		ft_del_line(g->line);
+		ft_del_line(command);
+		ft_del_line(g->ret_dir);
 	}
 	return (0);
 }

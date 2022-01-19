@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 19:04:36 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/19 22:30:20 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,12 @@ int	check_unset_error(char *str)
 	return (0);
 }
 
-void	ft_unset(t_ms *g)
+void	ft_unset(t_ms *g, int i)
 {
 	t_list	*tmp;
 	char	*pos;
 	t_list	*pre;
-	int		i;
 
-	i = 1;
 	tmp = g->env;
 	g->ret_errno = 0;
 	g->unset_path = 0;
@@ -53,10 +51,8 @@ void	ft_unset(t_ms *g)
 		return ;
 	}
 	if (ft_strequ("PATH", g->cmd_tab[1]))
-	{
 		g->unset_path = 1;
-	}
-	while (g->cmd_tab[i])
+	while (g->cmd_tab[++i])
 	{
 		while (tmp)
 		{
@@ -68,9 +64,7 @@ void	ft_unset(t_ms *g)
 					if (tmp->next)
 						pre->next = tmp->next;
 					else
-					{
 						pre->next = NULL;
-					}
 					free(tmp->content);
 					free(tmp);
 					break ;
@@ -80,6 +74,5 @@ void	ft_unset(t_ms *g)
 			tmp = tmp->next;
 		}
 		tmp = g->env;
-		i++;
 	}
 }
