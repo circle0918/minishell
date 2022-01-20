@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 19:35:21 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 20:04:58 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,17 +122,14 @@ int	export_replaced(char *ptr, char **tab, int i, t_ms *g)
 	t_list	*tmp;
 	char	*pos;
 	char	*s;
-	int		se;
 
-	se = 0;
 	tmp = g->env;
 	pos = NULL;
 	s = ft_substr(tab[i], 0, (ptr - tab[i]));
 	while (tmp)
 	{
 		pos = ft_strstr(tmp->content, s);
-		se = recup_content((char *)tmp->content);
-		if (pos - (char *)tmp->content == 0 && !ft_strncmp(tmp->content, s, se))
+		if (pos - (char *)tmp->content == 0 && *(pos + ft_strlen(s)) == '=')
 		{
 			free(tmp->content);
 			tmp->content = ft_strdup(tab[i]);
