@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 19:04:36 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 19:31:32 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,16 @@ t_list	*ft_lst_pop_last(t_list **lst)
 	pop = top->next;
 	top->next = NULL;
 	return (pop);
+}
+
+int	recup_content(char *line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i] && line[i] != '=')
+		i++;
+	return (i);
 }
 
 void	export_append(char **tab, int i, t_ms *g)

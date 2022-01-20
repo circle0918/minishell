@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 17:08:20 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 19:37:30 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ typedef struct s_ms
 
 t_ms		*g_ms;
 
+int		recup_content(char *line);
 char	*norm_clean_line_cmd(char **dest, int count, char *str, char *tmp);
 int		handle_cmd_noneed_fork(t_ms *g, char *cmd);
 char	*find_cmd_in_path_tab(t_ms *g);

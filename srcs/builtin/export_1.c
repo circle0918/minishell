@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   export_1.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/19 19:04:36 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 19:35:21 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,23 +121,26 @@ int	export_replaced(char *ptr, char **tab, int i, t_ms *g)
 {
 	t_list	*tmp;
 	char	*pos;
-	char	*str;
+	char	*s;
+	int		se;
 
+	se = 0;
 	tmp = g->env;
 	pos = NULL;
-	str = ft_substr(tab[i], 0, (ptr - tab[i]));
+	s = ft_substr(tab[i], 0, (ptr - tab[i]));
 	while (tmp)
 	{
-		pos = ft_strstr(tmp->content, str);
-		if (pos && pos - (char *)tmp->content == 0)
+		pos = ft_strstr(tmp->content, s);
+		se = recup_content((char *)tmp->content);
+		if (pos - (char *)tmp->content == 0 && !ft_strncmp(tmp->content, s, se))
 		{
 			free(tmp->content);
 			tmp->content = ft_strdup(tab[i]);
-			free(str);
+			free(s);
 			return (1);
 		}
 		tmp = tmp->next;
 	}
-	free(str);
+	free(s);
 	return (0);
 }
