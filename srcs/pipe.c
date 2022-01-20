@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/11 15:31:37 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/18 17:53:36 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 17:57:13 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,12 @@ void	execution(char *cmd, int fd_in[2], int fd_out[2], t_ms *g)
 			dup2(fd_out[1], STDOUT_FILENO);
 			close(fd_out[1]);
 		}
-		find_cmd_path(cmd, g);
-		exit(g->ret_errno);
+		if (!find_cmd_path(cmd, g))
+		{
+			ft_putstr(cmd);
+			ft_putstr(": command not found\n");
+		}
+		exit(EXIT_FAILURE);
 	}
 }
 
