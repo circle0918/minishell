@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 01:20:05 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 16:07:28 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,8 @@ int	find_cmd_path(char *cmd, t_ms *g)
 		return (1);
 	path_i = find_cmd_in_path_tab(g);
 	count = count_split(g->cmd_tab);
-	str = norm_clean_line_cmd(g->cmd_tab, count, str, tmp);
+	g->tmp = test_redir_flag_2(cmd);
+	str = norm_clean_line_cmd_2(g, count, str, tmp);
 	if (path_i)
 	{
 		launcher(str, g->cmd_tab[0], g, path_i);

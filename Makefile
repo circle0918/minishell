@@ -6,7 +6,7 @@
 #    By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/08 16:26:34 by thhusser          #+#    #+#              #
-#    Updated: 2022/01/19 19:01:52 by thhusser         ###   ########.fr        #
+#    Updated: 2022/01/20 16:08:16 by thhusser         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,7 @@ SRCS_FILES	= \
 				builtin/env_3.c \
 				builtin/env_4.c \
 				builtin/env_5.c \
+				builtin/env_6.c \
 				builtin/echo.c \
 				builtin/export.c \
 				builtin/export_1.c \

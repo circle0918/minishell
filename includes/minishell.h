@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 01:03:15 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 16:07:36 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ typedef struct s_ms
 	int		unset_path;
 	int		redir_out_fd;
 	int		redir_in_fd;
+	char	*tmp;
 }			t_ms;
 
 t_ms		*g_ms;
@@ -54,6 +55,9 @@ t_ms		*g_ms;
 char	*norm_clean_line_cmd(char **dest, int count, char *str, char *tmp);
 int		handle_cmd_noneed_fork(t_ms *g, char *cmd);
 char	*find_cmd_in_path_tab(t_ms *g);
+char	*norm_clean_line_cmd_2(t_ms *g, int count, char *str, char *tmp);
+char	*norm_tmp_cote(t_ms *g, char *tmp, char *str);
+char	*test_redir_flag_2(char *cmd);
 
 void	ft_exit_plus(char **cmd);
 int		checkvar(char *str, int i);
