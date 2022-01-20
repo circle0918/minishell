@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 01:05:32 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 01:20:05 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ int	find_cmd_path(char *cmd, t_ms *g)
 	if (path_i)
 	{
 		launcher(str, g->cmd_tab[0], g, path_i);
+		ft_del_line(str);
 		free_split(g->cmd_tab);
 		return (1);
 	}
