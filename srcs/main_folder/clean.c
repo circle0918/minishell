@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/19 19:01:28 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 01:22:07 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 17:08:02 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,55 +23,6 @@ static void	clean_line(t_ms *g)
 	dest = ft_strdup(g->line + i);
 	ft_del_line(g->line);
 	g->line = dest;
-}
-
-char	*norm_clean_line_cmd(char **dest, int count, char *str, char *tmp)
-{
-	int	i;
-
-	i = -1;
-	while (dest[++i])
-	{
-		if (i == 0)
-			str = ft_strjoin(dest[i], "");
-		else if (count - 1 == i)
-		{
-			tmp = ft_strjoin(str, " ");
-			ft_del_line(str);
-			str = ft_strjoin(tmp, dest[i]);
-			ft_del_line(tmp);
-			break ;
-		}
-		else if (i != 0)
-		{
-			tmp = ft_strjoin(str, " ");
-			ft_del_line(str);
-			str = ft_strjoin(tmp, dest[i]);
-			ft_del_line(tmp);
-		}
-	}
-	return (str);
-}
-
-void	clean_line_cmd(t_ms *g)
-{
-	char	**dest;
-	char	*str;
-	char	*tmp;
-	int		count;
-
-	str = NULL;
-	tmp = NULL;
-	dest = ft_split(g->line, ' ');
-	count = count_split(dest);
-	str = norm_clean_line_cmd(dest, count, str, tmp);
-	free_split(dest);
-	if (str)
-	{
-		ft_del_line(g->line);
-		g->line = ft_strdup(str);
-		free(str);
-	}
 }
 
 int	check_nb_pipe(const char *str, t_ms *g)
@@ -108,7 +59,6 @@ int	clean_command(t_ms *g)
 	if (parseur(g, -1, 0))
 		return (1);
 	clean_line(g);
-	clean_line_cmd(g);
 	if (g->line)
 	{
 		command = check_in_out(g, g->line);

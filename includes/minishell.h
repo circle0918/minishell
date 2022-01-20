@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 16:07:36 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 17:08:20 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,8 +200,6 @@ char	*ft_checkbackredir(t_ms *g, int i, int nb);
 char	*check_in_out(t_ms *g, char *str);
 
 //->clean
-char	*norm_clean_line_cmd(char **dest, int count, char *str, char *tmp);
-void	clean_line_cmd(t_ms *g);
 int		check_nb_pipe(const char *str, t_ms *g);
 int		clean_command(t_ms *g);
 
