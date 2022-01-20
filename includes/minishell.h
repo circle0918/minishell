@@ -6,7 +6,7 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 00:33:00 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 01:03:15 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ typedef struct s_ms
 t_ms		*g_ms;
 
 char	*norm_clean_line_cmd(char **dest, int count, char *str, char *tmp);
+int		handle_cmd_noneed_fork(t_ms *g, char *cmd);
+char	*find_cmd_in_path_tab(t_ms *g);
 
 void	ft_exit_plus(char **cmd);
 int		checkvar(char *str, int i);
@@ -119,6 +121,42 @@ char	*get_env(char *str, t_list *env);
 int		get_cmd_size(char *cmd);
 int		check_uset_error(char *str);
 char	*get_pwd(void);
+int		launcher(char *cmd, char *comd, t_ms *g, char *path_i);
+char	*get_abs_path(int pos, char *comd);
+int		get_last_char_pos(char *s, char c);
+int		exec_cmd_has_dir(char *cmd, char *comd, t_ms *g);
+int		count_tab(char **tab);
+void	init_redir(t_ms *g, char *cmd);
+int		is_buildin_2(char *comd, t_ms *g);
+int		is_buildin(char *comd, t_ms *g);
+char	**init_argv(char *cmd);
+char	**get_argv(t_ms *g, char *cmd);
+int		do_redir(t_ms *g, char *cmd, int *out, int *in);
+void	clean_redir(int *out, int *in);
+int		launch_exec(char *cmd, char *comd, t_ms *g, char *path_i);
+int		launch(char *cmd, char *comd, t_ms *g, char *path_i);
+int		count_space(char *tmp);
+void	strcpy_del_c(char *tmp, t_ms *g);
+void	test_redir_flag(char *cmd, t_ms *g);
+char	*get_cmd_in_line(char *line);
+void	get_path(t_ms *g);
+char	*init_abs_comd(char *comd, char *path_i);
+char	*find_cmd_in_path_i(char *cmd, char *path_i);
+void	ft_print_export(t_list *export_lst);
+void	export_no_arg_0(t_list **expl, t_list **i,
+			t_list **node, t_list **last);
+void	export_no_arg(t_ms *g);
+int		export_checker(char **tab, int i, t_ms *g);
+int		export_replaced(char *ptr, char **tab, int i, t_ms *g);
+t_list	*ft_lst_pop_last(t_list **lst);
+void	export_append(char **tab, int i, t_ms *g);
+int		ft_export_path_flag(t_ms *g);
+void	ft_export(t_ms *g);
+void	error_out2(char *comd, char *opt, char *msg);
+char	*get_env(char *str, t_list *env);
+int		set_env_replace(char *key, t_list *env, char (*s)[]);
+void	set_env(char *key, char *val, t_list *env);
+void	change_path(t_ms *g, int change_back);
 
 //redir fonctions
 int		ft_output(char *comd, char *direct, t_ms *g);
@@ -162,6 +200,5 @@ char	*norm_clean_line_cmd(char **dest, int count, char *str, char *tmp);
 void	clean_line_cmd(t_ms *g);
 int		check_nb_pipe(const char *str, t_ms *g);
 int		clean_command(t_ms *g);
-
 
 #endif

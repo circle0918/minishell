@@ -27,9 +27,16 @@ SRCS_FILES	= \
 				main.c \
 				init.c \
 				builtin/env.c \
+				builtin/env_1.c \
+				builtin/env_2.c \
+				builtin/env_3.c \
+				builtin/env_4.c \
+				builtin/env_5.c \
 				builtin/echo.c \
 				builtin/export.c \
+				builtin/export_1.c \
 				builtin/cd.c \
+				builtin/cd_1.c \
 				builtin/pwd.c \
 				builtin/unset.c \
 				exit_free.c \

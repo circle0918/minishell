@@ -6,386 +6,11 @@
 /*   By: thhusser <thhusser@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/08 16:24:56 by thhusser          #+#    #+#             */
-/*   Updated: 2022/01/20 00:37:43 by thhusser         ###   ########.fr       */
+/*   Updated: 2022/01/20 01:05:32 by thhusser         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-char	*find_cmd_in_path_i(char *cmd, char *path_i);
-
-int	count_space(char *tmp)
-{
-	int	i;
-	int	x;
-
-	i = -1;
-	x = 0;
-	while (tmp[++i])
-	{
-		if (tmp[i] == ' ')
-		x++;
-	}
-	return (x);
-}
-
-void	strcpy_del_c(char *tmp, t_ms *g)
-{
-	int	x;
-	int	i;
-
-	x = 0;
-	i = 0;
-	g->ret_dir = malloc(sizeof(char) * (ft_strlen(tmp) - count_space(tmp) + 1));
-	if (!g->ret_dir)
-		return ;
-	while (tmp[i])
-	{
-		if (tmp[i] != ' ')
-			g->ret_dir[x++] = tmp[i++];
-		else
-			i++;
-	}
-	g->ret_dir[x] = 0;
-}
-
-void	test_redir_flag(char *cmd, t_ms *g)
-{
-	int		i;
-	char	*tmp;
-
-	i = 0;
-	tmp = NULL;
-	if (ft_strchr(cmd, '>') || ft_strchr(cmd, '<'))
-	{
-		while (cmd[i] && cmd[i] != '>' && cmd[i] != '<')
-			i++;
-		tmp = ft_strdup(cmd + i);
-		strcpy_del_c(tmp, g);
-		free(tmp);
-	}
-}
-
-char	*get_cmd_in_line(char *line)
-{
-	char	*cmd;
-	int		i;
-	int		pos;
-
-	i = 0;
-	pos = 0;
-	cmd = 0;
-	while (ft_isspace(line[i]) == 1)
-	{
-		pos = i;
-		i++;
-	}
-	if (i != 0)
-		pos++;
-	while (line[i] && ft_isspace(line[i]) == 0)
-	{
-		i++;
-	}
-	cmd = ft_substr(line, pos, i - pos);
-	return (cmd);
-}
-
-void	get_path(t_ms *g)
-{
-	char	*path;
-
-	path = NULL;
-	path = ft_strdup(get_env("PATH", g->env));
-	g->path = ft_split(path, ':');
-	free(path);
-}
-
-int	is_buildin_2(char *comd, t_ms *g)
-{
-	if (ft_strcmp(comd, "export") == 0)
-	{
-		ft_export(g);
-		return (1);
-	}
-	else if (ft_strcmp(g->cmd_tab[0], "unset") == 0)
-	{
-		ft_unset(g);
-		return (1);
-	}
-	if (g->unset_path == 1)
-		return (-1);
-	if (ft_strcmp(comd, "env") == 0)
-	{
-		print_list(g->env);
-		return (1);
-	}
-	else
-		return (0);
-}
-
-int	is_buildin(char *comd, t_ms *g)
-{
-	if (ft_strcmp(comd, "pwd") == 0)
-	{
-		ft_pwd(g);
-		return (1);
-	}
-	else if (ft_strcmp(g->cmd_tab[0], "echo") == 0)
-	{
-		ft_echo(g);
-		return (1);
-	}
-	else if (ft_strcmp(g->cmd_tab[0], "cd") == 0)
-	{
-		ft_cd(g);
-		return (1);
-	}
-	else
-		return (is_buildin_2(comd, g));
-}
-
-char	**init_argv(char *cmd)
-{
-	int		j;
-	char	**split_cmd;
-	char	**argv;
-
-	argv = (char **)malloc(sizeof(char *) * (get_cmd_size(cmd) + 1));
-	split_cmd = ft_split(cmd, ' ');
-	j = 0;
-	while (split_cmd[j])
-	{
-		argv[j] = ft_strdup(split_cmd[j]);
-		free(split_cmd[j]);
-		j++;
-	}
-	argv[j] = NULL;
-	free (split_cmd);
-	return (argv);
-}
-
-char	*init_abs_comd(char *comd, char *path_i)
-{
-	char	*dir_cmd;
-	char	*abs;
-
-	dir_cmd = ft_strjoin(path_i, "/");
-	abs = ft_strjoin(dir_cmd, comd);
-	free(dir_cmd);
-	return (abs);
-}
-
-int	get_cmd_size(char *cmd)
-{
-	int		j;
-	char	**split_cmd;
-
-	j = 0;
-	split_cmd = ft_split(cmd, ' ');
-	while (split_cmd[j])
-		j++;
-	free_split(split_cmd);
-	return (j);
-}
-
-char	**get_argv(t_ms *g, char *cmd)
-{
-	char	**argv;
-
-	argv = init_argv(cmd);
-	if (g->ret_dir)
-	{
-		free_split(argv);
-		argv = get_argv_redir(cmd);
-	}
-	return (argv);
-}
-
-int	do_redir(t_ms *g, char *cmd, int *out, int *in)
-{
-	if (g->ret_dir)
-	{
-		*in = get_redir_in_file(cmd);
-		if (*in == -1)
-			return (-1);
-		*out = get_redir_out_file(cmd);
-		if (*out > 0)
-		{
-			if (dup2(*out, STDOUT_FILENO) == -1)
-				perror("Error redir out");
-		}
-		if (*in > 0)
-		{
-			if (dup2(*in, STDIN_FILENO) == -1)
-				perror("Error redir in");
-			close(*in);
-		}
-	}
-	return (0);
-}
-
-void	clean_redir(int *out, int *in)
-{
-	if (*out > 0)
-		close(*out);
-	if (*in > 0)
-		close(*in);
-	unlink("redir_lessless");
-}
-
-int	launch_exec(char *cmd, char *comd, t_ms *g, char *path_i)
-{
-	char	**argv;
-	char	*abs_comd;
-	char	**env;
-
-	argv = get_argv(g, cmd);
-	abs_comd = init_abs_comd(comd, path_i);
-	env = get_env_tab(g->env);
-	if (execve(abs_comd, argv, env) == -1)
-	{
-		free(abs_comd);
-		free_split(argv);
-		free_split(env);
-		return (-1);
-	}
-	free(abs_comd);
-	free_split(argv);
-	free_split(env);
-	return (0);
-}
-
-int	launch(char *cmd, char *comd, t_ms *g, char *path_i)
-{
-	int	try_buildin;
-
-	if (do_redir(g, cmd, &g->redir_out_fd, &g->redir_in_fd) == -1)
-		return (-1);
-	try_buildin = is_buildin(comd, g);
-	if (try_buildin == -1)
-	{
-		error_out2(comd, NULL, "No such file or directory");
-		g->ret_errno = 127;
-	}
-	else if (try_buildin == 0)
-	{
-		if (launch_exec(cmd, comd, g, path_i) == -1)
-			return (-1);
-	}
-	return (0);
-}
-
-int	launcher(char *cmd, char *comd, t_ms *g, char *path_i)
-{
-	int	status;
-
-	g_ms->pid[0] = fork();
-	if (g_ms->pid[0] == 0)
-	{
-		if (launch(cmd, comd, g, path_i) == -1)
-			perror("Error fork launch");
-		exit(EXIT_FAILURE);
-	}
-	else if (g_ms->pid[0] < 0)
-		perror("Error forking");
-	else
-	{
-		while (1)
-		{
-			if (waitpid(g_ms->pid[0], &status, WUNTRACED) == -1)
-			{
-				perror ("ERROR waitpid");
-				exit (EXIT_FAILURE);
-			}
-			if (WIFEXITED(status))
-			{
-			// g->ret_errno = WEXITSTATUS(status);
-			}
-			if (WIFEXITED(status) || WIFSIGNALED(status))
-				break ;
-		}
-		clean_redir(&g->redir_out_fd, &g->redir_in_fd);
-	}
-	return (1);
-}
-
-char	*get_abs_path(int pos, char *comd)
-{
-	char	*path;
-	char	*tmp;
-	char	*tmp2;
-
-	path = ft_substr(comd, 0, pos);
-	if (path[0] != '/')
-	{
-		tmp = path;
-		tmp2 = ft_strjoin(getenv("PWD"), "/");
-		path = ft_strjoin(tmp2, tmp);
-		free(tmp);
-		free(tmp2);
-	}
-	return (path);
-}
-
-int	get_last_char_pos(char *s, char c)
-{
-	int	l;
-
-	l = ft_strlen(s) - 1;
-	while (l >= 0)
-	{
-		if (s[l] == c)
-			break ;
-		l--;
-	}
-	if (l == -1)
-		return (-1);
-	return (l);
-}
-
-int	exec_cmd_has_dir(char *cmd, char *comd, t_ms *g)
-{
-	int		l;
-	char	*path;
-	char	*exec;
-	char	*path_i;
-
-	l = get_last_char_pos(comd, '/');
-	if (l == -1)
-		return (0);
-	path = get_abs_path(l, comd);
-	exec = ft_substr(comd, l + 1, ft_strlen(comd) - l);
-	path_i = find_cmd_in_path_i(exec, path);
-	if (path_i)
-	{
-		launcher(cmd, exec, g, path);
-		free(path);
-		free(exec);
-		return (1);
-	}
-	return (0);
-}
-
-int	count_tab(char **tab)
-{
-	int	i;
-
-	i = 0;
-	while (tab[i])
-	{
-		i++;
-	}
-	return (i);
-}
-
-void	init_redir(t_ms *g, char *cmd)
-{
-	if (g->ret_dir)
-	{
-		free_split(g->cmd_tab);
-		g->cmd_tab = get_argv_redir(cmd);
-	}
-}
 
 char	*find_cmd_in_path_i(char *cmd, char *path_i)
 {
@@ -412,50 +37,36 @@ char	*find_cmd_in_path_i(char *cmd, char *path_i)
 	return (NULL);
 }
 
-char	*find_cmd_in_path_tab(t_ms *g)
+int	reset_cmd_variable(char **cmd, t_ms *g)
 {
-	int		i;
-	char	*path_i;
-
-	i = 0;
-	while (g->path[i])
+	if (ft_strchr(*cmd, '$'))
 	{
-		path_i = find_cmd_in_path_i(g->cmd_tab[0], g->path[i]);
-		if (path_i)
-			return (path_i);
-		i++;
-	}
-	return (NULL);
-}
-
-int	handle_cmd_noneed_fork(t_ms *g, char *cmd)
-{
-	if (!ft_strcmp(g->cmd_tab[0], "exit"))
-	{
-		ft_exit_plus(g->cmd_tab);
-		free_split(g->cmd_tab);
-		g->exit = 1;
-		ft_exit(2, g, g->ret, cmd);
-	}
-	g->ret_errno = 0;
-	if (ft_strcmp(g->cmd_tab[0], "export") == 0
-		|| ft_strcmp(g->cmd_tab[0], "unset") == 0
-		|| ft_strcmp(g->cmd_tab[0], "cd") == 0)
-	{
-		if (launch(cmd, g->cmd_tab[0], g, g->path[0]) == -1)
-			perror("launch error");
-		free_split(g->cmd_tab);
-		return (1);
+		*cmd = check_var_cmd(g, *cmd);
+		if (!cmd || ft_strequ(*cmd, "\0"))
+			return (1);
 	}
 	return (0);
 }
 
-int	reset_cmd_variable(char *cmd)
+static int	fix_bug_quotes(char *cmd, t_ms *g)
 {
-	if (ft_strchr(cmd, '$'))
+	if (reset_cmd_variable(&cmd, g) == 1)
+		return (1);
+	g->cmd_tab = creat_list_arg(cmd);
+	g->cmd_ac = count_tab(g->cmd_tab);
+	test_redir_flag(cmd, g);
+	init_redir(g, cmd);
+	return (0);
+}
+
+static int	norm_fix_bug(char *cmd, t_ms *g)
+{
+	if (handle_cmd_noneed_fork(g, cmd) == 1)
+		return (1);
+	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g) == 1)
 	{
-		if (!cmd || ft_strequ(cmd, "\0"))
-			return (1);
+		free_split(g->cmd_tab);
+		return (1);
 	}
 	return (0);
 }
@@ -469,19 +80,10 @@ int	find_cmd_path(char *cmd, t_ms *g)
 
 	tmp = NULL;
 	str = NULL;
-	if (reset_cmd_variable(cmd) == 0)
-		cmd = check_var_cmd(g, cmd);
-	g->cmd_tab = creat_list_arg(cmd);
-	g->cmd_ac = count_tab(g->cmd_tab);
-	test_redir_flag(cmd, g);
-	init_redir(g, cmd);
-	if (handle_cmd_noneed_fork(g, cmd) == 1)
+	if (fix_bug_quotes(cmd, g))
 		return (1);
-	if (exec_cmd_has_dir(cmd, g->cmd_tab[0], g) == 1)
-	{
-		free_split(g->cmd_tab);
+	if (norm_fix_bug(cmd, g))
 		return (1);
-	}
 	path_i = find_cmd_in_path_tab(g);
 	count = count_split(g->cmd_tab);
 	str = norm_clean_line_cmd(g->cmd_tab, count, str, tmp);
